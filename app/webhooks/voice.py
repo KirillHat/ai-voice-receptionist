@@ -525,6 +525,73 @@ async def analytics_summary() -> dict[str, Any]:
     }
 
 
+@router.get("/analytics/calls/{call_sid}")
+async def analytics_call_detail(call_sid: str) -> dict[str, Any]:
+    """Return the full transcript and metadata for a single call."""
+    async with session_scope() as session:
+        result = await session.execute(select(CallSession).where(CallSession.call_sid == call_sid))
+        call = result.scalar_one_or_none()
+        if call is None:
+            raise HTTPException(status_code=404, detail="Call session not found")
+        lead_result = await session.execute(select(Lead).where(Lead.call_sid == call_sid))
+        lead = lead_result.scalar_one_or_none()
+
+    return {
+        "call_sid": call.call_sid,
+        "caller_phone": call.caller_phone,
+        "status": call.status,
+        "intent": call.intent,
+        "guest_name": call.guest_name,
+        "party_size": call.party_size,
+        "reservation_datetime": call.reservation_datetime,
+        "special_notes": call.special_notes,
+        "turn_count": call.turn_count,
+        "recording_sid": call.recording_sid,
+        "recording_url": call.recording_url,
+        "recording_duration_sec": call.recording_duration_sec,
+        "created_at": call.created_at.isoformat() if call.created_at else None,
+        "transcript": list(call.transcript or []),
+        "lead": (
+            {
+                "intent": lead.intent,
+                "guest_name": lead.guest_name,
+                "party_size": lead.party_size,
+                "reservation_datetime": lead.reservation_datetime,
+                "qualification_label": lead.qualification_label,
+                "summary": lead.summary,
+            }
+            if lead is not None
+            else None
+        ),
+    }
+
+
+@router.get("/analytics/calls")
+async def analytics_calls_list(limit: int = 20) -> dict[str, Any]:
+    """Return the most recent calls (no transcript)."""
+    limit = max(1, min(100, limit))
+    async with session_scope() as session:
+        result = await session.execute(
+            select(CallSession).order_by(CallSession.created_at.desc()).limit(limit)
+        )
+        calls = result.scalars().all()
+    return {
+        "calls": [
+            {
+                "call_sid": c.call_sid,
+                "caller_phone": c.caller_phone,
+                "status": c.status,
+                "intent": c.intent,
+                "guest_name": c.guest_name,
+                "turn_count": c.turn_count,
+                "recording_sid": c.recording_sid,
+                "created_at": c.created_at.isoformat() if c.created_at else None,
+            }
+            for c in calls
+        ]
+    }
+
+
 @router.get("/healthz")
 async def healthz() -> dict[str, str]:
     return {"status": "ok"}
