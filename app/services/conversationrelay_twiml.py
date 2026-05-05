@@ -29,6 +29,7 @@ def conversationrelay_response() -> str:
         "welcomeGreetingInterruptible": "any",
         "language": settings.conversationrelay_primary_language,
         "ttsProvider": settings.conversationrelay_tts_provider,
+        "voice": settings.conversationrelay_tts_voice,
         "transcriptionProvider": settings.conversationrelay_stt_provider,
         "interruptible": "any",
         "reportInputDuringAgentSpeech": "speech",
@@ -37,34 +38,22 @@ def conversationrelay_response() -> str:
     }
     relay = SubElement(connect, "ConversationRelay", relay_attrs)
 
-    # Pre-map languages so Twilio can switch with stable provider/voice choices.
-    SubElement(
-        relay,
-        "Language",
-        {
-            "code": "en-US",
-            "ttsProvider": settings.conversationrelay_tts_provider,
-            "transcriptionProvider": settings.conversationrelay_stt_provider,
-        },
+    languages = (
+        ("en-US", settings.conversationrelay_voice_en),
+        ("es-US", settings.conversationrelay_voice_es),
+        ("ru-RU", settings.conversationrelay_voice_ru),
     )
-    SubElement(
-        relay,
-        "Language",
-        {
-            "code": "es-US",
-            "ttsProvider": settings.conversationrelay_tts_provider,
-            "transcriptionProvider": settings.conversationrelay_stt_provider,
-        },
-    )
-    SubElement(
-        relay,
-        "Language",
-        {
-            "code": "ru-RU",
-            "ttsProvider": settings.conversationrelay_tts_provider,
-            "transcriptionProvider": settings.conversationrelay_stt_provider,
-        },
-    )
+    for code, locale_voice in languages:
+        SubElement(
+            relay,
+            "Language",
+            {
+                "code": code,
+                "ttsProvider": settings.conversationrelay_tts_provider,
+                "voice": locale_voice or settings.conversationrelay_tts_voice,
+                "transcriptionProvider": settings.conversationrelay_stt_provider,
+            },
+        )
 
     return tostring(root, encoding="unicode")
 

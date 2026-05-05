@@ -32,6 +32,12 @@ class Settings(BaseSettings):
     conversationrelay_primary_language: str = "en-US"
     conversationrelay_tts_provider: str = "ElevenLabs"
     conversationrelay_stt_provider: str = "Deepgram"
+    # ElevenLabs multilingual female voice; one ID covers en/es/ru.
+    # Override per locale via the *_voice_* settings below if needed.
+    conversationrelay_tts_voice: str = "Rachel"
+    conversationrelay_voice_en: str = ""
+    conversationrelay_voice_es: str = ""
+    conversationrelay_voice_ru: str = ""
     llm_streaming_enabled: bool = True
     openai_api_key: SecretStr | None = None
     openai_model: str = "gpt-4o-mini"

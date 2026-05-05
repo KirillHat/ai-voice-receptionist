@@ -216,6 +216,8 @@ def _extract_fields(
 
     if not session.reservation_datetime:
         maybe_time = _extract_datetime_phrase(text)
+        if not maybe_time and _was_asking_for(last_assistant, "datetime"):
+            maybe_time = _extract_short_datetime(text)
         if maybe_time:
             session.reservation_datetime = maybe_time
 
@@ -240,6 +242,22 @@ _PARTY_QUESTION_TOKENS = (
     "человек",
     "personas",
 )
+_DATETIME_QUESTION_TOKENS = (
+    "date",
+    "time",
+    "when",
+    "what date",
+    "what time",
+    "дата",
+    "время",
+    "когда",
+    "fecha",
+    "hora",
+    "cuándo",
+    "cuando",
+    "pickup",
+    "pick up",
+)
 
 
 def _was_asking_for(last_assistant: str | None, field: str) -> bool:
@@ -250,6 +268,8 @@ def _was_asking_for(last_assistant: str | None, field: str) -> bool:
         return any(token in lower for token in _NAME_QUESTION_TOKENS)
     if field == "party":
         return any(token in lower for token in _PARTY_QUESTION_TOKENS)
+    if field == "datetime":
+        return any(token in lower for token in _DATETIME_QUESTION_TOKENS)
     return False
 
 
@@ -280,6 +300,20 @@ def _extract_short_party(text: str) -> int | None:
         if re.search(rf"\b{word}\b", text):
             return value
     return None
+
+
+def _extract_short_datetime(text: str) -> str | None:
+    """Treat any non-empty caller reply as a datetime when we just asked.
+
+    The phone STT (especially in en-US mode listening to RU/ES speech)
+    rarely produces canonical phrases like 'tomorrow at 8 pm' — we get
+    'eight evening', 'mañana a las ocho', 'завтра в восемь' and similar.
+    If we just asked for the date/time, we trust whatever they said.
+    """
+    cleaned = re.sub(r"[.,!?]+$", "", text).strip()
+    if not cleaned:
+        return None
+    return cleaned[:120]
 
 
 def _last_assistant_prompt(session: CallSession) -> str | None:
