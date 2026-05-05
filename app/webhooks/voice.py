@@ -244,14 +244,29 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                     continue
 
                 user_input = str(message.get("voicePrompt", "") or "").strip()
+                stt_lang = str(message.get("lang", "") or "")
+                log.info(
+                    "voice.relay_prompt",
+                    call_sid=active_call_sid,
+                    stt_lang=stt_lang,
+                    active_lang=active_lang,
+                    voice_prompt=user_input,
+                )
                 if not user_input:
                     continue
 
                 detected_lang = language_router.normalize_language(
-                    str(message.get("lang", "") or ""),
+                    stt_lang,
                     user_input,
                 )
                 if detected_lang != active_lang:
+                    log.info(
+                        "voice.language_switch",
+                        call_sid=active_call_sid,
+                        from_lang=active_lang,
+                        to_lang=detected_lang,
+                        trigger=user_input[:80],
+                    )
                     await _send_language_switch(websocket, detected_lang)
                     active_lang = detected_lang
 

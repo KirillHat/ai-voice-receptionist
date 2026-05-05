@@ -12,6 +12,11 @@ _DEFAULT_LANG = "en-US"
 def normalize_language(lang: str | None, text: str | None = None) -> str:
     raw = (lang or "").strip().lower()
     if raw in {"en", "en-us", "en-gb"}:
+        # The STT layer may say "en-US" while the caller actually asked to
+        # switch — fall through to the text heuristics before trusting it.
+        forced = _force_switch_from_text(text)
+        if forced is not None:
+            return forced
         return "en-US"
     if raw in {"es", "es-us", "es-es"}:
         return "es-US"
@@ -24,7 +29,49 @@ def normalize_language(lang: str | None, text: str | None = None) -> str:
             token in text.lower() for token in ("hola", "reserva", "mesa", "para")
         ):
             return "es-US"
+        forced = _force_switch_from_text(text)
+        if forced is not None:
+            return forced
     return _DEFAULT_LANG
+
+
+_SWITCH_PATTERNS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    (
+        "ru-RU",
+        (
+            r"\b(?:in |speak |switch to |change to |po[\s-]?)?russian\b",
+            r"\bна русск\w*\b",
+            r"\bпо[\s-]?русски\b",
+            r"\bговорить (?:по\s)?русск\w*\b",
+        ),
+    ),
+    (
+        "es-US",
+        (
+            r"\b(?:in |speak |switch to |change to )?spanish\b",
+            r"\bespañol\b",
+            r"\bhabla\w* español\b",
+        ),
+    ),
+    (
+        "en-US",
+        (
+            r"\b(?:in |speak |switch to |change to |back to )?english\b",
+            r"\bпо[\s-]?английски\b",
+        ),
+    ),
+)
+
+
+def _force_switch_from_text(text: str | None) -> str | None:
+    if not text:
+        return None
+    lower = text.lower()
+    for code, patterns in _SWITCH_PATTERNS:
+        for pattern in patterns:
+            if re.search(pattern, lower):
+                return code
+    return None
 
 
 def build_reply(session: CallSession, *, missing_field: str | None, lang: str) -> str:

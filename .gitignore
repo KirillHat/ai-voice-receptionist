@@ -25,3 +25,4 @@ data/*.db
 
 # Internal brand assets — confidential, never commit
 *.pdf
+recordings/
