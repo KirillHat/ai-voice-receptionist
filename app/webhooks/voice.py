@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from time import monotonic
 from typing import Any
 
 import structlog
@@ -23,14 +24,17 @@ from twilio.rest import Client as TwilioClient
 
 from app.config import get_settings
 from app.services import (
+    caller_profile,
     conversationrelay_twiml,
     crm_client,
     faq,
     language_router,
     llm_stream,
+    prosody,
     qualifier,
     sevenrooms_client,
     slack_client,
+    turn_taking,
     twiml_voice,
 )
 from app.storage.db import session_scope
@@ -208,9 +212,14 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
 
     await websocket.accept()
 
+    settings = get_settings()
     active_call_sid = ""
     active_from = ""
-    active_lang = "en-US"
+    active_lang = settings.conversationrelay_primary_language
+    profile_context = ""
+    buffered_prompt_parts: list[str] = []
+    last_interrupt_at = 0.0
+    saw_interrupt = False
 
     try:
         while True:
@@ -228,29 +237,48 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                         caller_phone=active_from,
                     )
                     call.status = "in_progress"
+                    profile = await caller_profile.get_or_create_profile(session, active_from)
+                    if profile and profile.preferred_language:
+                        active_lang = profile.preferred_language
+                    profile_context = caller_profile.profile_prompt_context(profile)
+                if active_lang != settings.conversationrelay_primary_language:
+                    await _send_language_switch(websocket, active_lang)
                 continue
 
             if message_type == "interrupt":
                 log.info(
                     "voice.relay_interrupt",
                     call_sid=active_call_sid,
-                    utterance_until_interrupt=message.get("utteranceUntilInterrupt", ""),
                     duration_ms=message.get("durationUntilInterruptMs", 0),
                 )
+                saw_interrupt = True
+                last_interrupt_at = monotonic()
                 continue
 
             if message_type == "prompt":
+                prompt_chunk = str(message.get("voicePrompt", "") or "").strip()
                 if not bool(message.get("last", True)):
+                    if prompt_chunk:
+                        buffered_prompt_parts.append(prompt_chunk)
                     continue
 
-                user_input = str(message.get("voicePrompt", "") or "").strip()
+                if prompt_chunk:
+                    buffered_prompt_parts.append(prompt_chunk)
+                user_input = " ".join(buffered_prompt_parts).strip()
+                buffered_prompt_parts = []
                 stt_lang = str(message.get("lang", "") or "")
+                timing = turn_taking.compute_timing(user_input)
+                interrupted_recently = saw_interrupt and (
+                    monotonic() - last_interrupt_at <= settings.voice_interrupt_ack_window_sec
+                )
+                saw_interrupt = False
                 log.info(
                     "voice.relay_prompt",
                     call_sid=active_call_sid,
                     stt_lang=stt_lang,
                     active_lang=active_lang,
-                    voice_prompt=user_input,
+                    input_len=len(user_input),
+                    utterance_kind=timing.utterance_kind,
                 )
                 if not user_input:
                     continue
@@ -265,7 +293,7 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                         call_sid=active_call_sid,
                         from_lang=active_lang,
                         to_lang=detected_lang,
-                        trigger=user_input[:80],
+                        trigger_len=min(len(user_input), 80),
                     )
                     await _send_language_switch(websocket, detected_lang)
                     active_lang = detected_lang
@@ -284,6 +312,22 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                             caller_phone=active_from,
                         )
                         qualifier.note_faq_turn(call, user_input, faq_answer)
+                        profile = await caller_profile.get_or_create_profile(session, active_from)
+                        if profile:
+                            caller_profile.update_profile_from_turn(
+                                profile,
+                                utterance=user_input,
+                                detected_lang=active_lang,
+                                intent=call.intent,
+                            )
+                            profile_context = caller_profile.profile_prompt_context(profile)
+                    if interrupted_recently:
+                        await _send_text_token(
+                            websocket,
+                            prosody.interruption_ack(active_lang),
+                            lang=active_lang,
+                            last=False,
+                        )
                     await _send_text_token(
                         websocket,
                         faq_answer.text,
@@ -292,6 +336,8 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                     )
                     continue
 
+                lead_payload: dict[str, Any] | None = None
+                # Keep DB work short; do not hold a DB transaction while awaiting LLM/network I/O.
                 async with session_scope() as session:
                     call = await _get_or_create_call_session(
                         session,
@@ -299,37 +345,112 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                         caller_phone=active_from,
                     )
                     decision = qualifier.ingest_turn(call, user_input)
-
-                    lead_payload: dict[str, Any] | None = None
                     if decision.completed and call.status != "qualified":
                         call.status = "qualified"
                         lead = _build_lead(call)
                         session.add(lead)
                         await session.flush()
                         lead_payload = _lead_payload(lead)
-                    chunks: list[str] = []
-                    async for chunk in llm_stream.stream_reply(
-                        call=call,
-                        user_input=user_input,
-                        missing_field=decision.missing_field,
-                        lang=active_lang,
-                    ):
-                        chunks.append(chunk)
+                    profile = await caller_profile.get_or_create_profile(session, active_from)
+                    if profile:
+                        caller_profile.update_profile_from_turn(
+                            profile,
+                            utterance=user_input,
+                            detected_lang=active_lang,
+                            intent=call.intent,
+                        )
+                        profile_context = caller_profile.profile_prompt_context(profile)
 
-                if not chunks:
+                style_profile = caller_profile.choose_profile_mode(
+                    call,
+                    interrupted_recently=interrupted_recently,
+                )
+                await asyncio.sleep(timing.pause_ms / 1000)
+
+                if interrupted_recently:
+                    await _send_text_token(
+                        websocket,
+                        prosody.interruption_ack(active_lang),
+                        lang=active_lang,
+                        last=False,
+                    )
+
+                stream = llm_stream.stream_reply(
+                    call=call,
+                    user_input=user_input,
+                    missing_field=decision.missing_field,
+                    lang=active_lang,
+                    style_profile=style_profile,
+                    caller_profile_context=profile_context,
+                )
+                try:
+                    first_chunk = await asyncio.wait_for(
+                        anext(stream),
+                        timeout=timing.holding_delay_ms / 1000,
+                    )
+                except asyncio.TimeoutError:
+                    await _send_text_token(
+                        websocket,
+                        prosody.holding_phrase(active_lang),
+                        lang=active_lang,
+                        last=False,
+                    )
+                    try:
+                        first_chunk = await anext(stream)
+                    except StopAsyncIteration:
+                        first_chunk = None
+                except StopAsyncIteration:
+                    first_chunk = None
+
+                sent_any = False
+                pending_chunk: str | None = first_chunk
+                decorated_first_chunk = False
+                async for chunk in stream:
+                    if pending_chunk is not None and not decorated_first_chunk:
+                        pending_chunk = prosody.maybe_add_disfluency(
+                            pending_chunk,
+                            lang=active_lang,
+                            call_sid=active_call_sid,
+                            turn_count=int(call.turn_count or 0),
+                        )
+                        decorated_first_chunk = True
+                    if pending_chunk is not None:
+                        sent_any = True
+                        await _send_text_token(
+                            websocket,
+                            pending_chunk,
+                            lang=active_lang,
+                            last=False,
+                        )
+                    pending_chunk = chunk
+
+                if pending_chunk is not None:
+                    if not decorated_first_chunk:
+                        pending_chunk = prosody.maybe_add_disfluency(
+                            pending_chunk,
+                            lang=active_lang,
+                            call_sid=active_call_sid,
+                            turn_count=int(call.turn_count or 0),
+                        )
+                    sent_any = True
+                    await _send_text_token(
+                        websocket,
+                        pending_chunk,
+                        lang=active_lang,
+                        last=True,
+                    )
+
+                if not sent_any:
                     fallback = language_router.build_reply(
                         call,
                         missing_field=decision.missing_field,
                         lang=active_lang,
                     )
-                    chunks = [fallback]
-
-                for i, chunk in enumerate(chunks):
                     await _send_text_token(
                         websocket,
-                        chunk,
+                        fallback,
                         lang=active_lang,
-                        last=i == len(chunks) - 1,
+                        last=True,
                     )
 
                 if lead_payload:

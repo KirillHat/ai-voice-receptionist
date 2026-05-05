@@ -41,6 +41,14 @@ class Settings(BaseSettings):
     llm_streaming_enabled: bool = True
     openai_api_key: SecretStr | None = None
     openai_model: str = "gpt-4o-mini"
+    voice_soft_pause_min_ms: int = 180
+    voice_soft_pause_max_ms: int = 650
+    voice_fast_utterance_words: int = 8
+    voice_long_utterance_words: int = 22
+    voice_holding_phrase_delay_fast_ms: int = 900
+    voice_holding_phrase_delay_slow_ms: int = 1400
+    voice_interrupt_ack_window_sec: float = 10.0
+    voice_disfluency_rate: float = 0.18
 
     # Routing
     app_base_url: str = "http://localhost:8000"

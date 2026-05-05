@@ -8,6 +8,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from app.config import get_settings
+from app.services import datetime_nlu
 from app.storage.models import CallSession
 
 _INTENT_KEYWORDS: dict[str, tuple[str, ...]] = {
@@ -303,17 +305,57 @@ def _extract_short_party(text: str) -> int | None:
 
 
 def _extract_short_datetime(text: str) -> str | None:
-    """Treat any non-empty caller reply as a datetime when we just asked.
-
-    The phone STT (especially in en-US mode listening to RU/ES speech)
-    rarely produces canonical phrases like 'tomorrow at 8 pm' — we get
-    'eight evening', 'mañana a las ocho', 'завтра в восемь' and similar.
-    If we just asked for the date/time, we trust whatever they said.
-    """
+    """Extract datetime-like short replies when we just asked for date/time."""
     cleaned = re.sub(r"[.,!?]+$", "", text).strip()
     if not cleaned:
         return None
-    return cleaned[:120]
+
+    lower = cleaned.lower()
+    if any(
+        phrase in lower
+        for phrase in (
+            "not sure",
+            "don't know",
+            "dont know",
+            "later",
+            "whatever",
+            "idk",
+            "no idea",
+            "не знаю",
+            "без разницы",
+            "позже",
+            "no se",
+            "no sé",
+            "da igual",
+            "más tarde",
+        )
+    ):
+        return None
+
+    normalized = datetime_nlu.normalize_datetime_text(
+        cleaned,
+        timezone_name=get_settings().business_timezone,
+    )
+    if normalized:
+        return normalized
+
+    datetime_signal_patterns = (
+        r"\b\d{1,2}[:.]\d{2}\s*(?:am|pm)?\b",
+        r"\b\d{1,2}\s*(?:am|pm)\b",
+        r"\b(?:today|tonight|tomorrow|next)\b",
+        r"\b(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b",
+        r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b",
+        r"\b(?:завтра|сегодня|вечером|утром|дн[её]м|понедельник|вторник|среда|четверг|пятница|суббота|воскресенье)\b",
+        r"\b(?:mañana|hoy|esta noche|lunes|martes|miércoles|jueves|viernes|sábado|domingo)\b",
+    )
+    if any(re.search(pattern, lower) for pattern in datetime_signal_patterns):
+        return None
+
+    # Accept compact STT fragments with a leading number, e.g. "8 evening".
+    if re.search(r"^\d{1,2}\b", lower):
+        return None
+
+    return None
 
 
 def _last_assistant_prompt(session: CallSession) -> str | None:
@@ -362,6 +404,13 @@ def _extract_party_size(text: str) -> int | None:
 
 
 def _extract_datetime_phrase(text: str) -> str | None:
+    normalized = datetime_nlu.normalize_datetime_text(
+        text,
+        timezone_name=get_settings().business_timezone,
+    )
+    if normalized:
+        return normalized
+
     relative_tokens = ("today", "tonight", "tomorrow", "next ")
     date_time_patterns = [
         r"\b(?:today|tonight|tomorrow)\b",
@@ -380,7 +429,7 @@ def _extract_datetime_phrase(text: str) -> str | None:
         return " ".join(dict.fromkeys(matches))[:120]
 
     if any(token in text for token in relative_tokens):
-        return text[:120]
+        return None
     return None
 
 

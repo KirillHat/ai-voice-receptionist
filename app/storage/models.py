@@ -57,3 +57,16 @@ class Lead(Base):
     qualification_label: Mapped[str] = mapped_column(String(16))
     summary: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+
+
+class CallerProfile(Base):
+    __tablename__ = "caller_profiles"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    caller_phone: Mapped[str] = mapped_column(String(32), unique=True, index=True)
+    preferred_language: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    speech_pace: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    formality: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    typical_intents: Mapped[dict[str, int]] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow, onupdate=_utcnow)

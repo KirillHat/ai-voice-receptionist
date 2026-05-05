@@ -13,7 +13,7 @@ import httpx
 import structlog
 
 from app.config import get_settings
-from app.services import language_router
+from app.services import language_router, prosody
 from app.storage.models import CallSession
 
 log = structlog.get_logger()
@@ -87,9 +87,14 @@ async def stream_reply(
     user_input: str,
     missing_field: str | None,
     lang: str,
+    style_profile: str = "default",
+    caller_profile_context: str = "",
 ) -> AsyncIterator[str]:
     settings = get_settings()
-    fallback = language_router.build_reply(call, missing_field=missing_field, lang=lang)
+    fallback = _fallback_with_style(
+        language_router.build_reply(call, missing_field=missing_field, lang=lang),
+        style_profile=style_profile,
+    )
 
     if not settings.llm_streaming_enabled or not settings.openai_api_key:
         for chunk in _chunk_text(fallback):
@@ -104,16 +109,19 @@ async def stream_reply(
             {"role": "system", "content": _system_prompt(lang, settings.business_name)},
             {
                 "role": "user",
-                "content": (
-                    "Caller said: "
-                    f"{user_input}\n"
-                    f"Known context: {_conversation_context(call)}\n"
-                    f"Missing field: {missing_field or 'none'}\n"
-                    "Craft next phone utterance now."
-                ),
-            },
-        ],
-    }
+                    "content": (
+                        "Caller said: "
+                        f"{user_input}\n"
+                        f"Known context: {_conversation_context(call)}\n"
+                        f"Missing field: {missing_field or 'none'}\n"
+                        f"Prosody style profile: {style_profile}\n"
+                        f"Style hint: {prosody.style_hint(style_profile)}\n"
+                        f"Caller preference memory: {caller_profile_context or 'none'}\n"
+                        "Craft next phone utterance now."
+                    ),
+                },
+            ],
+        }
 
     headers = {
         "Authorization": f"Bearer {settings.openai_api_key.get_secret_value()}",
@@ -175,3 +183,13 @@ def _chunk_text(text: str) -> list[str]:
     if current:
         chunks.append(" ".join(current))
     return chunks
+
+
+def _fallback_with_style(text: str, *, style_profile: str) -> str:
+    if style_profile == "interruption_recovery":
+        head = text.split(".")[0].strip()
+        if head:
+            return head + "."
+    if style_profile == "apology":
+        return f"My apologies. {text}"
+    return text
