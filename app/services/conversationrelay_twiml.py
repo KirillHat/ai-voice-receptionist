@@ -29,13 +29,14 @@ def conversationrelay_response() -> str:
         "welcomeGreetingInterruptible": "any",
         "language": settings.conversationrelay_primary_language,
         "ttsProvider": settings.conversationrelay_tts_provider,
-        "voice": settings.conversationrelay_tts_voice,
         "transcriptionProvider": settings.conversationrelay_stt_provider,
         "interruptible": "any",
         "reportInputDuringAgentSpeech": "speech",
         "ignoreBackchannel": "true",
         "dtmfDetection": "true",
     }
+    if settings.conversationrelay_tts_voice:
+        relay_attrs["voice"] = settings.conversationrelay_tts_voice
     relay = SubElement(connect, "ConversationRelay", relay_attrs)
 
     languages = (
@@ -44,16 +45,15 @@ def conversationrelay_response() -> str:
         ("ru-RU", settings.conversationrelay_voice_ru),
     )
     for code, locale_voice in languages:
-        SubElement(
-            relay,
-            "Language",
-            {
-                "code": code,
-                "ttsProvider": settings.conversationrelay_tts_provider,
-                "voice": locale_voice or settings.conversationrelay_tts_voice,
-                "transcriptionProvider": settings.conversationrelay_stt_provider,
-            },
-        )
+        attrs = {
+            "code": code,
+            "ttsProvider": settings.conversationrelay_tts_provider,
+            "transcriptionProvider": settings.conversationrelay_stt_provider,
+        }
+        chosen_voice = locale_voice or settings.conversationrelay_tts_voice
+        if chosen_voice:
+            attrs["voice"] = chosen_voice
+        SubElement(relay, "Language", attrs)
 
     return tostring(root, encoding="unicode")
 
