@@ -1,0 +1,27 @@
+.env
+.env.*
+!.env.example
+
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+coverage.xml
+htmlcov/
+.coverage
+
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+data/*.db
+
+.DS_Store
+
+# Internal brand assets — confidential, never commit
+*.pdf
