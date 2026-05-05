@@ -32,9 +32,11 @@ class Settings(BaseSettings):
     conversationrelay_primary_language: str = "en-US"
     conversationrelay_tts_provider: str = "ElevenLabs"
     conversationrelay_stt_provider: str = "Deepgram"
-    # ElevenLabs multilingual female voice; one ID covers en/es/ru.
-    # Override per locale via the *_voice_* settings below if needed.
-    conversationrelay_tts_voice: str = "Rachel"
+    # Optional voice override for ConversationRelay. Leave empty to let
+    # Twilio pick the provider's default voice for each language. Twilio
+    # rejects unknown voice keys (error 64101), so only set this to a value
+    # registered in your Twilio console (e.g. 'Polly.Joanna-Neural').
+    conversationrelay_tts_voice: str = ""
     conversationrelay_voice_en: str = ""
     conversationrelay_voice_es: str = ""
     conversationrelay_voice_ru: str = ""
