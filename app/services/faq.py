@@ -5,7 +5,7 @@ Returns a polished response in the caller's language without spending an LLM
 round-trip. The matcher is intentionally conservative — when in doubt, returns
 None so the caller falls through to the LLM / qualifier flow.
 
-Wording lifted from `docs/novikov_brand_profile.md` §9.
+Wording lifted from `docs/brand_profile.md` §9.
 """
 
 from __future__ import annotations

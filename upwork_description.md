@@ -1,6 +1,6 @@
 # AI Voice Receptionist (Twilio + FastAPI + CRM/SevenRooms)
 
-Built a production-style 24/7 AI voice receptionist for a luxury restaurant use-case (Novikov Beverly Hills).
+Built a production-style 24/7 AI voice receptionist for an upscale-restaurant use case.
 
 ## What it does
 - Accepts inbound phone calls through Twilio Voice

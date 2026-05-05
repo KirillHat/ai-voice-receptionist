@@ -1,4 +1,4 @@
-<h3 align="center">AI Voice Receptionist - Novikov Beverly Hills</h3>
+<h3 align="center">AI Voice Receptionist</h3>
 
 <p align="center"><em>24/7 phone host that answers, qualifies, records and books.</em></p>
 
