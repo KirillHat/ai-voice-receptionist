@@ -56,9 +56,19 @@ async def _validate_signature(request: Request) -> None:
     url = str(request.url)
     form = await request.form()
     params = {k: str(v) for k, v in form.items()}
-    if not _validator.validate(url, params, signature):
-        log.warning("twilio.invalid_signature", url=url)
-        raise HTTPException(status_code=403, detail="Invalid Twilio signature")
+
+    candidate_urls = [url]
+    if url.startswith("http://"):
+        candidate_urls.append("https://" + url.removeprefix("http://"))
+    elif url.startswith("https://"):
+        candidate_urls.append("http://" + url.removeprefix("https://"))
+
+    for candidate in candidate_urls:
+        if _validator.validate(candidate, params, signature):
+            return
+
+    log.warning("twilio.invalid_signature", url=url)
+    raise HTTPException(status_code=403, detail="Invalid Twilio signature")
 
 
 async def _validate_ws_signature(websocket: WebSocket) -> bool:
