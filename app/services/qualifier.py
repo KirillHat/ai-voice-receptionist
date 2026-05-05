@@ -107,8 +107,10 @@ def ingest_turn(session: CallSession, utterance: str) -> TurnDecision:
             missing_field=None,
         )
 
+    last_assistant = _last_assistant_prompt(session)
+
     _append_transcript(session, role="caller", text=text)
-    _extract_fields(session, text)
+    _extract_fields(session, text, last_assistant=last_assistant)
     session.turn_count = int(session.turn_count or 0) + 1
 
     missing = _missing_fields(session)
@@ -189,17 +191,26 @@ def _missing_fields(session: CallSession) -> list[str]:
     return missing
 
 
-def _extract_fields(session: CallSession, text: str) -> None:
+def _extract_fields(
+    session: CallSession,
+    text: str,
+    *,
+    last_assistant: str | None = None,
+) -> None:
     if not session.intent:
         session.intent = _extract_intent(text)
 
     if not session.guest_name:
         maybe_name = _extract_name(text)
+        if not maybe_name and _was_asking_for(last_assistant, "name"):
+            maybe_name = _extract_short_name(text)
         if maybe_name:
             session.guest_name = maybe_name
 
     if session.party_size is None:
         maybe_party = _extract_party_size(text)
+        if maybe_party is None and _was_asking_for(last_assistant, "party"):
+            maybe_party = _extract_short_party(text)
         if maybe_party:
             session.party_size = maybe_party
 
@@ -212,6 +223,71 @@ def _extract_fields(session: CallSession, text: str) -> None:
         maybe_notes = _extract_notes(text)
         if maybe_notes:
             session.special_notes = maybe_notes
+
+
+_NAME_QUESTION_TOKENS = (
+    "name",
+    "имя",
+    "зовут",
+    "nombre",
+    "se llama",
+)
+_PARTY_QUESTION_TOKENS = (
+    "guests",
+    "people",
+    "party",
+    "гостей",
+    "человек",
+    "personas",
+)
+
+
+def _was_asking_for(last_assistant: str | None, field: str) -> bool:
+    if not last_assistant:
+        return False
+    lower = last_assistant.lower()
+    if field == "name":
+        return any(token in lower for token in _NAME_QUESTION_TOKENS)
+    if field == "party":
+        return any(token in lower for token in _PARTY_QUESTION_TOKENS)
+    return False
+
+
+def _extract_short_name(text: str) -> str | None:
+    """Treat a 1–3 word reply as a name when we just asked for one."""
+    cleaned = re.sub(r"[.,!?]+$", "", text).strip()
+    if not cleaned:
+        return None
+    parts = [p for p in cleaned.split() if p and not p.isdigit()]
+    if not parts or len(parts) > 3:
+        return None
+    if any(token in cleaned for token in _INTENT_KEYWORDS["reservation"]):
+        return None
+    if any(token in cleaned for token in _INTENT_KEYWORDS["private_event"]):
+        return None
+    if any(token in cleaned for token in _INTENT_KEYWORDS["takeout"]):
+        return None
+    return _title_case(cleaned)
+
+
+def _extract_short_party(text: str) -> int | None:
+    digits = re.search(r"\b(\d{1,2})\b", text)
+    if digits:
+        value = int(digits.group(1))
+        if 1 <= value <= 30:
+            return value
+    for word, value in _NUMBER_WORDS.items():
+        if re.search(rf"\b{word}\b", text):
+            return value
+    return None
+
+
+def _last_assistant_prompt(session: CallSession) -> str | None:
+    transcript = list(session.transcript or [])
+    for entry in reversed(transcript):
+        if entry.get("role") == "assistant":
+            return entry.get("text") or None
+    return None
 
 
 def _extract_intent(text: str) -> str:
