@@ -8,6 +8,8 @@ steps:
     lang: ru-RU
   - say: "В субботу в восемь вечера"
     lang: ru-RU
+  - say: "Да, всё верно"
+    lang: ru-RU
 expect_intent: private_event
 expect_guest_name: Анна
 expect_party_size: 6

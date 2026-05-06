@@ -80,6 +80,15 @@ class Settings(BaseSettings):
     environment: str = "development"
     sentry_dsn: str | None = None
 
+    # Daily digest
+    daily_digest_enabled: bool = False
+    daily_digest_hour_local: int = 23
+    daily_digest_minute_local: int = 0
+
+    # Silent-caller handling (ConversationRelay only)
+    voice_silence_nudge_sec: int = 15
+    voice_silence_endcall_sec: int = 35
+
 
 @lru_cache
 def get_settings() -> Settings:

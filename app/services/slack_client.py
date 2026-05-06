@@ -58,3 +58,20 @@ async def notify_lead(lead: dict[str, Any]) -> bool:
     if response.status_code != 200:
         log.warning("slack.notify_non_200", status=response.status_code, body=response.text)
     return response.status_code == 200
+
+
+async def post_digest(blocks: list[dict[str, Any]], *, summary_text: str) -> bool:
+    """Push a multi-block Slack message (used by the daily digest)."""
+    settings = get_settings()
+    if not settings.slack_webhook_url:
+        log.info("slack.digest_skipped", reason="no_webhook")
+        return False
+    payload = {"text": summary_text, "blocks": blocks}
+    async with httpx.AsyncClient(timeout=10) as client:
+        response = await client.post(
+            settings.slack_webhook_url.get_secret_value(),
+            json=payload,
+        )
+    if response.status_code != 200:
+        log.warning("slack.digest_non_200", status=response.status_code, body=response.text)
+    return response.status_code == 200

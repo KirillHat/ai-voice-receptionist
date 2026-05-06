@@ -4,6 +4,8 @@ steps:
     lang: en-US
   - say: "My name is Daniel"
     lang: en-US
+  - say: "Yes, that's correct"
+    lang: en-US
 expect_intent: takeout
 expect_guest_name: Daniel
 expect_qualified: true

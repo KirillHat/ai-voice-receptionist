@@ -30,6 +30,7 @@ from app.services import (
     faq,
     language_router,
     llm_stream,
+    phrase_metrics,
     prosody,
     qualifier,
     sevenrooms_client,
@@ -220,16 +221,66 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
     buffered_prompt_parts: list[str] = []
     last_interrupt_at = 0.0
     saw_interrupt = False
+    last_caller_activity_at = monotonic()
+    silence_nudge_sent = False
 
     try:
         while True:
-            raw = await websocket.receive_text()
+            # Poll more often than the nudge threshold so we don't oversleep
+            # past the silence boundary on slow callers.
+            poll_timeout = max(0.4, settings.voice_silence_nudge_sec / 5)
+            try:
+                raw = await asyncio.wait_for(
+                    websocket.receive_text(), timeout=poll_timeout
+                )
+            except asyncio.TimeoutError:
+                # No message for 5s. Decide whether to nudge or end the call.
+                idle = monotonic() - last_caller_activity_at
+                if (
+                    not silence_nudge_sent
+                    and idle >= settings.voice_silence_nudge_sec
+                    and active_call_sid
+                ):
+                    log.info(
+                        "voice.silence_nudge",
+                        call_sid=active_call_sid,
+                        idle_sec=int(idle),
+                    )
+                    await _send_text_token(
+                        websocket,
+                        prosody.silence_nudge(active_lang),
+                        lang=active_lang,
+                        last=True,
+                    )
+                    silence_nudge_sent = True
+                    continue
+                if (
+                    silence_nudge_sent
+                    and idle >= settings.voice_silence_endcall_sec
+                    and active_call_sid
+                ):
+                    log.info(
+                        "voice.silence_giveup",
+                        call_sid=active_call_sid,
+                        idle_sec=int(idle),
+                    )
+                    await _send_text_token(
+                        websocket,
+                        prosody.silence_giveup(active_lang),
+                        lang=active_lang,
+                        last=True,
+                    )
+                    await asyncio.sleep(0.3)
+                    await websocket.close()
+                    return
+                continue
             message = json.loads(raw)
             message_type = message.get("type")
 
             if message_type == "setup":
                 active_call_sid = str(message.get("callSid", "") or "")
                 active_from = str(message.get("from", "") or "")
+                returning_greeting: str | None = None
                 async with session_scope() as session:
                     call = await _get_or_create_call_session(
                         session,
@@ -238,11 +289,24 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                     )
                     call.status = "in_progress"
                     profile = await caller_profile.get_or_create_profile(session, active_from)
-                    if profile and profile.preferred_language:
-                        active_lang = profile.preferred_language
+                    if profile:
+                        if profile.preferred_language:
+                            active_lang = profile.preferred_language
+                        if caller_profile.is_returning_caller(profile):
+                            returning_greeting = caller_profile.returning_caller_greeting(
+                                profile, active_lang
+                            )
+                        caller_profile.mark_call_started(profile)
                     profile_context = caller_profile.profile_prompt_context(profile)
                 if active_lang != settings.conversationrelay_primary_language:
                     await _send_language_switch(websocket, active_lang)
+                if returning_greeting:
+                    await _send_text_token(
+                        websocket,
+                        returning_greeting,
+                        lang=active_lang,
+                        last=True,
+                    )
                 continue
 
             if message_type == "interrupt":
@@ -266,6 +330,9 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                     buffered_prompt_parts.append(prompt_chunk)
                 user_input = " ".join(buffered_prompt_parts).strip()
                 buffered_prompt_parts = []
+                # Caller spoke a complete utterance — reset silence tracking.
+                last_caller_activity_at = monotonic()
+                silence_nudge_sent = False
                 stt_lang = str(message.get("lang", "") or "")
                 timing = turn_taking.compute_timing(user_input)
                 interrupted_recently = saw_interrupt and (
@@ -281,6 +348,24 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                     utterance_kind=timing.utterance_kind,
                 )
                 if not user_input:
+                    continue
+
+                # Caller asked us to wait ('hold on, let me check the
+                # calendar'). Acknowledge once, then go silent — do NOT
+                # advance the qualifier or invoke the LLM. The next time
+                # the caller speaks we resume the flow normally.
+                if prosody.detect_hold_request(user_input):
+                    log.info(
+                        "voice.hold_request_detected",
+                        call_sid=active_call_sid,
+                        input_len=len(user_input),
+                    )
+                    await _send_text_token(
+                        websocket,
+                        prosody.hold_acknowledgement(active_lang),
+                        lang=active_lang,
+                        last=True,
+                    )
                     continue
 
                 detected_lang = language_router.normalize_language(
@@ -311,6 +396,17 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                             call_sid=active_call_sid,
                             caller_phone=active_from,
                         )
+                        # Even when the FAQ matcher owns the spoken reply,
+                        # silently extract any guest fields the caller
+                        # mentioned in the same breath ('I'm John, and I
+                        # have a nut allergy'). The TurnDecision drives the
+                        # qualified-state transition; the spoken reply is
+                        # the FAQ answer.
+                        silent_decision = qualifier.ingest_turn(
+                            call, user_input, lang=active_lang
+                        )
+                        if silent_decision.completed and call.status != "qualified":
+                            call.status = "qualified"
                         qualifier.note_faq_turn(call, user_input, faq_answer)
                         profile = await caller_profile.get_or_create_profile(session, active_from)
                         if profile:
@@ -319,6 +415,7 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                                 utterance=user_input,
                                 detected_lang=active_lang,
                                 intent=call.intent,
+                                guest_name=call.guest_name,
                             )
                             profile_context = caller_profile.profile_prompt_context(profile)
                     if interrupted_recently:
@@ -344,7 +441,7 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                         call_sid=active_call_sid,
                         caller_phone=active_from,
                     )
-                    decision = qualifier.ingest_turn(call, user_input)
+                    decision = qualifier.ingest_turn(call, user_input, lang=active_lang)
                     if decision.completed and call.status != "qualified":
                         call.status = "qualified"
                         lead = _build_lead(call)
@@ -358,6 +455,7 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                             utterance=user_input,
                             detected_lang=active_lang,
                             intent=call.intent,
+                            guest_name=call.guest_name,
                         )
                         profile_context = caller_profile.profile_prompt_context(profile)
 
@@ -394,6 +492,19 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                     )
                     if lead_payload:
                         asyncio.create_task(_fanout_lead(lead_payload))
+                    continue
+
+                # Read-back / reopen turns deliver the qualifier's
+                # deterministic prompt directly (verbatim is the whole
+                # point — we want the caller to verify the captured
+                # fields, not see an LLM paraphrase).
+                if decision.kind in ("readback", "reopen"):
+                    await _send_text_token(
+                        websocket,
+                        decision.prompt,
+                        lang=active_lang,
+                        last=True,
+                    )
                     continue
 
                 stream = llm_stream.stream_reply(
@@ -623,6 +734,73 @@ async def healthz() -> dict[str, str]:
     return {"status": "ok"}
 
 
+@router.post("/admin/digest/run")
+async def run_digest_now() -> dict[str, object]:
+    """Build and post the daily digest immediately. Useful for testing."""
+    from app.services.digest import build_payload, render_blocks, send_digest
+
+    posted = await send_digest()
+    payload = await build_payload()
+    return {
+        "posted": posted,
+        "calls": payload.total_calls,
+        "qualified": payload.qualified_calls,
+        "leads_total": sum(payload.labels.values()),
+    }
+
+
+@router.get("/dashboard", response_class=Response)
+async def dashboard_root() -> Response:
+    """Server-rendered manager dashboard (HTML)."""
+    from app.services.dashboard import render_dashboard
+
+    async with session_scope() as db:
+        html_body = await render_dashboard(db)
+    return Response(content=html_body, media_type="text/html")
+
+
+@router.get("/dashboard/call/{call_sid}", response_class=Response)
+async def dashboard_call_detail(call_sid: str) -> Response:
+    from app.services.dashboard import render_call_detail
+
+    async with session_scope() as db:
+        html_body = await render_call_detail(db, call_sid)
+    if html_body is None:
+        return Response(content="<p>Call not found</p>", status_code=404, media_type="text/html")
+    return Response(content=html_body, media_type="text/html")
+
+
+@router.get("/analytics/funnel")
+async def analytics_funnel(window_hours: int = 168) -> dict[str, object]:
+    """Conversion funnel over the last ``window_hours`` (default 7 days).
+
+    Returns counts at each stage, plus drop-off counts and rates between
+    consecutive stages.
+    """
+    from app.services.funnel import build_report
+
+    async with session_scope() as db:
+        report = await build_report(db, window_hours=window_hours)
+    return {
+        "window_hours": report.window_hours,
+        "total": report.total,
+        "counts": report.counts,
+        "drop_off": report.drop_off,
+        "drop_rate": report.drop_rate,
+    }
+
+
+@router.get("/analytics/phrase-usage")
+async def phrase_usage() -> dict[str, int]:
+    """Process-local tally of canonical phrase emissions.
+
+    Used to spot canned phrases worth shortening or skipping. Note:
+    counts reset on process restart since we don't persist this — for
+    long-window analysis, ship to a stats backend.
+    """
+    return phrase_metrics.snapshot()
+
+
 async def _get_or_create_call_session(
     session,
     *,
@@ -694,6 +872,7 @@ async def _send_text_token(
     lang: str,
     last: bool,
 ) -> None:
+    phrase_metrics.record(text)
     payload = {
         "type": "text",
         "token": text,

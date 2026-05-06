@@ -8,6 +8,8 @@ steps:
     lang: en-US
   - say: "Next Friday at seven"
     lang: en-US
+  - say: "Yes, that's correct"
+    lang: en-US
 expect_intent: private_event
 expect_party_size: 15
 expect_guest_name: Maria

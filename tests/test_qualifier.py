@@ -29,8 +29,12 @@ def test_qualifier_completes_flow() -> None:
     qualifier.ingest_turn(call, "I need a private event")
     qualifier.ingest_turn(call, "This is Maria Gomez")
     qualifier.ingest_turn(call, "party of 14")
-    decision = qualifier.ingest_turn(call, "next friday 7 pm")
+    readback = qualifier.ingest_turn(call, "next friday 7 pm")
+    # First time we have all fields → caller is asked to confirm.
+    assert readback.kind == "readback"
+    assert readback.completed is False
 
+    decision = qualifier.ingest_turn(call, "Yes, that's correct")
     assert decision.completed is True
     # Natural-language confirmation: must mention the captured fields by
     # value, NEVER echo internal labels like 'intent: ' or raw ISO timestamps.

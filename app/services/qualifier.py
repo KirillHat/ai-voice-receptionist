@@ -150,6 +150,9 @@ class TurnDecision:
     prompt: str
     completed: bool
     missing_field: str | None = None
+    # 'ask' = still collecting, 'readback' = asking caller to confirm,
+    # 'complete' = caller confirmed, 'reopen' = caller rejected read-back
+    kind: str = "ask"
 
 
 def required_fields(intent: str | None) -> tuple[str, ...]:
@@ -160,7 +163,19 @@ def required_fields(intent: str | None) -> tuple[str, ...]:
     return ("intent", "guest_name", "reservation_datetime")
 
 
-def ingest_turn(session: CallSession, utterance: str) -> TurnDecision:
+def ingest_turn(
+    session: CallSession,
+    utterance: str,
+    *,
+    lang: str | None = None,
+) -> TurnDecision:
+    """Process one caller turn.
+
+    ``lang`` is the language voice.py is currently speaking to the caller.
+    It's used by the read-back prompt so we don't end up doing an English
+    confirmation for a Russian conversation. If omitted we fall back to a
+    transcript-based heuristic.
+    """
     text = _clean(utterance)
     if not text:
         return TurnDecision(
@@ -171,20 +186,187 @@ def ingest_turn(session: CallSession, utterance: str) -> TurnDecision:
 
     last_assistant = _last_assistant_prompt(session)
 
+    # Read-back state: caller is responding to our confirmation prompt.
+    if session.status == "awaiting_confirmation":
+        _append_transcript(session, role="caller", text=text)
+        session.turn_count = int(session.turn_count or 0) + 1
+        verdict = _confirmation_verdict(text)
+        if verdict == "yes":
+            summary = summarize(session)
+            _append_transcript(session, role="assistant", text=summary)
+            return TurnDecision(prompt=summary, completed=True, kind="complete")
+        if verdict == "no":
+            # Caller rejected — try to re-extract any corrections from the
+            # same utterance, then fall through to ask the still-missing
+            # field (or, if nothing changed, ask which field to fix).
+            session.status = "in_progress"
+            # In rejection branch the caller often immediately corrects a
+            # field ('no, my name is Alla'). Allow overwrite of fields that
+            # were already set from the misheard turn.
+            _extract_fields(session, text, last_assistant=last_assistant, allow_overwrite=True)
+            missing = _missing_fields(session)
+            if missing:
+                next_field = missing[0]
+                prompt = _prompt_for(next_field, session.intent)
+                _append_transcript(session, role="assistant", text=prompt)
+                return TurnDecision(
+                    prompt=prompt, completed=False, missing_field=next_field, kind="reopen"
+                )
+            # Still complete after re-extract → ask once more for confirmation.
+            session.status = "awaiting_confirmation"
+            prompt = _readback_prompt(session, last_assistant, lang=lang)
+            _append_transcript(session, role="assistant", text=prompt)
+            return TurnDecision(prompt=prompt, completed=False, kind="readback")
+        # Ambiguous response — re-extract fields and re-prompt for confirmation.
+        _extract_fields(session, text, last_assistant=last_assistant)
+        missing = _missing_fields(session)
+        if missing:
+            session.status = "in_progress"
+            next_field = missing[0]
+            prompt = _prompt_for(next_field, session.intent)
+            _append_transcript(session, role="assistant", text=prompt)
+            return TurnDecision(
+                prompt=prompt, completed=False, missing_field=next_field, kind="reopen"
+            )
+        prompt = _readback_prompt(session, last_assistant, lang=lang)
+        _append_transcript(session, role="assistant", text=prompt)
+        return TurnDecision(prompt=prompt, completed=False, kind="readback")
+
     _append_transcript(session, role="caller", text=text)
     _extract_fields(session, text, last_assistant=last_assistant)
     session.turn_count = int(session.turn_count or 0) + 1
 
     missing = _missing_fields(session)
     if not missing:
-        summary = summarize(session)
-        _append_transcript(session, role="assistant", text=summary)
-        return TurnDecision(prompt=summary, completed=True)
+        # All required fields collected — first run the read-back loop so
+        # any STT mishearings (Anna→Alla, May 9→May 19) get caught before
+        # we mark the call qualified and create the lead.
+        session.status = "awaiting_confirmation"
+        prompt = _readback_prompt(session, last_assistant, lang=lang)
+        _append_transcript(session, role="assistant", text=prompt)
+        return TurnDecision(prompt=prompt, completed=False, kind="readback")
 
     next_field = missing[0]
     prompt = _prompt_for(next_field, session.intent)
     _append_transcript(session, role="assistant", text=prompt)
     return TurnDecision(prompt=prompt, completed=False, missing_field=next_field)
+
+
+_YES_PATTERNS = (
+    r"\b(?:yes|yeah|yep|yup|sure|correct|right|exactly|that'?s right|that is right|"
+    r"perfect|fine|ok|okay)\b",
+    r"\b(?:да|верно|точно|правильно|именно|всё верно|все верно|правильна|правильно так)\b",
+    r"\b(?:s[ií]|claro|exacto|correcto|correcta|exactamente|así es|asi es|perfecto)\b",
+)
+_NO_PATTERNS = (
+    r"\b(?:no|nope|wrong|incorrect|not (?:right|quite)|that'?s wrong|"
+    r"actually|hold on|wait)\b",
+    r"\b(?:нет|неверно|неправильно|не так|погод(?:и|ите)|секундочку|стоп)\b",
+    r"\b(?:no|incorrecto|incorrecta|equivocad[ao]|espera|esper[ae])\b",
+)
+
+
+def _confirmation_verdict(text: str) -> str | None:
+    """Classify a read-back response as yes/no/None (ambiguous)."""
+    lower = text.lower().strip()
+    if not lower:
+        return None
+    no_hit = any(re.search(pat, lower) for pat in _NO_PATTERNS)
+    yes_hit = any(re.search(pat, lower) for pat in _YES_PATTERNS)
+    # 'no' is sticky — if both appear, prefer the correction signal so we
+    # don't lock in a wrong field on a hesitant 'no, yes, that's wrong'.
+    if no_hit:
+        return "no"
+    if yes_hit:
+        return "yes"
+    return None
+
+
+def _readback_prompt(
+    session: CallSession,
+    last_assistant: str | None,
+    *,
+    lang: str | None = None,
+) -> str:
+    """Read-back text in the conversation's currently spoken language.
+
+    Caller passes ``lang`` when known (voice.py knows active_lang). If
+    not provided, we fall back to sniffing the last assistant prompt so
+    direct unit-test calls still produce a reasonable answer.
+    """
+    if not lang:
+        last = (last_assistant or "").lower()
+        if any(ch in last for ch in "абвгдеёжзийклмнопрстуфхцчшщыэюя"):
+            lang = "ru-RU"
+        elif "ñ" in last or "¿" in last or "à" in last or " él " in last or last.startswith(("hola", "gracias", "para", "qué", "cuál")):
+            lang = "es-US"
+        else:
+            lang = "en-US"
+    guest = (session.guest_name or "").strip()
+    party = session.party_size
+    iso = session.reservation_datetime
+    intent = session.intent or ""
+
+    if lang == "ru-RU":
+        intent_phrase = {
+            "reservation": "бронь",
+            "private_event": "частное мероприятие",
+            "takeout": "заказ навынос",
+        }.get(intent, "заявку")
+        bits: list[str] = [intent_phrase]
+        if party:
+            bits.append(f"на {party} {_ru_guests(party)}")
+        if iso:
+            bits.append("на " + _humanize_datetime(iso, lang="ru-RU"))
+        if guest:
+            bits.append(f"на имя {guest}")
+        body = " ".join(bits)
+        return f"Уточняю: {body}. Всё верно?"
+
+    if lang == "es-US":
+        intent_phrase = {
+            "reservation": "una reserva",
+            "private_event": "un evento privado",
+            "takeout": "un pedido para llevar",
+        }.get(intent, "su solicitud")
+        bits = [intent_phrase]
+        if party:
+            personas = "persona" if party == 1 else "personas"
+            bits.append(f"para {party} {personas}")
+        if iso:
+            bits.append("el " + _humanize_datetime(iso, lang="es-US"))
+        if guest:
+            bits.append(f"a nombre de {guest}")
+        body = " ".join(bits)
+        return f"Para confirmar: {body}. ¿Es correcto?"
+
+    intent_phrase = {
+        "reservation": "a reservation",
+        "private_event": "a private event",
+        "takeout": "a takeout order",
+    }.get(intent, "your request")
+    bits = [intent_phrase]
+    if party:
+        guests = "guest" if party == 1 else "guests"
+        bits.append(f"for {party} {guests}")
+    if iso:
+        bits.append("on " + _humanize_datetime(iso, lang="en-US"))
+    if guest:
+        bits.append(f"under {guest}")
+    body = " ".join(bits)
+    return f"Just to confirm: {body}. Is that correct?"
+
+
+def _ru_guests(n: int) -> str:
+    n = abs(n) % 100
+    if 11 <= n <= 14:
+        return "гостей"
+    n %= 10
+    if n == 1:
+        return "гостя"
+    if 2 <= n <= 4:
+        return "гостей"
+    return "гостей"
 
 
 def note_faq_turn(session: CallSession, utterance: str, answer: object) -> None:
@@ -316,6 +498,7 @@ def _extract_fields(
     text: str,
     *,
     last_assistant: str | None = None,
+    allow_overwrite: bool = False,
 ) -> None:
     # Re-run intent detection on every turn until we get a specific intent.
     # The previous logic locked intent on the first reply, so a caller who
@@ -325,14 +508,14 @@ def _extract_fields(
         if new_intent != "general" or not session.intent:
             session.intent = new_intent
 
-    if not session.guest_name:
+    if not session.guest_name or allow_overwrite:
         maybe_name = _extract_name(text)
         if not maybe_name and _was_asking_for(last_assistant, "name"):
             maybe_name = _extract_short_name(text)
         if maybe_name:
             session.guest_name = maybe_name
 
-    if session.party_size is None:
+    if session.party_size is None or allow_overwrite:
         maybe_party = _extract_party_size(text)
         if maybe_party is None and _was_asking_for(last_assistant, "party"):
             maybe_party = _extract_short_party(text)
@@ -345,6 +528,14 @@ def _extract_fields(
             maybe_time = _extract_short_datetime(text)
         if maybe_time:
             session.reservation_datetime = maybe_time
+    elif _has_explicit_time_correction(text):
+        new_dt = _extract_datetime_phrase(text)
+        if new_dt:
+            session.reservation_datetime = _merge_time_into_stored(
+                stored=session.reservation_datetime,
+                new=new_dt,
+                text=text,
+            )
 
     if not session.special_notes:
         maybe_notes = _extract_notes(text)
@@ -580,7 +771,71 @@ def _extract_party_size(text: str) -> int | None:
     )
     if near_noun:
         return _NUMBER_WORDS[near_noun.group(1)]
+
+    # Russian collective genitive forms after 'на' are unambiguous party
+    # markers — 'на двоих', 'на троих', 'на четверых' ('for two/three/four
+    # people'). They are never used as date/time fragments, so the 'на N'
+    # trigger we dropped earlier is safe specifically for these words.
+    collective_only = re.search(
+        r"\bна\s+(двоих|троих|четверых|пятерых|шестерых|семерых|восьмерых|"
+        r"девятерых|десятерых|двадцатерых|двое|трое|четверо|пятеро|шестеро|"
+        r"семеро|восьмеро)\b",
+        text,
+    )
+    if collective_only and collective_only.group(1) in _NUMBER_WORDS:
+        return _NUMBER_WORDS[collective_only.group(1)]
     return None
+
+
+_EXPLICIT_TIME_SIGNAL = re.compile(
+    r"\b(?:am|pm|p\.m\.?|a\.m\.?)\b|"
+    r"\b\d{1,2}(?::\d{2})?\s*(?:am|pm)\b|"
+    r"\b(?:вечера|вечером|утра|утром|дня|днём|днем|ночи|ночью)\b|"
+    r"de\s+la\s+(?:tarde|noche|mañana)\b|"
+    r"por\s+la\s+(?:tarde|noche|mañana)\b|"
+    r"\b(?:noon|midnight|полдень|полночь|mediodía|medianoche)\b",
+    re.IGNORECASE,
+)
+_DATE_SIGNAL = re.compile(
+    r"\b(?:today|tonight|tomorrow|next|monday|tuesday|wednesday|thursday|"
+    r"friday|saturday|sunday|january|february|march|april|may|june|july|"
+    r"august|september|october|november|december|"
+    r"сегодня|завтра|следующ\w+|понедельник|вторник|среда|четверг|"
+    r"пятница|пятницу|суббота|воскресенье|"
+    r"января|февраля|марта|апреля|мая|июня|июля|августа|сентября|"
+    r"октября|ноября|декабря|"
+    r"hoy|mañana|lunes|martes|miércoles|jueves|viernes|sábado|domingo|"
+    r"enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|"
+    r"octubre|noviembre|diciembre)\b|\b\d{1,2}[/.]\d{1,2}\b",
+    re.IGNORECASE,
+)
+
+
+def _has_explicit_time_correction(text: str) -> bool:
+    return bool(_EXPLICIT_TIME_SIGNAL.search(text))
+
+
+def _has_explicit_date_marker(text: str) -> bool:
+    return bool(_DATE_SIGNAL.search(text))
+
+
+def _merge_time_into_stored(*, stored: str, new: str, text: str) -> str:
+    """Replace HH:MM in stored ISO with HH:MM from a fresh time-only correction.
+
+    If the new utterance also carries a date marker, prefer the new value
+    wholesale instead of merging.
+    """
+    if _has_explicit_date_marker(text):
+        return new
+    try:
+        from datetime import datetime as _dt
+
+        stored_dt = _dt.fromisoformat(stored)
+        new_dt = _dt.fromisoformat(new)
+    except ValueError:
+        return new
+    merged = stored_dt.replace(hour=new_dt.hour, minute=new_dt.minute)
+    return merged.isoformat(timespec="minutes")
 
 
 def _extract_datetime_phrase(text: str) -> str | None:

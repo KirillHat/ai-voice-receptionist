@@ -79,12 +79,21 @@ def test_collect_completes_and_fans_out(client: TestClient) -> None:
             "/webhooks/voice/collect",
             data={"CallSid": "CA222", "From": "+13105550102", "SpeechResult": "for 4"},
         )
-        r = client.post(
+        client.post(
             "/webhooks/voice/collect",
             data={
                 "CallSid": "CA222",
                 "From": "+13105550102",
                 "SpeechResult": "tomorrow at 8 pm",
+            },
+        )
+        # Read-back loop adds a confirmation turn before the fan-out fires.
+        r = client.post(
+            "/webhooks/voice/collect",
+            data={
+                "CallSid": "CA222",
+                "From": "+13105550102",
+                "SpeechResult": "yes that's correct",
             },
         )
 

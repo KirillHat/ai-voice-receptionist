@@ -264,10 +264,15 @@ _TOPIC_PATTERNS: tuple[tuple[str, tuple[str, ...]], ...] = (
     (
         "gluten_free_pasta",
         (
-            r"\bgluten[-\s]?free\b",
-            r"\bбез глютена\b",
-            r"\bбезглютенов\w*\b",
-            r"\bsin gluten\b",
+            # Require an explicit pasta reference so the broader 'what
+            # gluten-free dishes do you have?' falls through to the menu
+            # listing instead of returning the narrower pasta-only answer.
+            r"\bgluten[-\s]?free\b.*\bpasta\b",
+            r"\bpasta\b.*\bgluten[-\s]?free\b",
+            r"\bпаст\w*\b.*\bбез\s+глютен\w*\b",
+            r"\bбез\s+глютен\w*\b.*\bпаст\w*\b",
+            r"\bpasta\b.*\bsin\s+gluten\b",
+            r"\bsin\s+gluten\b.*\bpasta\b",
         ),
     ),
     (
@@ -363,6 +368,355 @@ def _looks_like_booking(utterance: str) -> bool:
     return any(re.search(pat, lower) for pat in _BOOKING_INTENT_PATTERNS)
 
 
+_MENU_QUESTION_PATTERNS = (
+    r"\bdo\s+you\s+(?:have|serve|offer|carry)\b",
+    r"\bis\s+(?:the\s+)?\w+\s+(?:available|on\s+the\s+menu)\b",
+    r"\bwhat\s+(?:kind\s+of\s+)?(?:cocktails?|desserts?|wines?|pastas?|"
+    r"steaks?|salads?|appetizers?|starters?)\b",
+    r"\bare\s+there\s+any\b",
+    r"\bcan\s+i\s+(?:get|order|have)\b",
+    r"\b(?:есть|подаёте|подаете|есть\s+ли|у\s+вас\s+есть)\b",
+    r"\bкакие\s+(?:у\s+вас\s+)?(?:десерты|коктейл\w+|вин\w+|паст\w+|стейк\w+)\b",
+    r"\b(?:tienen|tienes|hay|sirven|ofrecen|tiene)\b",
+    r"\bqué\s+(?:postres?|cocteles?|vinos?|pastas?)\b",
+)
+_MENU_CATEGORY_TOKENS: dict[str, str] = {
+    # query keyword (lowercase, normalized) → canonical category in menu.json
+    "dessert": "Desserts",
+    "desserts": "Desserts",
+    "десерт": "Desserts",
+    "десерты": "Desserts",
+    "postre": "Desserts",
+    "postres": "Desserts",
+    "cocktail": "Cocktails",
+    "cocktails": "Cocktails",
+    "коктейл": "Cocktails",
+    "cóctel": "Cocktails",
+    "coctel": "Cocktails",
+    "wine": "Wine List",
+    "wines": "Wine List",
+    "вино": "Wine List",
+    "vino": "Wine List",
+    "pasta": "Pasta, Risotto & Soup",
+    "паста": "Pasta, Risotto & Soup",
+    "salad": "Salads",
+    "salads": "Salads",
+    "салат": "Salads",
+    "ensalada": "Salads",
+    "side": "Sides",
+    "sides": "Sides",
+    "гарнир": "Sides",
+    "appetizer": "Appetizers & Charcuterie",
+    "appetizers": "Appetizers & Charcuterie",
+    "starter": "Appetizers & Charcuterie",
+    "starters": "Appetizers & Charcuterie",
+    "закуск": "Appetizers & Charcuterie",
+    "meat": "Meat",
+    "steak": "Meat",
+    "стейк": "Meat",
+    "carne": "Meat",
+    "fish": "Fish & Seafood",
+    "seafood": "Fish & Seafood",
+    "рыб": "Fish & Seafood",
+    "pescado": "Fish & Seafood",
+}
+_MENU_PRICE_PHRASES = (
+    "how much",
+    "price",
+    "cost",
+    "сколько стоит",
+    "цена",
+    "стоимость",
+    "cuánto cuesta",
+    "cuanto cuesta",
+    "precio",
+)
+
+
+def _looks_like_menu_question(utterance: str) -> bool:
+    lower = utterance.lower()
+    return any(re.search(pat, lower) for pat in _MENU_QUESTION_PATTERNS)
+
+
+def _detect_menu_category(utterance: str) -> str | None:
+    lower = utterance.lower()
+    for token, canonical in _MENU_CATEGORY_TOKENS.items():
+        if token in lower:
+            return canonical
+    return None
+
+
+def _format_dish_list(items, lang: str) -> str:
+    names = [it.name for it in items[:6]]
+    if not names:
+        return ""
+    if len(names) == 1:
+        joined = names[0]
+    else:
+        joined = ", ".join(names[:-1]) + f", and {names[-1]}"
+    if lang.startswith("ru"):
+        joined = ", ".join(names[:-1]) + (f" и {names[-1]}" if len(names) > 1 else names[0])
+        return f"Из этой категории у нас, например: {joined}. Полный выбор покажет команда при подтверждении."
+    if lang.startswith("es"):
+        joined = ", ".join(names[:-1]) + (f" y {names[-1]}" if len(names) > 1 else names[0])
+        return f"Por ejemplo, ofrecemos: {joined}. Nuestro equipo le compartirá la selección completa."
+    return f"For example, we have {joined}. Our team can share the full selection."
+
+
+_DIETARY_KEYWORDS = (
+    "vegan", "vegetarian", "gluten free", "gluten-free", "halal",
+)
+
+
+def _looks_like_dietary_only(description: str) -> bool:
+    norm = description.lower().strip(" .,;:")
+    parts = [p.strip() for p in re.split(r"[,/]| and ", norm) if p.strip()]
+    return bool(parts) and all(
+        any(kw in p for kw in _DIETARY_KEYWORDS) for p in parts
+    )
+
+
+def _format_dish_confirmation(item, lang: str) -> str:
+    """Confirm a dish without volunteering price — price is only quoted
+    when the caller explicitly asks 'how much / сколько стоит / cuánto cuesta'."""
+    name = item.name
+    if lang.startswith("ru"):
+        head = f"Да, у нас есть {name}"
+    elif lang.startswith("es"):
+        head = f"Sí, tenemos {name}"
+    else:
+        head = f"Yes, we serve {name}"
+    if item.description and not _looks_like_dietary_only(item.description):
+        head += f" — {item.description}"
+    return head + "."
+
+
+def _format_price_phrase(price: str, lang: str) -> str:
+    """Phrase used in standalone price answers ('Tomahawk is $241')."""
+    is_market = price.lower().startswith("market")
+    if lang.startswith("ru"):
+        return "по рыночной цене" if is_market else f"стоит {price}"
+    if lang.startswith("es"):
+        return "a precio de mercado" if is_market else f"cuesta {price}"
+    return "at market price" if is_market else f"is {price}"
+
+
+_ALLERGEN_TRIGGERS: tuple[tuple[str, str], ...] = (
+    (r"\ballerg(?:y|ic)\s+to\s+(\w[\w\s-]{2,30})\b", "match"),
+    (r"\bintoleran(?:t|ce)\s+(?:to|of)\s+(\w[\w\s-]{2,30})\b", "match"),
+    (r"\bi\s+can'?t\s+(?:have|eat)\s+(\w[\w\s-]{2,30})\b", "match"),
+    (r"\b(?:без|нет)\s+(\w[\w\s-]{2,30})\b", "match"),
+    (r"\bаллерги\w*\s+на\s+(\w[\w\s-]{2,30})\b", "match"),
+    (r"\bнепереносимост\w*\s+(\w[\w\s-]{2,30})\b", "match"),
+    (r"\bне\s+ем\s+(\w[\w\s-]{2,30})\b", "match"),
+    (r"\balerg(?:ia|ico|ica)\s+a\s+(\w[\w\s-]{2,30})\b", "match"),
+    (r"\bintoleran(?:cia|te)\s+(?:a|al)\s+(\w[\w\s-]{2,30})\b", "match"),
+    (r"\bsoy\s+alérgic", "spanish"),
+)
+_DIETARY_QUESTION_PATTERNS: tuple[tuple[str, str], ...] = (
+    (r"\b(?:any\s+|what\s+|do\s+you\s+have\s+(?:any\s+)?)?vegan\b", "vegan"),
+    (r"\bvegetarian\b", "vegetarian"),
+    (r"\bgluten[\s-]?free\b", "gluten_free"),
+    (r"\bwithout\s+gluten\b|\bno\s+gluten\b", "gluten_free"),
+    (r"\bhalal\b", "halal"),
+    (r"\bвеган\w*\b", "vegan"),
+    (r"\bвегетариан\w*\b", "vegetarian"),
+    (r"\bбез\s+глютен\w*\b|\bбезглютен\w*\b", "gluten_free"),
+    (r"\bнепереносимост\w*\s+глютен\w*\b", "gluten_free"),
+    (r"\bхаляль\b", "halal"),
+    (r"\bvegan[oa]s?\b", "vegan"),
+    (r"\bvegetarian[oa]s?\b", "vegetarian"),
+    (r"\bsin\s+gluten\b", "gluten_free"),
+)
+
+
+def _detect_allergen(utterance: str) -> str | None:
+    """Map a free-form allergy phrase to a canonical allergen key."""
+    lower = utterance.lower()
+    aliases = {
+        "nut": "nuts", "nuts": "nuts", "peanut": "nuts", "peanuts": "nuts",
+        "tree nut": "nuts", "tree nuts": "nuts", "almonds": "nuts",
+        "walnuts": "nuts", "hazelnuts": "nuts", "pistachio": "nuts",
+        "frutos secos": "nuts", "nuez": "nuts", "nueces": "nuts",
+        "орех": "nuts", "орехи": "nuts", "арахис": "nuts",
+        "shellfish": "shellfish", "seafood": "shellfish",
+        "shrimp": "shellfish", "lobster": "shellfish", "crab": "shellfish",
+        "marisco": "shellfish", "mariscos": "shellfish", "camarón": "shellfish",
+        "морепродукт": "shellfish", "креветк": "shellfish",
+        "lactose": "dairy", "dairy": "dairy", "milk": "dairy",
+        "cheese": "dairy", "lácteo": "dairy", "lacteo": "dairy",
+        "leche": "dairy", "молоч": "dairy", "лактоз": "dairy",
+        "gluten": "gluten", "wheat": "gluten", "глютен": "gluten",
+        "trigo": "gluten", "пшениц": "gluten",
+        "fish": "fish", "рыб": "fish", "pescado": "fish",
+        "egg": "egg", "eggs": "egg", "яйц": "egg", "huevo": "egg",
+    }
+    for pattern, _ in _ALLERGEN_TRIGGERS:
+        m = re.search(pattern, lower)
+        if not m or not m.groups():
+            continue
+        target = m.group(1)
+        for alias, canonical in aliases.items():
+            if alias in target:
+                return canonical
+    # Fallback: keyword anywhere in utterance, but only if 'allerg'/'аллерг' near.
+    if re.search(r"\ballerg\w*\b|аллерги|alérgic", lower):
+        for alias, canonical in aliases.items():
+            if alias in lower:
+                return canonical
+    return None
+
+
+def _detect_dietary_question(utterance: str) -> str | None:
+    lower = utterance.lower()
+    for pattern, tag in _DIETARY_QUESTION_PATTERNS:
+        if re.search(pattern, lower):
+            return tag
+    return None
+
+
+def _format_allergen_safe_list(items, allergen: str, lang: str) -> str:
+    names = [it.name for it in items[:5]]
+    if not names:
+        if lang.startswith("ru"):
+            return (
+                "Пожалуйста, сообщите наш команде об аллергии — шеф подберёт безопасные варианты."
+            )
+        if lang.startswith("es"):
+            return (
+                "Por favor, infórmele a nuestro equipo sobre la alergia — el chef preparará opciones seguras."
+            )
+        return (
+            "Please let our team know about the allergy — our chef will tailor safe options for you."
+        )
+    if lang.startswith("ru"):
+        joined = ", ".join(names[:-1]) + (f" и {names[-1]}" if len(names) > 1 else names[0])
+        return (
+            f"Из безопасных опций, например: {joined}. "
+            "Обязательно предупредите хостес — шеф уточнит детали по кухне."
+        )
+    if lang.startswith("es"):
+        joined = ", ".join(names[:-1]) + (f" y {names[-1]}" if len(names) > 1 else names[0])
+        return (
+            f"Algunas opciones seguras: {joined}. "
+            "Por favor, avise al equipo — el chef confirmará los detalles."
+        )
+    joined = ", ".join(names[:-1]) + (f", and {names[-1]}" if len(names) > 1 else names[0])
+    return (
+        f"Some safer options include {joined}. "
+        "Please flag the allergy to our team — the chef will confirm preparations."
+    )
+
+
+def _format_dietary_list(items, tag: str, lang: str) -> str:
+    names = [it.name for it in items[:5]]
+    if not names:
+        if lang.startswith("ru"):
+            return "Уточню у нашей команды — мы подберём подходящие варианты."
+        if lang.startswith("es"):
+            return "Confirmaré con nuestro equipo las opciones disponibles."
+        return "Let me confirm with our team what we can offer."
+    label_map = {
+        "vegan": ("vegan", "веганских", "veganas"),
+        "vegetarian": ("vegetarian", "вегетарианских", "vegetarianas"),
+        "gluten_free": ("gluten-free", "без глютена", "sin gluten"),
+        "halal": ("halal", "халяль", "halal"),
+    }
+    label_en, label_ru, label_es = label_map[tag]
+    if lang.startswith("ru"):
+        joined = ", ".join(names[:-1]) + (f" и {names[-1]}" if len(names) > 1 else names[0])
+        return f"Из {label_ru} вариантов: {joined}. Полный список покажет команда."
+    if lang.startswith("es"):
+        joined = ", ".join(names[:-1]) + (f" y {names[-1]}" if len(names) > 1 else names[0])
+        return f"Opciones {label_es}: {joined}. Nuestro equipo le mostrará la lista completa."
+    joined = ", ".join(names[:-1]) + (f", and {names[-1]}" if len(names) > 1 else names[0])
+    return f"Our {label_en} options include {joined}. Our team can share the full list."
+
+
+def _menu_answer(utterance: str, lang: str) -> FaqAnswer | None:
+    from app.services import menu as menu_service
+
+    # 0. Allergy / dietary takes priority over generic menu questions.
+    allergen = _detect_allergen(utterance)
+    if allergen:
+        safe = menu_service.safe_for_allergen(allergen, limit=6)
+        return FaqAnswer(
+            topic=f"menu_allergen_{allergen}",
+            text=_format_allergen_safe_list(safe, allergen, lang),
+        )
+    dietary_tag = _detect_dietary_question(utterance)
+    if dietary_tag:
+        items = menu_service.list_dietary(dietary_tag, limit=6)
+        return FaqAnswer(
+            topic=f"menu_dietary_{dietary_tag}",
+            text=_format_dietary_list(items, dietary_tag, lang),
+        )
+
+    lower = utterance.lower()
+    is_price_question = any(phrase in lower for phrase in _MENU_PRICE_PHRASES)
+
+    # 1. Pricing question with a concrete dish in it: try to quote the price
+    #    we have on file. Fall back to deferring only when we have no match.
+    if is_price_question:
+        hit = menu_service.has_item(utterance)
+        if hit and hit.price:
+            price_phrase = _format_price_phrase(hit.price, lang)
+            text = f"{hit.name} {price_phrase}."
+            return FaqAnswer(topic=f"menu_price_{hit.slug}", text=text)
+        if lang.startswith("ru"):
+            text = "Цены наша команда уточнит при подтверждении брони."
+        elif lang.startswith("es"):
+            text = "Nuestro equipo le compartirá los precios al confirmar la reserva."
+        else:
+            text = "Our team will share pricing when we confirm your reservation."
+        return FaqAnswer(topic="menu_price_deferred", text=text)
+
+    if not _looks_like_menu_question(utterance):
+        return None
+
+    # 2. Try specific dish first — exact-name and high-overlap matches win
+    #    over category fallbacks ('do you have a tomahawk steak' → Tomahawk,
+    #    not the generic Meat list).
+    hit = menu_service.has_item(utterance)
+    if hit:
+        from app.services.menu import _normalize, _tokens
+
+        q_tokens = _tokens(utterance)
+        n_tokens = _tokens(hit.name)
+        generic = {
+            "steak", "pasta", "fish", "salad", "wine", "cocktail",
+            "dessert", "desserts", "side", "sides", "appetizer", "starter",
+            "meat", "soup", "pizza", "drink", "drinks", "bread", "sauce",
+        }
+        distinctive = (q_tokens & n_tokens) - generic
+        strong = bool(q_tokens) and (
+            _normalize(hit.name) in _normalize(utterance)
+            or n_tokens.issubset(q_tokens)
+            or len(q_tokens & n_tokens) >= 2
+            or any(len(tok) >= 5 for tok in distinctive)
+        )
+        if strong:
+            text = _format_dish_confirmation(hit, lang)
+            return FaqAnswer(topic=f"menu_item_{hit.slug}", text=text)
+
+    # 3. Category questions: 'what desserts do you have?'
+    canonical = _detect_menu_category(utterance)
+    if canonical:
+        dishes = menu_service.list_category(canonical, limit=6)
+        if dishes:
+            return FaqAnswer(
+                topic=f"menu_category_{canonical.lower()}",
+                text=_format_dish_list(dishes, lang),
+            )
+
+    # 4. Weak single-token dish hit as last resort.
+    if hit:
+        text = _format_dish_confirmation(hit, lang)
+        return FaqAnswer(topic=f"menu_item_{hit.slug}", text=text)
+
+    return None
+
+
 def match_faq(utterance: str, lang: str = "en-US") -> FaqAnswer | None:
     """Return a canonical FAQ answer if the utterance matches a known topic.
 
@@ -377,12 +731,18 @@ def match_faq(utterance: str, lang: str = "en-US") -> FaqAnswer | None:
     """
     if _looks_like_booking(utterance):
         return None
+    # Allergy questions take priority over any topic — they're high-stakes
+    # and the canonical FAQ has nothing precise for arbitrary allergies.
+    if _detect_allergen(utterance):
+        menu_hit = _menu_answer(utterance, lang)
+        if menu_hit:
+            return menu_hit
     topic = detect_topic(utterance)
-    if topic is None:
-        return None
-    bundle = _ANSWERS[topic]
-    text = bundle.get(lang) or bundle["en-US"]
-    return FaqAnswer(topic=topic, text=text)
+    if topic is not None:
+        bundle = _ANSWERS[topic]
+        text = bundle.get(lang) or bundle["en-US"]
+        return FaqAnswer(topic=topic, text=text)
+    return _menu_answer(utterance, lang)
 
 
 __all__ = ["FaqAnswer", "match_faq", "detect_topic"]

@@ -1,0 +1,4 @@
+name: ru_menu_dessert_question
+steps:
+  - say: "Какие у вас десерты?"
+    lang: ru-RU

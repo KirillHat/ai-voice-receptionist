@@ -182,6 +182,10 @@ def normalize_datetime_text(
         hour += 12
     elif hour == 12 and _has_am_modifier(lower):
         hour = 0
+    elif 5 <= hour <= 11 and not _has_am_modifier(lower):
+        # Restaurant context: an unmodified 'at seven' / 'a las nueve' /
+        # 'на семь' is overwhelmingly a dinner-hour PM intent.
+        hour += 12
 
     if base_date is None and hour is None:
         return None
@@ -276,7 +280,30 @@ def _extract_weekday_date(lower: str, ref: datetime):
     return None
 
 
+_MIDNIGHT_PATTERN = re.compile(
+    r"\b(?:midnight|полночь|полуночи|полночи|medianoche)\b"
+)
+_NOON_PATTERN = re.compile(
+    r"\b(?:noon|полдень|полудня|mediodía|mediodia)\b"
+)
+# Time cues that legitimately precede an hour value across en/ru/es.
+_TIME_CUE_PREFIX = r"(?:at|к\s|в\s|во\s|a\s+las|a\s+la|para\s+las)"
+# Phrases that indicate a number is a party size, not an hour.
+_PARTY_CUE_PREFIX = (
+    r"(?:party\s+of|table\s+for|for|of|para|somos|нас\s+будет|нас|для)"
+)
+_PARTY_NOUN_SUFFIX = (
+    r"(?:guests?|people|persons?|adults?|kids?|children?|child|"
+    r"гостей|человек|людей|persona[s]?|personas|niños?|niño)"
+)
+
+
 def _extract_time(lower: str) -> tuple[int | None, int]:
+    if _MIDNIGHT_PATTERN.search(lower):
+        return 0, 0
+    if _NOON_PATTERN.search(lower):
+        return 12, 0
+
     ampm_match = re.search(r"\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b", lower)
     if ampm_match:
         hour = int(ampm_match.group(1))
@@ -289,22 +316,40 @@ def _extract_time(lower: str) -> tuple[int | None, int]:
         if 0 <= hour <= 23 and 0 <= minute <= 59:
             return hour, minute
 
-    plain_match = re.search(r"\b(?:at|к|a las|a la|en|на)?\s*(\d{1,2})(?::(\d{2}))\b", lower)
+    plain_match = re.search(
+        rf"\b{_TIME_CUE_PREFIX}\s*(\d{{1,2}})(?::(\d{{2}}))?\b",
+        lower,
+    )
     if plain_match:
         hour = int(plain_match.group(1))
         minute = int(plain_match.group(2) or "0")
         if 0 <= hour <= 23 and 0 <= minute <= 59:
             return hour, minute
 
-    short_hour = re.search(r"\b(?:at|к|a las|a la)?\s*(\d{1,2})\b", lower)
-    if short_hour and _looks_like_time_context(lower):
-        hour = int(short_hour.group(1))
-        if 0 <= hour <= 23:
-            return hour, 0
+    word_alt = "|".join(re.escape(w) for w in _TIME_WORDS)
+    cued_word = re.search(
+        rf"\b{_TIME_CUE_PREFIX}\s*({word_alt})\b",
+        lower,
+    )
+    if cued_word:
+        return _TIME_WORDS[cued_word.group(1)], 0
 
-    for word, value in _TIME_WORDS.items():
-        if re.search(rf"\b{re.escape(word)}\b", lower) and _looks_like_time_context(lower):
-            return value, 0
+    # Indices of number words that are clearly party-size, not hours.
+    party_word_offsets: set[int] = set()
+    for match in re.finditer(
+        rf"\b{_PARTY_CUE_PREFIX}\s+({word_alt})\b", lower
+    ):
+        party_word_offsets.add(match.start(1))
+    for match in re.finditer(
+        rf"\b({word_alt})\b\s+{_PARTY_NOUN_SUFFIX}\b", lower
+    ):
+        party_word_offsets.add(match.start(1))
+
+    if _looks_like_time_context(lower):
+        for match in re.finditer(rf"\b({word_alt})\b", lower):
+            if match.start(1) in party_word_offsets:
+                continue
+            return _TIME_WORDS[match.group(1)], 0
 
     return None, 0
 
@@ -316,23 +361,18 @@ def _extract_time_hint(lower: str) -> tuple[int | None, int]:
     return None, 0
 
 
+_TIME_CONTEXT_PATTERN = re.compile(
+    r"\b(?:at|around|tonight|tomorrow|today|"
+    r"вечер\w*|утр\w*|дн[её]м|ноч\w*|сегодня|завтра|"
+    r"a\s+las|a\s+la|hora|por\s+la\s+(?:tarde|noche|mañana))\b"
+    r"|(?<![а-яёa-z])к\s|(?<![а-яёa-z])в\s+(?=\d|"
+    r"один|два|три|четыре|пять|шесть|семь|восемь|"
+    r"девять|десять|одиннадцать|двенадцать)",
+)
+
+
 def _looks_like_time_context(lower: str) -> bool:
-    tokens = (
-        " at ",
-        " around ",
-        " tonight",
-        " tomorrow",
-        "вечер",
-        "утро",
-        "днем",
-        "днём",
-        "ноч",
-        "a las",
-        "hora",
-        "вечером",
-        "к ",
-    )
-    return any(token in f" {lower} " for token in tokens)
+    return bool(_TIME_CONTEXT_PATTERN.search(lower))
 
 
 def _next_weekday(ref: datetime, target_weekday: int, lower: str):
@@ -343,43 +383,31 @@ def _next_weekday(ref: datetime, target_weekday: int, lower: str):
     return (ref + timedelta(days=delta)).date()
 
 
-_PM_MODIFIERS = (
-    "pm",
-    "p.m.",
-    "evening",
-    "night",
-    "in the evening",
-    "in the afternoon",
-    "вечера",
-    "вечером",
-    "ночи",
-    "ночью",
-    "дня",  # 'три часа дня' = 3 PM
-    "днём",
-    "днем",
-    "de la tarde",
-    "de la noche",
-    "por la tarde",
-    "por la noche",
+_PM_MODIFIER_PATTERN = re.compile(
+    r"\bpm\b|\bp\.m\.?|"
+    r"\bevening\b|\bafternoon\b|"
+    r"in\s+the\s+(?:evening|afternoon|night)\b|"
+    # 'night' but never the 'midnight' substring (handled separately as 0:00).
+    r"(?<!mid)\bnight\b|\btonight\b|"
+    r"\bвечера\b|\bвечером\b|"
+    r"\bночи\b|\bночью\b|"
+    r"\bдня\b|\bднём\b|\bднем\b|"
+    r"de\s+la\s+(?:tarde|noche)\b|por\s+la\s+(?:tarde|noche)\b"
 )
-_AM_MODIFIERS = (
-    "am",
-    "a.m.",
-    "in the morning",
-    "morning",
-    "утра",
-    "утром",
-    "de la mañana",
-    "por la mañana",
+_AM_MODIFIER_PATTERN = re.compile(
+    r"\bam\b|\ba\.m\.?|"
+    r"\bin\s+the\s+morning\b|\bmorning\b|"
+    r"\bутра\b|\bутром\b|"
+    r"de\s+la\s+mañana\b|por\s+la\s+mañana\b"
 )
 
 
 def _has_pm_modifier(lower: str) -> bool:
-    return any(token in lower for token in _PM_MODIFIERS)
+    return bool(_PM_MODIFIER_PATTERN.search(lower))
 
 
 def _has_am_modifier(lower: str) -> bool:
-    return any(token in lower for token in _AM_MODIFIERS)
+    return bool(_AM_MODIFIER_PATTERN.search(lower))
 
 
 def _coerce_year(raw: str | None, current_year: int) -> int:

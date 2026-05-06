@@ -4,6 +4,8 @@ steps:
     lang: en-US
   - say: "My name is Lucas"
     lang: en-US
+  - say: "Yes, that's correct"
+    lang: en-US
 expect_intent: reservation
 expect_guest_name: Lucas
 expect_party_size: 2

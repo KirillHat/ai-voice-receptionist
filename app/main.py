@@ -37,6 +37,10 @@ def _configure_logging(level: str) -> None:
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    import asyncio as _asyncio
+
+    from app.services.digest import run_daily
+
     settings = get_settings()
     _configure_logging(settings.log_level)
     if settings.sentry_dsn:
@@ -46,7 +50,19 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
             traces_sample_rate=0.1,
         )
     await init_db()
-    yield
+    digest_task: _asyncio.Task | None = None
+    if settings.daily_digest_enabled:
+        digest_task = _asyncio.create_task(
+            run_daily(
+                target_hour=settings.daily_digest_hour_local,
+                target_minute=settings.daily_digest_minute_local,
+            )
+        )
+    try:
+        yield
+    finally:
+        if digest_task:
+            digest_task.cancel()
 
 
 def create_app() -> FastAPI:

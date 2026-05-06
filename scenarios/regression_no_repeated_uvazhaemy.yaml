@@ -12,6 +12,8 @@ steps:
     lang: ru-RU
   - say: "Завтра в восемь вечера"
     lang: ru-RU
+  - say: "Да, всё верно"
+    lang: ru-RU
 expect_intent: reservation
 expect_guest_name: Кирилл
 expect_party_size: 2

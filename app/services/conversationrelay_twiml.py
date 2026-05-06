@@ -5,6 +5,20 @@ from __future__ import annotations
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 from app.config import get_settings
+from app.services.business_hours import closed_greeting, is_open_now
+
+
+def _build_welcome_greeting() -> str:
+    if is_open_now():
+        return (
+            "Good evening, thank you for calling Novikov Beverly Hills. "
+            "How may I help you?"
+        )
+    closed = closed_greeting("en-US")
+    return (
+        "Thank you for calling Novikov Beverly Hills. "
+        f"{closed} How may I help you?"
+    )
 
 
 def conversationrelay_response() -> str:
@@ -22,10 +36,7 @@ def conversationrelay_response() -> str:
 
     relay_attrs = {
         "url": _ws_url("/ws/conversationrelay"),
-        "welcomeGreeting": (
-            "Good evening, thank you for calling Novikov Beverly Hills. "
-            "How may I help you?"
-        ),
+        "welcomeGreeting": _build_welcome_greeting(),
         "welcomeGreetingInterruptible": "any",
         "language": settings.conversationrelay_primary_language,
         "ttsProvider": settings.conversationrelay_tts_provider,

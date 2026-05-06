@@ -47,6 +47,74 @@ def interruption_ack(lang: str) -> str:
     return _INTERRUPTION_ACK.get(lang, _INTERRUPTION_ACK["en-US"])
 
 
+_HOLD_PATTERNS: tuple[str, ...] = (
+    r"\bhold on\b",
+    r"\bhang on\b",
+    r"\bone (?:second|sec|moment|minute)\b",
+    r"\bjust a (?:second|sec|moment|minute)\b",
+    r"\bgive me a (?:second|sec|moment|minute)\b",
+    r"\blet me (?:check|see|think|grab|look)\b",
+    r"\bпогоди\w*\b",
+    r"\bсекундочк\w*\b",
+    r"\bодну секунд\w*\b",
+    r"\bминуточк\w*\b",
+    r"\bподожди\w*\b",
+    r"\bдай(?:те)?\s+(?:мне|мин|секунд)\w*\b",
+    r"\bсейчас\s+посмотрю\b",
+    r"\bun momento\b",
+    r"\bun segundo\b",
+    r"\bdéjeme\s+(?:revisar|ver|pensar)\b",
+    r"\bdame un momento\b",
+    r"\bespera\w*\b",
+)
+_HOLD_ACK = {
+    "en-US": "Of course, take your time.",
+    "es-US": "Por supuesto, tómese su tiempo.",
+    "ru-RU": "Конечно, не торопитесь.",
+}
+
+
+_SILENCE_NUDGE = {
+    "en-US": "Are you still there?",
+    "es-US": "¿Sigue ahí?",
+    "ru-RU": "Вы на линии?",
+}
+_SILENCE_GIVEUP = {
+    "en-US": (
+        "I haven't heard from you in a moment. "
+        "Our team will give you a call back shortly. Have a wonderful day."
+    ),
+    "es-US": (
+        "Parece que no le escucho. "
+        "Nuestro equipo le devolverá la llamada en breve. Que tenga un buen día."
+    ),
+    "ru-RU": (
+        "Кажется, связь пропала. "
+        "Наша команда перезвонит вам в ближайшее время. Хорошего дня."
+    ),
+}
+
+
+def silence_nudge(lang: str) -> str:
+    return _SILENCE_NUDGE.get(lang, _SILENCE_NUDGE["en-US"])
+
+
+def silence_giveup(lang: str) -> str:
+    return _SILENCE_GIVEUP.get(lang, _SILENCE_GIVEUP["en-US"])
+
+
+def detect_hold_request(utterance: str) -> bool:
+    """True when the caller is asking us to pause ('hold on, let me check')."""
+    if not utterance:
+        return False
+    lower = utterance.lower().strip()
+    return any(re.search(pat, lower) for pat in _HOLD_PATTERNS)
+
+
+def hold_acknowledgement(lang: str) -> str:
+    return _HOLD_ACK.get(lang, _HOLD_ACK["en-US"])
+
+
 _NAME_OPENER_PATTERNS = (
     r"^(?:dear|mr\.?|ms\.?|mrs\.?|miss)\s+[A-ZА-ЯЁ][A-Za-zА-Яа-яЁё'\-]+\s*[,—-]?\s*",
     r"^(?:уважаем(?:ый|ая))\s+[А-ЯЁA-Z][А-Яа-яЁёA-Za-z'\-]+\s*[,—-]?\s*",

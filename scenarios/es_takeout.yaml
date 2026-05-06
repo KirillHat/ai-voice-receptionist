@@ -4,6 +4,8 @@ steps:
     lang: es-US
   - say: "Me llamo Carlos"
     lang: es-US
+  - say: "Sí, correcto"
+    lang: es-US
 expect_intent: takeout
 expect_guest_name: Carlos
 expect_qualified: true

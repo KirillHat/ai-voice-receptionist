@@ -1,0 +1,2837 @@
+{
+  "generated_at": "2026-05-06T18:23:31+00:00",
+  "source": "https://novikovbeverly.com",
+  "items_total": 249,
+  "categories": [
+    {
+      "name": "A La Carte",
+      "slug": "a-la-carte-en",
+      "count": 64
+    },
+    {
+      "name": "Wine List",
+      "slug": "wine-list-en",
+      "count": 42
+    },
+    {
+      "name": "Dessert",
+      "slug": "dessert-en",
+      "count": 36
+    },
+    {
+      "name": "Lunch",
+      "slug": "lunch-en",
+      "count": 35
+    },
+    {
+      "name": "Cocktails",
+      "slug": "cocktails-en",
+      "count": 23
+    },
+    {
+      "name": "Desserts",
+      "slug": "desserts",
+      "count": 22
+    },
+    {
+      "name": "Coffee Shop",
+      "slug": "coffee-shop-en",
+      "count": 18
+    },
+    {
+      "name": "Red Wine",
+      "slug": "red-wine",
+      "count": 17
+    },
+    {
+      "name": "Late Night Menu",
+      "slug": "late-night-menu-en",
+      "count": 16
+    },
+    {
+      "name": "Chef’s Special",
+      "slug": "chefs-special-en",
+      "count": 13
+    },
+    {
+      "name": "Classics",
+      "slug": "classics",
+      "count": 12
+    },
+    {
+      "name": "Coffee",
+      "slug": "coffee",
+      "count": 11
+    },
+    {
+      "name": "New Vision",
+      "slug": "new-vision",
+      "count": 11
+    },
+    {
+      "name": "Second Course",
+      "slug": "second-course",
+      "count": 11
+    },
+    {
+      "name": "White Wine",
+      "slug": "white-wine",
+      "count": 10
+    },
+    {
+      "name": "Chef’s Seasonal Special",
+      "slug": "chefs-seasonal-special",
+      "count": 9
+    },
+    {
+      "name": "Pasta, Risotto & Soup",
+      "slug": "pasta-risotto-soup",
+      "count": 9
+    },
+    {
+      "name": "Meat",
+      "slug": "meat",
+      "count": 9
+    },
+    {
+      "name": "Tea & Mocktail",
+      "slug": "tea-mocktail",
+      "count": 7
+    },
+    {
+      "name": "First Course",
+      "slug": "first-course",
+      "count": 7
+    },
+    {
+      "name": "Appetizers & Charcuterie",
+      "slug": "appetizers-charcuterie",
+      "count": 7
+    },
+    {
+      "name": "Dessert",
+      "slug": "dessert-en-lunch-en",
+      "count": 7
+    },
+    {
+      "name": "Salads",
+      "slug": "salads",
+      "count": 7
+    },
+    {
+      "name": "Sides",
+      "slug": "sides-en",
+      "count": 7
+    },
+    {
+      "name": "MEDITERRANEAN MEZE",
+      "slug": "mediterranean-meze",
+      "count": 6
+    },
+    {
+      "name": "Sparkling Wine",
+      "slug": "sparkling-wine",
+      "count": 6
+    },
+    {
+      "name": "Fish & Seafood",
+      "slug": "fish-seafood",
+      "count": 6
+    },
+    {
+      "name": "Appetizers & Charcuterie",
+      "slug": "appetizers-charcuterie-en",
+      "count": 6
+    },
+    {
+      "name": "OTHER LUNCH OFFERINGS",
+      "slug": "other-lunch-offerings",
+      "count": 6
+    },
+    {
+      "name": "Carpaccio & Tartare",
+      "slug": "carpaccio-tartare-en",
+      "count": 5
+    },
+    {
+      "name": "Dessert Wine",
+      "slug": "dessert-wine",
+      "count": 5
+    },
+    {
+      "name": "Chef’s Sharing",
+      "slug": "chefs-sharing",
+      "count": 4
+    },
+    {
+      "name": "Wood Oven Pizza",
+      "slug": "wood-oven-pizza",
+      "count": 4
+    },
+    {
+      "name": "Caviar, Eastern & Pacific Oysters",
+      "slug": "caviar-eastern-pacific-oysters",
+      "count": 4
+    },
+    {
+      "name": "LUNCH SPECIAL OFFERING",
+      "slug": "lunch-special-offering",
+      "count": 3
+    },
+    {
+      "name": "Carpaccio & Tartare",
+      "slug": "carpaccio-tartare",
+      "count": 3
+    },
+    {
+      "name": "Sides",
+      "slug": "sides",
+      "count": 3
+    },
+    {
+      "name": "Fried",
+      "slug": "fried",
+      "count": 3
+    },
+    {
+      "name": "Fish & Meat",
+      "slug": "fish-meat",
+      "count": 3
+    },
+    {
+      "name": "Non Alcoholic Wine",
+      "slug": "non-alcoholic-wine",
+      "count": 2
+    },
+    {
+      "name": "Rose Wine",
+      "slug": "rose-wine",
+      "count": 2
+    },
+    {
+      "name": "Set Lunch Menu",
+      "slug": "set-lunch-menu",
+      "count": 1
+    }
+  ],
+  "items": [
+    {
+      "slug": "babaganoush",
+      "name": "Babaganoush",
+      "url": "https://novikovbeverly.com/menus/babaganoush/",
+      "categories": [
+        "A La Carte",
+        "MEDITERRANEAN MEZE"
+      ],
+      "price": "$15",
+      "description": "Vegan"
+    },
+    {
+      "slug": "baby-calamari-espellette-pepper-tartar-sauce-2",
+      "name": "Baby Calamari, Espellette Pepper & Tartar Sauce",
+      "url": "https://novikovbeverly.com/menus/baby-calamari-espellette-pepper-tartar-sauce-2/",
+      "categories": [
+        "A La Carte",
+        "Fried"
+      ],
+      "price": "$31"
+    },
+    {
+      "slug": "baked-aubergine-parmigiana",
+      "name": "Baked Aubergine Parmigiana",
+      "url": "https://novikovbeverly.com/menus/baked-aubergine-parmigiana/",
+      "categories": [
+        "A La Carte",
+        "Appetizers & Charcuterie"
+      ],
+      "price": "$36",
+      "description": "vegetarian"
+    },
+    {
+      "slug": "beef-carpaccio-parmesan-cheese-rocket-salad",
+      "name": "Beef Carpaccio, Parmesan Cheese & Rocket Salad",
+      "url": "https://novikovbeverly.com/menus/beef-carpaccio-parmesan-cheese-rocket-salad/",
+      "categories": [
+        "A La Carte",
+        "Carpaccio & Tartare"
+      ],
+      "price": "$35",
+      "description": "gluten free, halal"
+    },
+    {
+      "slug": "beef-ossobuco-saffron-risotto-lemon-zest",
+      "name": "Beef Ossobuco, Saffron Risotto & Lemon Zest",
+      "url": "https://novikovbeverly.com/menus/beef-ossobuco-saffron-risotto-lemon-zest/",
+      "categories": [
+        "A La Carte",
+        "Meat"
+      ],
+      "price": "$71"
+    },
+    {
+      "slug": "beef-filet-tagliata-with-rocket-parmesan-8-oz",
+      "name": "Beef Tenderloin Tagliata",
+      "url": "https://novikovbeverly.com/menus/beef-filet-tagliata-with-rocket-parmesan-8-oz/",
+      "categories": [
+        "A La Carte",
+        "Meat"
+      ],
+      "price": "$91",
+      "description": "gluten free"
+    },
+    {
+      "slug": "beetroot-hummus",
+      "name": "Beetroot Hummus",
+      "url": "https://novikovbeverly.com/menus/beetroot-hummus/",
+      "categories": [
+        "A La Carte",
+        "MEDITERRANEAN MEZE"
+      ],
+      "price": "$15"
+    },
+    {
+      "slug": "bistecca-tomahawk-45oz",
+      "name": "Bistecca Tomahawk 45oz",
+      "url": "https://novikovbeverly.com/menus/bistecca-tomahawk-45oz/",
+      "categories": [
+        "A La Carte",
+        "Meat"
+      ],
+      "price": "$241"
+    },
+    {
+      "slug": "bluefin-tuna-tartare-2",
+      "name": "Bluefin Tuna Tartare",
+      "url": "https://novikovbeverly.com/menus/bluefin-tuna-tartare-2/",
+      "categories": [
+        "A La Carte",
+        "Carpaccio & Tartare"
+      ],
+      "price": "$43",
+      "description": "gluten free"
+    },
+    {
+      "slug": "bluefin-tuna-tartare-with-gold-ossetra-caviar",
+      "name": "Bluefin Tuna Tartare with Gold Ossetra Caviar",
+      "url": "https://novikovbeverly.com/menus/bluefin-tuna-tartare-with-gold-ossetra-caviar/",
+      "categories": [
+        "A La Carte",
+        "Carpaccio & Tartare"
+      ],
+      "price": "$71",
+      "description": "gluten free"
+    },
+    {
+      "slug": "whole-fish",
+      "name": "Branzino Al Limone e Capperi",
+      "url": "https://novikovbeverly.com/menus/whole-fish/",
+      "categories": [
+        "A La Carte",
+        "Fish & Seafood"
+      ],
+      "price": "$81"
+    },
+    {
+      "slug": "bruschetta-burrata-tomato-with-gold-powder-2",
+      "name": "Bruschetta, Burrata, Tomato with Gold Powder",
+      "url": "https://novikovbeverly.com/menus/bruschetta-burrata-tomato-with-gold-powder-2/",
+      "categories": [
+        "A La Carte",
+        "Appetizers & Charcuterie"
+      ],
+      "price": "$26"
+    },
+    {
+      "slug": "buffalo-burrata-with-farmers-market-tomatoes",
+      "name": "Buffalo Burrata with Farmers Market Tomatoes",
+      "url": "https://novikovbeverly.com/menus/buffalo-burrata-with-farmers-market-tomatoes/",
+      "categories": [
+        "A La Carte",
+        "Salads"
+      ],
+      "price": "$61",
+      "description": "vegetarian"
+    },
+    {
+      "slug": "caesar-salad",
+      "name": "Caesar Salad",
+      "url": "https://novikovbeverly.com/menus/caesar-salad/",
+      "categories": [
+        "A La Carte",
+        "Salads"
+      ],
+      "price": "$22"
+    },
+    {
+      "slug": "caledonian-prawns-with-tartar-sauce",
+      "name": "Caledonian Prawns with Tartar Sauce",
+      "url": "https://novikovbeverly.com/menus/caledonian-prawns-with-tartar-sauce/",
+      "categories": [
+        "A La Carte",
+        "Fried"
+      ],
+      "price": "$43"
+    },
+    {
+      "slug": "charbroiled-langoustines",
+      "name": "Charbroiled Langoustines",
+      "url": "https://novikovbeverly.com/menus/charbroiled-langoustines/",
+      "categories": [
+        "A La Carte",
+        "Fish & Seafood"
+      ],
+      "price": "$123",
+      "description": "gluten free"
+    },
+    {
+      "slug": "classic-novikov-burrata",
+      "name": "Classic Novikov Burrata",
+      "url": "https://novikovbeverly.com/menus/classic-novikov-burrata/",
+      "categories": [
+        "A La Carte",
+        "Salads"
+      ],
+      "price": "$43",
+      "description": "vegetarian"
+    },
+    {
+      "slug": "corn-fed-baby-chicken-honey-mustard",
+      "name": "Corn Fed Baby Chicken, Honey & Mustard",
+      "url": "https://novikovbeverly.com/menus/corn-fed-baby-chicken-honey-mustard/",
+      "categories": [
+        "A La Carte",
+        "Meat"
+      ],
+      "price": "$55",
+      "description": "gluten free, halal"
+    },
+    {
+      "slug": "datterino-tomato-salad-2",
+      "name": "Datterino Tomato Salad",
+      "url": "https://novikovbeverly.com/menus/datterino-tomato-salad-2/",
+      "categories": [
+        "A La Carte",
+        "Sides"
+      ],
+      "price": "$19",
+      "description": "vegetarian"
+    },
+    {
+      "slug": "dozen",
+      "name": "Dozen",
+      "url": "https://novikovbeverly.com/menus/dozen/",
+      "categories": [
+        "A La Carte",
+        "Caviar, Eastern & Pacific Oysters"
+      ],
+      "price": "$47",
+      "description": "gluten free"
+    },
+    {
+      "slug": "filetto-di-manzo",
+      "name": "Filetto Di Manzo",
+      "url": "https://novikovbeverly.com/menus/filetto-di-manzo/",
+      "categories": [
+        "A La Carte",
+        "Meat"
+      ],
+      "price": "$91"
+    },
+    {
+      "slug": "gnocchi-with-pistachio-pesto-buffalo-mozzarella",
+      "name": "Gnocchi with Pistachio Pesto & Buffalo Mozzarella",
+      "url": "https://novikovbeverly.com/menus/gnocchi-with-pistachio-pesto-buffalo-mozzarella/",
+      "categories": [
+        "A La Carte",
+        "Pasta, Risotto & Soup"
+      ],
+      "price": "$35",
+      "description": "Vegetarian"
+    },
+    {
+      "slug": "greek-style-tomato-salad-with-feta-cheese-2",
+      "name": "Greek Style Tomato Salad with Feta Cheese",
+      "url": "https://novikovbeverly.com/menus/greek-style-tomato-salad-with-feta-cheese-2/",
+      "categories": [
+        "A La Carte",
+        "Salads"
+      ],
+      "price": "$34",
+      "description": "gluten free, vegetarian"
+    },
+    {
+      "slug": "green-beans",
+      "name": "Green Beans",
+      "url": "https://novikovbeverly.com/menus/green-beans/",
+      "categories": [
+        "A La Carte",
+        "Sides"
+      ],
+      "price": "$19",
+      "description": "vegetarian"
+    },
+    {
+      "slug": "green-hummus",
+      "name": "Green Hummus",
+      "url": "https://novikovbeverly.com/menus/green-hummus/",
+      "categories": [
+        "A La Carte",
+        "MEDITERRANEAN MEZE"
+      ],
+      "price": "$15",
+      "description": "Vegetarian"
+    },
+    {
+      "slug": "green-salad",
+      "name": "Green Salad",
+      "url": "https://novikovbeverly.com/menus/green-salad/",
+      "categories": [
+        "A La Carte",
+        "Sides"
+      ],
+      "price": "$19"
+    },
+    {
+      "slug": "grilled-broccolini-2",
+      "name": "Grilled Broccolini",
+      "url": "https://novikovbeverly.com/menus/grilled-broccolini-2/",
+      "categories": [
+        "A La Carte",
+        "Sides"
+      ],
+      "price": "$19",
+      "description": "vegetarian"
+    },
+    {
+      "slug": "grilled-new-zealand-salmon-with-tzatziki-2",
+      "name": "Grilled New Zealand Salmon with Tzatziki",
+      "url": "https://novikovbeverly.com/menus/grilled-new-zealand-salmon-with-tzatziki-2/",
+      "categories": [
+        "A La Carte",
+        "Fish & Seafood"
+      ],
+      "price": "$50",
+      "description": "gluten free"
+    },
+    {
+      "slug": "grilled-sea-bass-fillet-with-salmoriglio-sauce-2",
+      "name": "Grilled Sea Bass Fillet with Salmoriglio Sauce",
+      "url": "https://novikovbeverly.com/menus/grilled-sea-bass-fillet-with-salmoriglio-sauce-2/",
+      "categories": [
+        "A La Carte",
+        "Fish & Seafood"
+      ],
+      "price": "$61",
+      "description": "gluten free"
+    },
+    {
+      "slug": "half-dozen",
+      "name": "Half Dozen",
+      "url": "https://novikovbeverly.com/menus/half-dozen/",
+      "categories": [
+        "A La Carte",
+        "Caviar, Eastern & Pacific Oysters"
+      ],
+      "price": "$25",
+      "description": "gluten free"
+    },
+    {
+      "slug": "hummus",
+      "name": "Hummus",
+      "url": "https://novikovbeverly.com/menus/hummus/",
+      "categories": [
+        "A La Carte",
+        "MEDITERRANEAN MEZE"
+      ],
+      "price": "$15",
+      "description": "Vegan"
+    },
+    {
+      "slug": "italian-style-mixed-deep-fried-seafood",
+      "name": "Italian Style Mixed Deep-Fried Seafood",
+      "url": "https://novikovbeverly.com/menus/italian-style-mixed-deep-fried-seafood/",
+      "categories": [
+        "A La Carte",
+        "Fried"
+      ],
+      "price": "$92",
+      "description": "For 2"
+    },
+    {
+      "slug": "jidori-chicken-milanese",
+      "name": "Jidori Chicken Milanese",
+      "url": "https://novikovbeverly.com/menus/jidori-chicken-milanese/",
+      "categories": [
+        "A La Carte",
+        "Meat"
+      ],
+      "price": "$40"
+    },
+    {
+      "slug": "lamb-chops-with-chimichurri",
+      "name": "Lamb Chops with Chimichurri",
+      "url": "https://novikovbeverly.com/menus/lamb-chops-with-chimichurri/",
+      "categories": [
+        "A La Carte",
+        "Meat"
+      ],
+      "price": "$88",
+      "description": "gluten free, halal"
+    },
+    {
+      "slug": "linguini-with-native-lobster-tomato",
+      "name": "Linguini with Native Lobster & Tomato",
+      "url": "https://novikovbeverly.com/menus/linguini-with-native-lobster-tomato/",
+      "categories": [
+        "A La Carte",
+        "Pasta, Risotto & Soup"
+      ],
+      "price": "$87"
+    },
+    {
+      "slug": "king-crab-avocado-sicilian-datterino-tomatoes",
+      "name": "Lobster Catalana",
+      "url": "https://novikovbeverly.com/menus/king-crab-avocado-sicilian-datterino-tomatoes/",
+      "categories": [
+        "A La Carte",
+        "Salads"
+      ],
+      "price": "$40"
+    },
+    {
+      "slug": "mashed-potatoes",
+      "name": "Mashed potatoes",
+      "url": "https://novikovbeverly.com/menus/mashed-potatoes/",
+      "categories": [
+        "A La Carte",
+        "Sides"
+      ],
+      "price": "$19",
+      "description": "vegetarian"
+    },
+    {
+      "slug": "meze-platter",
+      "name": "Meze Platter",
+      "url": "https://novikovbeverly.com/menus/meze-platter/",
+      "categories": [
+        "A La Carte",
+        "MEDITERRANEAN MEZE"
+      ],
+      "price": "$55",
+      "description": "Vegetarian"
+    },
+    {
+      "slug": "mixed-grilled-vegetables-2",
+      "name": "Mixed Grilled Vegetables",
+      "url": "https://novikovbeverly.com/menus/mixed-grilled-vegetables-2/",
+      "categories": [
+        "A La Carte",
+        "Sides"
+      ],
+      "price": "$19",
+      "description": "vegetarian"
+    },
+    {
+      "slug": "mixed-salad-autumn-vegetables",
+      "name": "Mixed Salad & Autumn Vegetables",
+      "url": "https://novikovbeverly.com/menus/mixed-salad-autumn-vegetables/",
+      "categories": [
+        "A La Carte",
+        "Salads"
+      ],
+      "price": "$22",
+      "description": "gluten free, vegan"
+    },
+    {
+      "slug": "new-zealand-salmon-tartare-yogurt-dressing-quail-eggs-3",
+      "name": "New Zealand Salmon Tartare, Yogurt Dressing & Quail Eggs",
+      "url": "https://novikovbeverly.com/menus/new-zealand-salmon-tartare-yogurt-dressing-quail-eggs-3/",
+      "categories": [
+        "A La Carte",
+        "Carpaccio & Tartare"
+      ],
+      "price": "$33",
+      "description": "gluten free"
+    },
+    {
+      "slug": "novikov-classic-minestrone",
+      "name": "Novikov Classic Minestrone",
+      "url": "https://novikovbeverly.com/menus/novikov-classic-minestrone/",
+      "categories": [
+        "A La Carte",
+        "Pasta, Risotto & Soup"
+      ],
+      "price": "$20",
+      "description": "Gluten Free"
+    },
+    {
+      "slug": "novikov-gold-oscietra-2oz-2",
+      "name": "Novikov Gold Oscietra 2oz",
+      "url": "https://novikovbeverly.com/menus/novikov-gold-oscietra-2oz-2/",
+      "categories": [
+        "A La Carte",
+        "Caviar, Eastern & Pacific Oysters"
+      ],
+      "price": "$121"
+    },
+    {
+      "slug": "olive-oil",
+      "name": "Olive Oil",
+      "url": "https://novikovbeverly.com/menus/olive-oil/",
+      "categories": [
+        "A La Carte",
+        "Salads"
+      ],
+      "price": "$50"
+    },
+    {
+      "slug": "pizza-margherita",
+      "name": "Pizza Margherita",
+      "url": "https://novikovbeverly.com/menus/pizza-margherita/",
+      "categories": [
+        "A La Carte",
+        "Wood Oven Pizza"
+      ],
+      "price": "$42"
+    },
+    {
+      "slug": "pizza-pepperoni",
+      "name": "Pizza Pepperoni",
+      "url": "https://novikovbeverly.com/menus/pizza-pepperoni/",
+      "categories": [
+        "A La Carte",
+        "Wood Oven Pizza"
+      ],
+      "price": "$55"
+    },
+    {
+      "slug": "pizza-with-soft-cheese-black-truffle",
+      "name": "Pizza with Soft Cheese & Black Truffle",
+      "url": "https://novikovbeverly.com/menus/pizza-with-soft-cheese-black-truffle/",
+      "categories": [
+        "A La Carte",
+        "Wood Oven Pizza"
+      ],
+      "price": "$71",
+      "description": "vegetarian"
+    },
+    {
+      "slug": "prosciutto-di-parma-aged-30-months-tomato-bruschetta-2",
+      "name": "Prosciutto Di Parma Aged 30 Months & Tomato Bruschetta",
+      "url": "https://novikovbeverly.com/menus/prosciutto-di-parma-aged-30-months-tomato-bruschetta-2/",
+      "categories": [
+        "A La Carte",
+        "Appetizers & Charcuterie"
+      ],
+      "price": "$35"
+    },
+    {
+      "slug": "ricotta-spinach-ravioli-with-mixed-mushrooms-2",
+      "name": "Ricotta & Spinach Ravioli with Mixed Mushrooms",
+      "url": "https://novikovbeverly.com/menus/ricotta-spinach-ravioli-with-mixed-mushrooms-2/",
+      "categories": [
+        "A La Carte",
+        "Pasta, Risotto & Soup"
+      ],
+      "price": "$40",
+      "description": "vegetarian"
+    },
+    {
+      "slug": "risotto-with-asparagus-black-truffle",
+      "name": "Risotto with Asparagus & Black Truffle",
+      "url": "https://novikovbeverly.com/menus/risotto-with-asparagus-black-truffle/",
+      "categories": [
+        "A La Carte",
+        "Pasta, Risotto & Soup"
+      ],
+      "price": "$50",
+      "description": "gluten free, vegetarian"
+    },
+    {
+      "slug": "sea-bass-carpaccio-with-capers-almonds-raisins",
+      "name": "Sea Bass Carpaccio with Capers, Almonds & Raisins",
+      "url": "https://novikovbeverly.com/menus/sea-bass-carpaccio-with-capers-almonds-raisins/",
+      "categories": [
+        "A La Carte",
+        "Carpaccio & Tartare"
+      ],
+      "price": "$33",
+      "description": "gluten free"
+    },
+    {
+      "slug": "sea-bass-salt-crusted-crudaiola-sauce",
+      "name": "Sea Bass Salt Crusted, Crudaiola Sauce",
+      "url": "https://novikovbeverly.com/menus/sea-bass-salt-crusted-crudaiola-sauce/",
+      "categories": [
+        "A La Carte",
+        "Fish & Seafood"
+      ],
+      "price": "market price",
+      "description": "gluten free"
+    },
+    {
+      "slug": "sea-bass-wood-oven-roasted-or-grilled-potatoes-tomatoes-olive-capers",
+      "name": "Sea Bass Wood Oven Roasted or Grilled, Potatoes, Tomatoes, Olive & Capers",
+      "url": "https://novikovbeverly.com/menus/sea-bass-wood-oven-roasted-or-grilled-potatoes-tomatoes-olive-capers/",
+      "categories": [
+        "A La Carte",
+        "Fish & Seafood"
+      ],
+      "price": "$205",
+      "description": "gluten free"
+    },
+    {
+      "slug": "selection-of-charcuterie-cheese-2",
+      "name": "Selection of Charcuterie & Cheese",
+      "url": "https://novikovbeverly.com/menus/selection-of-charcuterie-cheese-2/",
+      "categories": [
+        "A La Carte",
+        "Appetizers & Charcuterie"
+      ],
+      "price": "$2"
+    },
+    {
+      "slug": "snake-river-farms-45-day-dry-aged-rib-eye-14-oz",
+      "name": "Snake River Farms 45 Day Dry Aged Rib-Eye 14 oz",
+      "url": "https://novikovbeverly.com/menus/snake-river-farms-45-day-dry-aged-rib-eye-14-oz/",
+      "categories": [
+        "A La Carte",
+        "Meat"
+      ],
+      "price": "$112",
+      "description": "gluten free"
+    },
+    {
+      "slug": "snake-river-farms-bone-in-rib-eye-21-oz",
+      "name": "Snake River Farms Bone in Rib-Eye 21 oz",
+      "url": "https://novikovbeverly.com/menus/snake-river-farms-bone-in-rib-eye-21-oz/",
+      "categories": [
+        "A La Carte",
+        "Meat"
+      ],
+      "price": "$123",
+      "description": "gluten free"
+    },
+    {
+      "slug": "spaghetti-tomato-burrata",
+      "name": "Spaghetti Tomato Burrata",
+      "url": "https://novikovbeverly.com/menus/spaghetti-tomato-burrata/",
+      "categories": [
+        "A La Carte",
+        "Pasta, Risotto & Soup"
+      ],
+      "price": "$45",
+      "description": "Vegetarian"
+    },
+    {
+      "slug": "spaghetti-with-clams-bottarga-garlic-chilli",
+      "name": "Spaghetti with Clams, Bottarga, Garlic & Chilli",
+      "url": "https://novikovbeverly.com/menus/spaghetti-with-clams-bottarga-garlic-chilli/",
+      "categories": [
+        "A La Carte",
+        "Pasta, Risotto & Soup"
+      ],
+      "price": "$42",
+      "description": "Garlic"
+    },
+    {
+      "slug": "spinach-with-butter",
+      "name": "Spinach with Butter",
+      "url": "https://novikovbeverly.com/menus/spinach-with-butter/",
+      "categories": [
+        "A La Carte",
+        "Sides"
+      ],
+      "price": "$19",
+      "description": "vegetarian"
+    },
+    {
+      "slug": "tagliatelle-wagyu-bolognese",
+      "name": "Tagliatelle Wagyu Bolognese",
+      "url": "https://novikovbeverly.com/menus/tagliatelle-wagyu-bolognese/",
+      "categories": [
+        "A La Carte",
+        "Pasta, Risotto & Soup"
+      ],
+      "price": "$35"
+    },
+    {
+      "slug": "tonnarelli-with-pecorino-cheese-black-pepper",
+      "name": "Tonnarelli with Pecorino Cheese & Black Pepper",
+      "url": "https://novikovbeverly.com/menus/tonnarelli-with-pecorino-cheese-black-pepper/",
+      "categories": [
+        "A La Carte",
+        "Pasta, Risotto & Soup"
+      ],
+      "price": "$28",
+      "description": "Vegetarian"
+    },
+    {
+      "slug": "tzatziki",
+      "name": "Tzatziki",
+      "url": "https://novikovbeverly.com/menus/tzatziki/",
+      "categories": [
+        "A La Carte",
+        "MEDITERRANEAN MEZE"
+      ],
+      "price": "$15",
+      "description": "Vegetarian"
+    },
+    {
+      "slug": "vitello-tonnato-2",
+      "name": "Vitello Tonnato",
+      "url": "https://novikovbeverly.com/menus/vitello-tonnato-2/",
+      "categories": [
+        "A La Carte",
+        "Appetizers & Charcuterie"
+      ],
+      "price": "$35",
+      "description": "gluten free, halal"
+    },
+    {
+      "slug": "vitello-tonnato-with-black-truffle",
+      "name": "Vitello Tonnato with Black Truffle",
+      "url": "https://novikovbeverly.com/menus/vitello-tonnato-with-black-truffle/",
+      "categories": [
+        "A La Carte",
+        "Appetizers & Charcuterie"
+      ],
+      "price": "$47",
+      "description": "gluten free, halal"
+    },
+    {
+      "slug": "bruschetta-burrata-tomato-with-gold-powder",
+      "name": "Bruschetta, Burrata, Tomato with Gold Powder",
+      "url": "https://novikovbeverly.com/menus/bruschetta-burrata-tomato-with-gold-powder/",
+      "categories": [
+        "Appetizers & Charcuterie",
+        "Late Night Menu"
+      ],
+      "price": "$26"
+    },
+    {
+      "slug": "dozen-oysters",
+      "name": "Dozen Oysters",
+      "url": "https://novikovbeverly.com/menus/dozen-oysters/",
+      "categories": [
+        "Appetizers & Charcuterie",
+        "Late Night Menu"
+      ],
+      "price": "$47"
+    },
+    {
+      "slug": "half-dozen-oysters",
+      "name": "Half Dozen Oysters",
+      "url": "https://novikovbeverly.com/menus/half-dozen-oysters/",
+      "categories": [
+        "Appetizers & Charcuterie",
+        "Late Night Menu"
+      ],
+      "price": "$25"
+    },
+    {
+      "slug": "novikov-gold-oscietra-2oz",
+      "name": "Novikov Gold Oscietra 2oz",
+      "url": "https://novikovbeverly.com/menus/novikov-gold-oscietra-2oz/",
+      "categories": [
+        "Appetizers & Charcuterie",
+        "Late Night Menu"
+      ],
+      "price": "$121"
+    },
+    {
+      "slug": "novikov-royal-caviar-2oz",
+      "name": "Novikov Royal Caviar 2oz",
+      "url": "https://novikovbeverly.com/menus/novikov-royal-caviar-2oz/",
+      "categories": [
+        "Appetizers & Charcuterie",
+        "Late Night Menu"
+      ],
+      "price": "$155"
+    },
+    {
+      "slug": "prosciutto-di-parma-aged-30-months-tomato-bruschetta",
+      "name": "Prosciutto Di Parma Aged 30 Months & Tomato Bruschetta",
+      "url": "https://novikovbeverly.com/menus/prosciutto-di-parma-aged-30-months-tomato-bruschetta/",
+      "categories": [
+        "Appetizers & Charcuterie",
+        "Late Night Menu"
+      ],
+      "price": "$35"
+    },
+    {
+      "slug": "selection-of-charcuterie-cheese",
+      "name": "Selection of Charcuterie & Cheese",
+      "url": "https://novikovbeverly.com/menus/selection-of-charcuterie-cheese/",
+      "categories": [
+        "Appetizers & Charcuterie",
+        "Late Night Menu"
+      ],
+      "price": "$2"
+    },
+    {
+      "slug": "bluefin-tuna-tartare",
+      "name": "Bluefin Tuna Tartare",
+      "url": "https://novikovbeverly.com/menus/bluefin-tuna-tartare/",
+      "categories": [
+        "Carpaccio & Tartare",
+        "Late Night Menu"
+      ],
+      "price": "$43"
+    },
+    {
+      "slug": "bluefin-tuna-tartare-gold-oscietra-caviar",
+      "name": "Bluefin Tuna Tartare Gold Oscietra Caviar",
+      "url": "https://novikovbeverly.com/menus/bluefin-tuna-tartare-gold-oscietra-caviar/",
+      "categories": [
+        "Carpaccio & Tartare",
+        "Late Night Menu"
+      ],
+      "price": "$71"
+    },
+    {
+      "slug": "new-zealand-salmon-tartare-yogurt-dressing-quail-eggs",
+      "name": "New Zealand Salmon Tartare, Yogurt Dressing & Quail Eggs",
+      "url": "https://novikovbeverly.com/menus/new-zealand-salmon-tartare-yogurt-dressing-quail-eggs/",
+      "categories": [
+        "Carpaccio & Tartare",
+        "Late Night Menu"
+      ],
+      "price": "$33"
+    },
+    {
+      "slug": "novikov-royal-caviar-2oz-2",
+      "name": "Novikov Royal Caviar 2oz",
+      "url": "https://novikovbeverly.com/menus/novikov-royal-caviar-2oz-2/",
+      "categories": [
+        "Caviar, Eastern & Pacific Oysters"
+      ],
+      "price": "$155"
+    },
+    {
+      "slug": "aglio-e-olio",
+      "name": "Aglio e Olio",
+      "url": "https://novikovbeverly.com/menus/aglio-e-olio/",
+      "categories": [
+        "Chef’s Seasonal Special",
+        "Chef’s Special"
+      ],
+      "price": "$61",
+      "description": "Gluten Free"
+    },
+    {
+      "slug": "beef-borolo",
+      "name": "Beef Borolo",
+      "url": "https://novikovbeverly.com/menus/beef-borolo/",
+      "categories": [
+        "Chef’s Seasonal Special",
+        "Chef’s Special"
+      ],
+      "price": "$71"
+    },
+    {
+      "slug": "buffalo-ricotta-stuffed-squash-blossoms",
+      "name": "Buffalo Ricotta Stuffed Squash Blossoms",
+      "url": "https://novikovbeverly.com/menus/buffalo-ricotta-stuffed-squash-blossoms/",
+      "categories": [
+        "Chef’s Seasonal Special",
+        "Chef’s Special"
+      ],
+      "price": "$33",
+      "description": "Vegetarian"
+    },
+    {
+      "slug": "fiorentina-steak-64oz",
+      "name": "Fiorentina Steak 64oz",
+      "url": "https://novikovbeverly.com/menus/fiorentina-steak-64oz/",
+      "categories": [
+        "Chef’s Seasonal Special",
+        "Chef’s Special"
+      ],
+      "price": "$277",
+      "description": "Recommended doneness: Medium rare (gluten free)"
+    },
+    {
+      "slug": "patate-al-tartufo",
+      "name": "Patate al Tartufo",
+      "url": "https://novikovbeverly.com/menus/patate-al-tartufo/",
+      "categories": [
+        "Chef’s Seasonal Special",
+        "Chef’s Special"
+      ],
+      "price": "$25",
+      "description": "Garlic, Vegetarian"
+    },
+    {
+      "slug": "grilled-octopus-puttanesca",
+      "name": "Polpo Alla Puttanesca",
+      "url": "https://novikovbeverly.com/menus/grilled-octopus-puttanesca/",
+      "categories": [
+        "Chef’s Seasonal Special",
+        "Chef’s Special"
+      ],
+      "price": "$61",
+      "description": "vegetarian"
+    },
+    {
+      "slug": "tagliatelle-with-creamy-girolles-mushroom-truffle",
+      "name": "Tagliatelle with Creamy Girolles Mushroom & Truffle",
+      "url": "https://novikovbeverly.com/menus/tagliatelle-with-creamy-girolles-mushroom-truffle/",
+      "categories": [
+        "Chef’s Seasonal Special",
+        "Chef’s Special"
+      ],
+      "price": "$57"
+    },
+    {
+      "slug": "tagliatelle-with-native-lobster-tomato",
+      "name": "Tagliatelle with Native Lobster & Tomato",
+      "url": "https://novikovbeverly.com/menus/tagliatelle-with-native-lobster-tomato/",
+      "categories": [
+        "Chef’s Seasonal Special",
+        "Chef’s Special"
+      ],
+      "price": "$123"
+    },
+    {
+      "slug": "wild-scallops-pan-roasted-with-gremolada",
+      "name": "Wild Scallops Pan Roasted with Gremolada",
+      "url": "https://novikovbeverly.com/menus/wild-scallops-pan-roasted-with-gremolada/",
+      "categories": [
+        "Chef’s Seasonal Special",
+        "Chef’s Special"
+      ],
+      "price": "$55",
+      "description": "gluten free"
+    },
+    {
+      "slug": "bistecca-tomahawk",
+      "name": "Bistecca Tomahawk",
+      "url": "https://novikovbeverly.com/menus/bistecca-tomahawk/",
+      "categories": [
+        "Chef’s Sharing",
+        "Chef’s Special"
+      ],
+      "price": "$241",
+      "description": "Gluten Free"
+    },
+    {
+      "slug": "italian-style-mixed-deep-fried-seafood-2",
+      "name": "Italian Style Mixed Deep-Fried Seafood",
+      "url": "https://novikovbeverly.com/menus/italian-style-mixed-deep-fried-seafood-2/",
+      "categories": [
+        "Chef’s Sharing",
+        "Chef’s Special"
+      ],
+      "price": "$92"
+    },
+    {
+      "slug": "sea-bass-salt-crusted-crudaiola-sauce-2",
+      "name": "Sea Bass Salt Crusted, Crudaiola Sauce",
+      "url": "https://novikovbeverly.com/menus/sea-bass-salt-crusted-crudaiola-sauce-2/",
+      "categories": [
+        "Chef’s Sharing",
+        "Chef’s Special"
+      ],
+      "price": "market price",
+      "description": "gluten free"
+    },
+    {
+      "slug": "selection-of-charcuterie-cheese-3",
+      "name": "Selection of Charcuterie & Cheese",
+      "url": "https://novikovbeverly.com/menus/selection-of-charcuterie-cheese-3/",
+      "categories": [
+        "Chef’s Sharing",
+        "Chef’s Special"
+      ],
+      "price": "$61",
+      "description": "gluten free"
+    },
+    {
+      "slug": "aperol-spritz",
+      "name": "Aperol Spritz",
+      "url": "https://novikovbeverly.com/menus/aperol-spritz/",
+      "categories": [
+        "Classics",
+        "Cocktails"
+      ],
+      "price": "$18",
+      "description": "Aperol, Villa Sandi Prosecco, soda water"
+    },
+    {
+      "slug": "clover-club",
+      "name": "Clover Club",
+      "url": "https://novikovbeverly.com/menus/clover-club/",
+      "categories": [
+        "Classics",
+        "Cocktails"
+      ],
+      "price": "$24",
+      "description": "Malfy gin, Carpano dry Vermouth, raspberry syrup, lemon juice, egg white"
+    },
+    {
+      "slug": "dry-martini",
+      "name": "Dry Martini",
+      "url": "https://novikovbeverly.com/menus/dry-martini/",
+      "categories": [
+        "Classics",
+        "Cocktails"
+      ],
+      "price": "$28",
+      "description": "Still Elit, Dry Vermouth, Green Olives"
+    },
+    {
+      "slug": "espresso-martini",
+      "name": "Espresso Martini",
+      "url": "https://novikovbeverly.com/menus/espresso-martini/",
+      "categories": [
+        "Classics",
+        "Cocktails"
+      ],
+      "price": "$24",
+      "description": "Elit vodka, espresso coffee, Mr. Black coffee liqueur"
+    },
+    {
+      "slug": "french-75",
+      "name": "French 75",
+      "url": "https://novikovbeverly.com/menus/french-75/",
+      "categories": [
+        "Classics",
+        "Cocktails"
+      ],
+      "price": "$23",
+      "description": "Tanqueray gin, lemon juice, Villa Sandi Prosecco"
+    },
+    {
+      "slug": "manhattan",
+      "name": "Manhattan",
+      "url": "https://novikovbeverly.com/menus/manhattan/",
+      "categories": [
+        "Classics",
+        "Cocktails"
+      ],
+      "price": "$26",
+      "description": "Sazerac rye, Carpano Antica formula, dry Curaçao, Angostura bitters"
+    },
+    {
+      "slug": "negroni",
+      "name": "Negroni",
+      "url": "https://novikovbeverly.com/menus/negroni/",
+      "categories": [
+        "Classics",
+        "Cocktails"
+      ],
+      "price": "$24",
+      "description": "Malfy gin, Carpano Rosso, Campari, Cherry Heering"
+    },
+    {
+      "slug": "old-fashion",
+      "name": "Old Fashion",
+      "url": "https://novikovbeverly.com/menus/old-fashion/",
+      "categories": [
+        "Classics",
+        "Cocktails"
+      ],
+      "price": "$25",
+      "description": "Bulleit bourbon, rich syrup, Angostura bitters"
+    },
+    {
+      "slug": "paloma",
+      "name": "Paloma",
+      "url": "https://novikovbeverly.com/menus/paloma/",
+      "categories": [
+        "Classics",
+        "Cocktails"
+      ],
+      "price": "$24",
+      "description": "Maestro Dobel silver tequila, grapefruit juice, lime juice, agave syrup"
+    },
+    {
+      "slug": "penicillin",
+      "name": "Penicillin",
+      "url": "https://novikovbeverly.com/menus/penicillin/",
+      "categories": [
+        "Classics",
+        "Cocktails"
+      ],
+      "price": "$26",
+      "description": "Johnnie Walker black, Ardberg 10, ginger liqueur, lemon juice, honey syrup, Angostura bitters, egg white"
+    },
+    {
+      "slug": "porn-star-martini",
+      "name": "Porn Star Martini",
+      "url": "https://novikovbeverly.com/menus/porn-star-martini/",
+      "categories": [
+        "Classics",
+        "Cocktails"
+      ],
+      "price": "$24",
+      "description": "Absolut vanilla, Chinola passion liqueur, passion fruit syrup, lime juice, Prosecco, egg white"
+    },
+    {
+      "slug": "whiskey-sour",
+      "name": "Whiskey Sour",
+      "url": "https://novikovbeverly.com/menus/whiskey-sour/",
+      "categories": [
+        "Classics",
+        "Cocktails"
+      ],
+      "price": "$24",
+      "description": "Buffalo Trace, egg white, lemon juice, Angostura bitters"
+    },
+    {
+      "slug": "blackberry-clover-club",
+      "name": "Blackberry Clover Club",
+      "url": "https://novikovbeverly.com/menus/blackberry-clover-club/",
+      "categories": [
+        "Cocktails",
+        "New Vision"
+      ],
+      "price": "$29",
+      "description": "Monkey 47 gin, Chambord, Giffard Mure, Amaro Averna, Cocchi rosa, plum bitters, egg white"
+    },
+    {
+      "slug": "cinnamon-sour",
+      "name": "Cinnamon Sour",
+      "url": "https://novikovbeverly.com/menus/cinnamon-sour/",
+      "categories": [
+        "Cocktails",
+        "New Vision"
+      ],
+      "price": "$26",
+      "description": "Sazerac rye, Becherovka, apple cordial, Angostura bitters, apple-cinnamon foam"
+    },
+    {
+      "slug": "ex-porn-star-martini",
+      "name": "Ex Porn Star Martini",
+      "url": "https://novikovbeverly.com/menus/ex-porn-star-martini/",
+      "categories": [
+        "Cocktails",
+        "New Vision"
+      ],
+      "price": "$26",
+      "description": "Absolut vanilla, Giffard banane du bresil, Chinola passion fruit, Prosecco, mango puree, vanilla ice cream"
+    },
+    {
+      "slug": "irish-old-fashion",
+      "name": "Irish Old Fashion",
+      "url": "https://novikovbeverly.com/menus/irish-old-fashion/",
+      "categories": [
+        "Cocktails",
+        "New Vision"
+      ],
+      "price": "$25",
+      "description": "Powers Three Swallow, noisette butter, Frangelico, caramel, Angostura bitters, black walnut bitters"
+    },
+    {
+      "slug": "italicus-french-75",
+      "name": "Italicus French 75",
+      "url": "https://novikovbeverly.com/menus/italicus-french-75/",
+      "categories": [
+        "Cocktails",
+        "New Vision"
+      ],
+      "price": "$25",
+      "description": "Malfy lemon, St. Germain, italicus, lemon sherbet, Villa Sandi Prosecco, Peychaud’s bitters"
+    },
+    {
+      "slug": "novikov-negroni",
+      "name": "Novikov Negroni",
+      "url": "https://novikovbeverly.com/menus/novikov-negroni/",
+      "categories": [
+        "Cocktails",
+        "New Vision"
+      ],
+      "price": "$26",
+      "description": "Casa Mexico reposado, Del Maguey Vida mezcal, Carpano Antica formula, Cynar, plum brandy, Pedro Ximenez sherry"
+    },
+    {
+      "slug": "novikov-spritz",
+      "name": "Novikov Spritz",
+      "url": "https://novikovbeverly.com/menus/novikov-spritz/",
+      "categories": [
+        "Cocktails",
+        "New Vision"
+      ],
+      "price": "$25",
+      "description": "Rhubarb, Villa Sandi Prosecco, Campari, Amaretto Disaronno, Chambord, lemongrass cordial"
+    },
+    {
+      "slug": "reposado-espresso-martini",
+      "name": "Reposado Espresso Martini",
+      "url": "https://novikovbeverly.com/menus/reposado-espresso-martini/",
+      "categories": [
+        "Cocktails",
+        "New Vision"
+      ],
+      "price": "$26",
+      "description": "Casa Mexico Reposado, Amaro Averna, Mr. Black coffee liqueur, Cocchi Dopo Teatro, espresso coffee"
+    },
+    {
+      "slug": "smokey-manhattan",
+      "name": "Smokey Manhattan",
+      "url": "https://novikovbeverly.com/menus/smokey-manhattan/",
+      "categories": [
+        "Cocktails",
+        "New Vision"
+      ],
+      "price": "$25",
+      "description": "Zacapa 23 rum, Del maguey Vida mezcal, Amaro Averna, Punt e Mes, Cocchi di Torino Vermouth, dry Curaçao, chocolate bitters"
+    },
+    {
+      "slug": "spicy-paloma",
+      "name": "Spicy Paloma",
+      "url": "https://novikovbeverly.com/menus/spicy-paloma/",
+      "categories": [
+        "Cocktails",
+        "New Vision"
+      ],
+      "price": "$25",
+      "description": "Maestro Dobel silver tequila, Aperol, Amaro del Capo red hot, Ancho Reyes verde, grapefruit sherbet, passion fruit, lime juice"
+    },
+    {
+      "slug": "wax-penicillin",
+      "name": "Wax Penicillin",
+      "url": "https://novikovbeverly.com/menus/wax-penicillin/",
+      "categories": [
+        "Cocktails",
+        "New Vision"
+      ],
+      "price": "$31",
+      "description": "Talisker 10, Del Maguey Vida mezcal, Chartreuse yellow, Drambuie, ginger cordial, Angostura bitters"
+    },
+    {
+      "slug": "americano",
+      "name": "Americano",
+      "url": "https://novikovbeverly.com/menus/americano/",
+      "categories": [
+        "Coffee",
+        "Coffee Shop"
+      ],
+      "price": "$6"
+    },
+    {
+      "slug": "cappuccino",
+      "name": "Cappuccino",
+      "url": "https://novikovbeverly.com/menus/cappuccino/",
+      "categories": [
+        "Coffee",
+        "Coffee Shop"
+      ],
+      "price": "$7"
+    },
+    {
+      "slug": "cherry-espresso-tonic",
+      "name": "Cherry Espresso Tonic",
+      "url": "https://novikovbeverly.com/menus/cherry-espresso-tonic/",
+      "categories": [
+        "Coffee",
+        "Coffee Shop"
+      ],
+      "price": "$11"
+    },
+    {
+      "slug": "cortado",
+      "name": "Cortado",
+      "url": "https://novikovbeverly.com/menus/cortado/",
+      "categories": [
+        "Coffee",
+        "Coffee Shop"
+      ],
+      "price": "$7"
+    },
+    {
+      "slug": "espresso",
+      "name": "Espresso",
+      "url": "https://novikovbeverly.com/menus/espresso/",
+      "categories": [
+        "Coffee",
+        "Coffee Shop"
+      ],
+      "price": "$5"
+    },
+    {
+      "slug": "espresso-tonic",
+      "name": "Espresso Tonic",
+      "url": "https://novikovbeverly.com/menus/espresso-tonic/",
+      "categories": [
+        "Coffee",
+        "Coffee Shop"
+      ],
+      "price": "$6"
+    },
+    {
+      "slug": "flat-white",
+      "name": "Flat White",
+      "url": "https://novikovbeverly.com/menus/flat-white/",
+      "categories": [
+        "Coffee",
+        "Coffee Shop"
+      ],
+      "price": "$7"
+    },
+    {
+      "slug": "latte",
+      "name": "Latte",
+      "url": "https://novikovbeverly.com/menus/latte/",
+      "categories": [
+        "Coffee",
+        "Coffee Shop"
+      ],
+      "price": "$7"
+    },
+    {
+      "slug": "macchiato",
+      "name": "Macchiato",
+      "url": "https://novikovbeverly.com/menus/macchiato/",
+      "categories": [
+        "Coffee",
+        "Coffee Shop"
+      ],
+      "price": "$7"
+    },
+    {
+      "slug": "matcha-latte",
+      "name": "Matcha Latte",
+      "url": "https://novikovbeverly.com/menus/matcha-latte/",
+      "categories": [
+        "Coffee",
+        "Coffee Shop"
+      ],
+      "price": "$8"
+    },
+    {
+      "slug": "vanilla-lavender-pumpkin-raf",
+      "name": "Vanilla / Lavender / Pumpkin Raf",
+      "url": "https://novikovbeverly.com/menus/vanilla-lavender-pumpkin-raf/",
+      "categories": [
+        "Coffee",
+        "Coffee Shop"
+      ],
+      "price": "$7"
+    },
+    {
+      "slug": "citrus-butterfly-ice-tea",
+      "name": "Citrus Butterfly Ice Tea",
+      "url": "https://novikovbeverly.com/menus/citrus-butterfly-ice-tea/",
+      "categories": [
+        "Coffee Shop",
+        "Tea & Mocktail"
+      ],
+      "price": "$11",
+      "description": "Bright citrus with floral butterfly tea"
+    },
+    {
+      "slug": "elderflower-hibiscus-lemonade",
+      "name": "Elderflower Hibiscus Lemonade",
+      "url": "https://novikovbeverly.com/menus/elderflower-hibiscus-lemonade/",
+      "categories": [
+        "Coffee Shop",
+        "Tea & Mocktail"
+      ],
+      "price": "$13",
+      "description": "Zesty hibiscus partnered with wild elderflower"
+    },
+    {
+      "slug": "lavender-coconut-matcha",
+      "name": "Lavender Coconut Matcha",
+      "url": "https://novikovbeverly.com/menus/lavender-coconut-matcha/",
+      "categories": [
+        "Coffee Shop",
+        "Tea & Mocktail"
+      ],
+      "price": "$13",
+      "description": "Butterfly tea enriched with lavender, coconut sweetness & matcha tartness"
+    },
+    {
+      "slug": "mango-dragonfruit-lemonade",
+      "name": "Mango Dragonfruit Lemonade",
+      "url": "https://novikovbeverly.com/menus/mango-dragonfruit-lemonade/",
+      "categories": [
+        "Coffee Shop",
+        "Tea & Mocktail"
+      ],
+      "price": "$13",
+      "description": "Exotic mango with bold dragonfruit mix"
+    },
+    {
+      "slug": "matcha-strawberry-cheesecake",
+      "name": "Matcha Strawberry Cheesecake",
+      "url": "https://novikovbeverly.com/menus/matcha-strawberry-cheesecake/",
+      "categories": [
+        "Coffee Shop",
+        "Tea & Mocktail"
+      ],
+      "price": "$15",
+      "description": "Luscious strawberry flavor with delicious matcha piquancy"
+    },
+    {
+      "slug": "matcha-tonic",
+      "name": "Matcha Tonic",
+      "url": "https://novikovbeverly.com/menus/matcha-tonic/",
+      "categories": [
+        "Coffee Shop",
+        "Tea & Mocktail"
+      ],
+      "price": "$7"
+    },
+    {
+      "slug": "orange-hibiscus-ice-tea",
+      "name": "Orange Hibiscus Ice Tea",
+      "url": "https://novikovbeverly.com/menus/orange-hibiscus-ice-tea/",
+      "categories": [
+        "Coffee Shop",
+        "Tea & Mocktail"
+      ],
+      "price": "$11",
+      "description": "Zesty orange with vibrant hibiscus tang"
+    },
+    {
+      "slug": "apple-tarte",
+      "name": "Apple Tarte",
+      "url": "https://novikovbeverly.com/menus/apple-tarte/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$31",
+      "description": "Warm puff pastry layered with caramelized apples, served with vanilla ice cream and fresh seasonal berries"
+    },
+    {
+      "slug": "assorted-fruit-bowl-with-whipped-cream-2",
+      "name": "Assorted Fruit Bowl With Whipped Cream",
+      "url": "https://novikovbeverly.com/menus/assorted-fruit-bowl-with-whipped-cream-2/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$34",
+      "description": "Dragon fruit, grapes, blueberries, blackberries, raspberries & strawberries"
+    },
+    {
+      "slug": "assorted-fruit-bowl-with-whipped-cream",
+      "name": "Assorted Fruit Bowl with Whipped Cream",
+      "url": "https://novikovbeverly.com/menus/assorted-fruit-bowl-with-whipped-cream/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$28",
+      "description": "Peaches, grapes, figs, blueberries, raspberries & strawberries. (vegetarian)"
+    },
+    {
+      "slug": "basque-cheesecake",
+      "name": "Basque Cheesecake",
+      "url": "https://novikovbeverly.com/menus/basque-cheesecake/",
+      "categories": [
+        "Dessert",
+        "Lunch"
+      ],
+      "price": "$5"
+    },
+    {
+      "slug": "cannoli-2",
+      "name": "Cannoli",
+      "url": "https://novikovbeverly.com/menus/cannoli-2/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$21",
+      "description": "Crispy Sicilian roll filled with ricotta & mascarpone cheese"
+    },
+    {
+      "slug": "cannoli",
+      "name": "Cannoli",
+      "url": "https://novikovbeverly.com/menus/cannoli/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$21",
+      "description": "Crispy Sicilian roll filled with ricotta & mascarpone cheese (vegetarian)"
+    },
+    {
+      "slug": "caramel-ice-cream",
+      "name": "Caramel Ice Cream",
+      "url": "https://novikovbeverly.com/menus/caramel-ice-cream/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$9"
+    },
+    {
+      "slug": "cigara-novikov",
+      "name": "Cigara Novikov",
+      "url": "https://novikovbeverly.com/menus/cigara-novikov/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$28",
+      "description": "Chocolate Mousse, Creamy Caramel, Crunchy Hazelnut Layer"
+    },
+    {
+      "slug": "classic-creme-brulee-2",
+      "name": "Classic Creme Brulee",
+      "url": "https://novikovbeverly.com/menus/classic-creme-brulee-2/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$21",
+      "description": "Vanila custard base, topped with caramelized sugar & fresh berries"
+    },
+    {
+      "slug": "classic-creme-brulee",
+      "name": "Classic Crème Brulée",
+      "url": "https://novikovbeverly.com/menus/classic-creme-brulee/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$21",
+      "description": "Vanilla custard base, topped with caramelized sugar & fresh berries (gluten free, vegetarian)"
+    },
+    {
+      "slug": "classic-italian-tiramisu-2",
+      "name": "Classic Italian Tiramisu",
+      "url": "https://novikovbeverly.com/menus/classic-italian-tiramisu-2/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$17",
+      "description": "Coffee dipped savoiardi, layered with mascarpone cheese & cocoa"
+    },
+    {
+      "slug": "classic-italian-tiramisu",
+      "name": "Classic Italian Tiramisu",
+      "url": "https://novikovbeverly.com/menus/classic-italian-tiramisu/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$16",
+      "description": "Coffee-dipped savoiardi, layered with mascarpone cheese & cocoa (vegetarian)"
+    },
+    {
+      "slug": "classic-new-york-cheesecake-2",
+      "name": "Classic New York Cheesecake",
+      "url": "https://novikovbeverly.com/menus/classic-new-york-cheesecake-2/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$25",
+      "description": "Graham cracker crust topped with Italian cream cheese"
+    },
+    {
+      "slug": "classic-new-york-cheesecake",
+      "name": "Classic New York Cheesecake",
+      "url": "https://novikovbeverly.com/menus/classic-new-york-cheesecake/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$21",
+      "description": "Graham cracker crust topped with Italian cream cheese (vegetarian)"
+    },
+    {
+      "slug": "coconut-sorbet",
+      "name": "Coconut Sorbet",
+      "url": "https://novikovbeverly.com/menus/coconut-sorbet/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$9"
+    },
+    {
+      "slug": "hazelnut-profiteroles-2",
+      "name": "Hazelnut Profiteroles",
+      "url": "https://novikovbeverly.com/menus/hazelnut-profiteroles-2/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$21",
+      "description": "Homemade choux pastry filled with praline cream & roasted caramelized hazelnuts"
+    },
+    {
+      "slug": "hazelnut-profiteroles",
+      "name": "Hazelnut Profiteroles",
+      "url": "https://novikovbeverly.com/menus/hazelnut-profiteroles/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$21",
+      "description": "Homemade choux pastry filled with praline cream & roasted caramelized hazelnuts (vegetarian)"
+    },
+    {
+      "slug": "honey-cake",
+      "name": "Honey Cake",
+      "url": "https://novikovbeverly.com/menus/honey-cake/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$27",
+      "description": "Delicate honey-infused layers with a light, creamy filling"
+    },
+    {
+      "slug": "ice-cream-2",
+      "name": "Ice Cream",
+      "url": "https://novikovbeverly.com/menus/ice-cream-2/",
+      "categories": [
+        "Dessert",
+        "Lunch"
+      ],
+      "description": "Choice of Vanilla or Caramel"
+    },
+    {
+      "slug": "ice-cream",
+      "name": "Ice Cream",
+      "url": "https://novikovbeverly.com/menus/ice-cream/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$9",
+      "description": "Choice of vanilla or caramel (vegetarian)"
+    },
+    {
+      "slug": "large-assorted-fruit-bowl-with-meringue-2",
+      "name": "Large Assorted Fruit Bowl with Meringue",
+      "url": "https://novikovbeverly.com/menus/large-assorted-fruit-bowl-with-meringue-2/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$98",
+      "description": "Rambutan, white dragon fruit, red dragon fruit, fig, mixed berries, cherry,"
+    },
+    {
+      "slug": "large-assorted-fruit-bowl-with-meringue",
+      "name": "Large Assorted Fruit Bowl with Meringue",
+      "url": "https://novikovbeverly.com/menus/large-assorted-fruit-bowl-with-meringue/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$98",
+      "description": "Rambutan, white dragon fruit, red dragon fruit, fig, mixed berries, cherry, passion fruit, peach, mango & grapes (vegetarian)"
+    },
+    {
+      "slug": "lava-cake",
+      "name": "Lava Cake",
+      "url": "https://novikovbeverly.com/menus/lava-cake/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$25",
+      "description": "Chocolate cake with a molten center, served with a scoop of vanilla ice cream,"
+    },
+    {
+      "slug": "lemon-sorbet",
+      "name": "Lemon Sorbet",
+      "url": "https://novikovbeverly.com/menus/lemon-sorbet/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$9"
+    },
+    {
+      "slug": "mango-sorbet",
+      "name": "Mango Sorbet",
+      "url": "https://novikovbeverly.com/menus/mango-sorbet/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$9"
+    },
+    {
+      "slug": "mixed-berry-bowl",
+      "name": "Mixed Berry Bowl",
+      "url": "https://novikovbeverly.com/menus/mixed-berry-bowl/",
+      "categories": [
+        "Dessert",
+        "Lunch"
+      ],
+      "price": "$5",
+      "description": "Strawberries, blueberries & raspberries"
+    },
+    {
+      "slug": "napoleon-3",
+      "name": "Napoleon",
+      "url": "https://novikovbeverly.com/menus/napoleon-3/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$29",
+      "description": "Mille-feuille with vanilla custard & heavy cream"
+    },
+    {
+      "slug": "napoleon",
+      "name": "Napoleon",
+      "url": "https://novikovbeverly.com/menus/napoleon/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$29",
+      "description": "Mille-feuille with vanilla custard & heavy cream (vegetarian)"
+    },
+    {
+      "slug": "novikov-mini-desserts-plate",
+      "name": "Novikov Mini Desserts Plate",
+      "url": "https://novikovbeverly.com/menus/novikov-mini-desserts-plate/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$110",
+      "description": "Bite-Size Napoleon, Bite Size Pavlova, Panna Cotta , Tiramisu, Torta Ciccolatino"
+    },
+    {
+      "slug": "panna-cotta-3",
+      "name": "Panna Cotta",
+      "url": "https://novikovbeverly.com/menus/panna-cotta-3/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$23",
+      "description": "Italian vanilla pudding with raspberry sauce & fresh berries"
+    },
+    {
+      "slug": "panna-cotta-2",
+      "name": "Panna Cotta",
+      "url": "https://novikovbeverly.com/menus/panna-cotta-2/",
+      "categories": [
+        "Dessert",
+        "Lunch"
+      ]
+    },
+    {
+      "slug": "panna-cotta",
+      "name": "Panna Cotta",
+      "url": "https://novikovbeverly.com/menus/panna-cotta/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$21",
+      "description": "Italian vanilla pudding with raspberry sauce & fresh berries (gluten free)"
+    },
+    {
+      "slug": "pavlova-by-et-cetera-winery-3",
+      "name": "Pavlova By Et Cetera Winery",
+      "url": "https://novikovbeverly.com/menus/pavlova-by-et-cetera-winery-3/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$27",
+      "description": "Meringue layered with whipped cream, raspberry sauce & fresh berries"
+    },
+    {
+      "slug": "pavlova-by-et-cetera-winery",
+      "name": "Pavlova by Et Cetera Winery",
+      "url": "https://novikovbeverly.com/menus/pavlova-by-et-cetera-winery/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$24",
+      "description": "Meringue layered with whipped cream, raspberry sauce & fresh berries (gluten free)"
+    },
+    {
+      "slug": "rum-baba-2",
+      "name": "Rum Baba",
+      "url": "https://novikovbeverly.com/menus/rum-baba-2/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$22",
+      "description": "Creamy sponge soaked in spiced rum, served with butter cream & citrus sauce"
+    },
+    {
+      "slug": "rum-baba",
+      "name": "Rum Baba",
+      "url": "https://novikovbeverly.com/menus/rum-baba/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$22",
+      "description": "Creamy sponge soaked in spiced rum served with buttercream & citrus sauce (vegetarian)"
+    },
+    {
+      "slug": "sorbet-2",
+      "name": "Sorbet",
+      "url": "https://novikovbeverly.com/menus/sorbet-2/",
+      "categories": [
+        "Dessert",
+        "Lunch"
+      ],
+      "description": "Choice of Lemon, Mago or Coconut"
+    },
+    {
+      "slug": "sorbet",
+      "name": "Sorbet",
+      "url": "https://novikovbeverly.com/menus/sorbet/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$9",
+      "description": "Choice of lemon, mango, or coconut (Choice of lemon, mango, or coconut)"
+    },
+    {
+      "slug": "tiramisu",
+      "name": "Tiramisu",
+      "url": "https://novikovbeverly.com/menus/tiramisu/",
+      "categories": [
+        "Dessert",
+        "Lunch"
+      ]
+    },
+    {
+      "slug": "torta-cioccolatino-3",
+      "name": "Torta Cioccolatino",
+      "url": "https://novikovbeverly.com/menus/torta-cioccolatino-3/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$21",
+      "description": "Dark chocolate ganache filled with mascarpone cheese"
+    },
+    {
+      "slug": "torta-cioccolatino-2",
+      "name": "Torta Cioccolatino",
+      "url": "https://novikovbeverly.com/menus/torta-cioccolatino-2/",
+      "categories": [
+        "Dessert",
+        "Lunch"
+      ]
+    },
+    {
+      "slug": "torta-cioccolatino",
+      "name": "Torta Cioccolatino",
+      "url": "https://novikovbeverly.com/menus/torta-cioccolatino/",
+      "categories": [
+        "Dessert"
+      ],
+      "price": "$21",
+      "description": "Dark chocolate ganache filled with mascarpone cheese (gluten free, vegetarian)"
+    },
+    {
+      "slug": "vanilla-ice-cream",
+      "name": "Vanilla Ice Cream",
+      "url": "https://novikovbeverly.com/menus/vanilla-ice-cream/",
+      "categories": [
+        "Dessert",
+        "Desserts"
+      ],
+      "price": "$9"
+    },
+    {
+      "slug": "c-n-kopke-colheita-tawny-port",
+      "name": "C.N. Kopke- Colheita Tawny Port",
+      "url": "https://novikovbeverly.com/menus/c-n-kopke-colheita-tawny-port/",
+      "categories": [
+        "Dessert Wine",
+        "Wine List"
+      ],
+      "price": "$18",
+      "description": "Douro, Portugal, 2012"
+    },
+    {
+      "slug": "chateau-dyquem-sauternes",
+      "name": "Chateau d’Yquem- Sauternes",
+      "url": "https://novikovbeverly.com/menus/chateau-dyquem-sauternes/",
+      "categories": [
+        "Dessert Wine",
+        "Wine List"
+      ],
+      "price": "$99",
+      "description": "Bordeaux, France, 2006"
+    },
+    {
+      "slug": "donnafugata-ben-rye",
+      "name": "Donnafugata- Ben Rye",
+      "url": "https://novikovbeverly.com/menus/donnafugata-ben-rye/",
+      "categories": [
+        "Dessert Wine",
+        "Wine List"
+      ],
+      "price": "$21",
+      "description": "Sicily, Italy, 2022"
+    },
+    {
+      "slug": "grahams-tawny-20-years-port",
+      "name": "Graham’s- Tawny 20 years Port",
+      "url": "https://novikovbeverly.com/menus/grahams-tawny-20-years-port/",
+      "categories": [
+        "Dessert Wine",
+        "Wine List"
+      ],
+      "price": "$15",
+      "description": "Douro, Portugal, NV"
+    },
+    {
+      "slug": "inniskillin-cabernet-franc-icewine",
+      "name": "Inniskillin- Cabernet Franc Icewine",
+      "url": "https://novikovbeverly.com/menus/inniskillin-cabernet-franc-icewine/",
+      "categories": [
+        "Dessert Wine",
+        "Wine List"
+      ],
+      "price": "$39",
+      "description": "Niagra Peninsula, Canada, 2022"
+    },
+    {
+      "slug": "baked-eggplant-parmigiana",
+      "name": "Baked Eggplant Parmigiana",
+      "url": "https://novikovbeverly.com/menus/baked-eggplant-parmigiana/",
+      "categories": [
+        "First Course",
+        "Lunch"
+      ]
+    },
+    {
+      "slug": "beef-carpaccio-parmesan-cheese-rocket-salad-2",
+      "name": "Beef Carpaccio, Parmesan Cheese & Rocket Salad",
+      "url": "https://novikovbeverly.com/menus/beef-carpaccio-parmesan-cheese-rocket-salad-2/",
+      "categories": [
+        "First Course",
+        "Lunch"
+      ],
+      "price": "$15",
+      "description": "halal"
+    },
+    {
+      "slug": "greek-style-tomato-salad-with-feta-cheese",
+      "name": "Greek Style Tomato Salad with Feta Cheese",
+      "url": "https://novikovbeverly.com/menus/greek-style-tomato-salad-with-feta-cheese/",
+      "categories": [
+        "First Course",
+        "Lunch"
+      ]
+    },
+    {
+      "slug": "hamachi-crudo-with-almonds-fennel-and-orange-segments",
+      "name": "Hamachi Crudo with Almonds Fennel and Orange Segments",
+      "url": "https://novikovbeverly.com/menus/hamachi-crudo-with-almonds-fennel-and-orange-segments/",
+      "categories": [
+        "First Course",
+        "Lunch"
+      ],
+      "price": "$10"
+    },
+    {
+      "slug": "new-zealand-salmon-tartare-yogurt-dressing-quail-eggs-2",
+      "name": "New Zealand Salmon Tartare, Yogurt Dressing & Quail Eggs",
+      "url": "https://novikovbeverly.com/menus/new-zealand-salmon-tartare-yogurt-dressing-quail-eggs-2/",
+      "categories": [
+        "First Course",
+        "Lunch"
+      ]
+    },
+    {
+      "slug": "soup-of-the-day-or-minestrone-or-gazpacho",
+      "name": "Soup of The Day or Minestrone or Gazpacho",
+      "url": "https://novikovbeverly.com/menus/soup-of-the-day-or-minestrone-or-gazpacho/",
+      "categories": [
+        "First Course",
+        "Lunch"
+      ]
+    },
+    {
+      "slug": "tuna-tartare",
+      "name": "Tuna Tartare",
+      "url": "https://novikovbeverly.com/menus/tuna-tartare/",
+      "categories": [
+        "First Course",
+        "Lunch"
+      ],
+      "price": "$10"
+    },
+    {
+      "slug": "grilled-new-zealand-salmon-with-tzatziki",
+      "name": "Grilled New Zealand Salmon with Tzatziki",
+      "url": "https://novikovbeverly.com/menus/grilled-new-zealand-salmon-with-tzatziki/",
+      "categories": [
+        "Fish & Meat",
+        "Late Night Menu"
+      ],
+      "price": "$50"
+    },
+    {
+      "slug": "grilled-sea-bass-fillet-with-salmoriglio-sauce",
+      "name": "Grilled Sea Bass Fillet with Salmoriglio Sauce",
+      "url": "https://novikovbeverly.com/menus/grilled-sea-bass-fillet-with-salmoriglio-sauce/",
+      "categories": [
+        "Fish & Meat",
+        "Late Night Menu"
+      ],
+      "price": "$61"
+    },
+    {
+      "slug": "snake-river-farms-45-day-dry-aged-rib-eye-14oz",
+      "name": "Snake River Farms 45 Day Dry Aged Rib-Eye 14oz",
+      "url": "https://novikovbeverly.com/menus/snake-river-farms-45-day-dry-aged-rib-eye-14oz/",
+      "categories": [
+        "Fish & Meat",
+        "Late Night Menu"
+      ],
+      "price": "$112"
+    },
+    {
+      "slug": "napoleon-2",
+      "name": "Napoleon",
+      "url": "https://novikovbeverly.com/menus/napoleon-2/",
+      "categories": [
+        "LUNCH SPECIAL OFFERING",
+        "Lunch"
+      ],
+      "price": "$29"
+    },
+    {
+      "slug": "pavlova-by-et-cetera-winery-2",
+      "name": "Pavlova By Et Cetera Winery",
+      "url": "https://novikovbeverly.com/menus/pavlova-by-et-cetera-winery-2/",
+      "categories": [
+        "LUNCH SPECIAL OFFERING",
+        "Lunch"
+      ],
+      "price": "$24"
+    },
+    {
+      "slug": "syrniky",
+      "name": "Syrniky",
+      "url": "https://novikovbeverly.com/menus/syrniky/",
+      "categories": [
+        "LUNCH SPECIAL OFFERING",
+        "Lunch"
+      ],
+      "price": "$22"
+    },
+    {
+      "slug": "datterino-tomato-salad",
+      "name": "Datterino Tomato Salad",
+      "url": "https://novikovbeverly.com/menus/datterino-tomato-salad/",
+      "categories": [
+        "Late Night Menu",
+        "Sides"
+      ],
+      "price": "$19"
+    },
+    {
+      "slug": "grilled-broccolini",
+      "name": "Grilled Broccolini",
+      "url": "https://novikovbeverly.com/menus/grilled-broccolini/",
+      "categories": [
+        "Late Night Menu",
+        "Sides"
+      ],
+      "price": "$19"
+    },
+    {
+      "slug": "mixed-grilled-vegetables",
+      "name": "Mixed Grilled Vegetables",
+      "url": "https://novikovbeverly.com/menus/mixed-grilled-vegetables/",
+      "categories": [
+        "Late Night Menu",
+        "Sides"
+      ],
+      "price": "$19"
+    },
+    {
+      "slug": "add-black-truffle-to-any-meal",
+      "name": "ADD BLACK TRUFFLE TO ANY MEAL",
+      "url": "https://novikovbeverly.com/menus/add-black-truffle-to-any-meal/",
+      "categories": [
+        "Lunch",
+        "Second Course"
+      ],
+      "price": "$20"
+    },
+    {
+      "slug": "australian-lamb-chops-with-chimichurri-asparagus",
+      "name": "Australian Lamb Chops with Chimichurri & Asparagus",
+      "url": "https://novikovbeverly.com/menus/australian-lamb-chops-with-chimichurri-asparagus/",
+      "categories": [
+        "Lunch",
+        "Second Course"
+      ],
+      "price": "$25"
+    },
+    {
+      "slug": "bortolomiol-prior-prosecco-superiore-brut-2",
+      "name": "Babaganoush",
+      "url": "https://novikovbeverly.com/menus/bortolomiol-prior-prosecco-superiore-brut-2/",
+      "categories": [
+        "Lunch",
+        "OTHER LUNCH OFFERINGS"
+      ],
+      "price": "$10"
+    },
+    {
+      "slug": "tenuta-ornellaia-le-volte-dellornellaia-2",
+      "name": "Beetroot Hummus",
+      "url": "https://novikovbeverly.com/menus/tenuta-ornellaia-le-volte-dellornellaia-2/",
+      "categories": [
+        "Lunch",
+        "OTHER LUNCH OFFERINGS"
+      ],
+      "price": "$7"
+    },
+    {
+      "slug": "branzino-filet-with-daterrino-tomatoes-taggiasca-olives-sauteed-spinach",
+      "name": "Branzino Filet with Daterrino Tomatoes, Taggiasca Olives & Sautéed Spinach",
+      "url": "https://novikovbeverly.com/menus/branzino-filet-with-daterrino-tomatoes-taggiasca-olives-sauteed-spinach/",
+      "categories": [
+        "Lunch",
+        "Second Course"
+      ],
+      "price": "$5"
+    },
+    {
+      "slug": "crudite",
+      "name": "Crudite",
+      "url": "https://novikovbeverly.com/menus/crudite/",
+      "categories": [
+        "Lunch",
+        "OTHER LUNCH OFFERINGS"
+      ],
+      "price": "$5"
+    },
+    {
+      "slug": "filet-mignon-with-chianti-sauce-roasted-potatoes",
+      "name": "Filet Mignon with Chianti Sauce & Roasted Potatoes",
+      "url": "https://novikovbeverly.com/menus/filet-mignon-with-chianti-sauce-roasted-potatoes/",
+      "categories": [
+        "Lunch",
+        "Second Course"
+      ],
+      "price": "$26"
+    },
+    {
+      "slug": "ca-dei-frati-i-frati-lugana-2",
+      "name": "Green Hummus",
+      "url": "https://novikovbeverly.com/menus/ca-dei-frati-i-frati-lugana-2/",
+      "categories": [
+        "Lunch",
+        "OTHER LUNCH OFFERINGS"
+      ],
+      "price": "$10"
+    },
+    {
+      "slug": "blanc-de-blanc-brut-2021",
+      "name": "Hummus",
+      "url": "https://novikovbeverly.com/menus/blanc-de-blanc-brut-2021/",
+      "categories": [
+        "Lunch",
+        "OTHER LUNCH OFFERINGS"
+      ],
+      "price": "$7"
+    },
+    {
+      "slug": "jidori-chicken-milanese-with-arugula-confit-tomatoes-on-vine",
+      "name": "Jidori Chicken Milanese with Arugula & Confit Tomatoes on Vine",
+      "url": "https://novikovbeverly.com/menus/jidori-chicken-milanese-with-arugula-confit-tomatoes-on-vine/",
+      "categories": [
+        "Lunch",
+        "Second Course"
+      ]
+    },
+    {
+      "slug": "ora-king-salmon-filet-with-grilled-vegetables-tzatziki",
+      "name": "Ora King Salmon Filet with Grilled Vegetables & Tzatziki",
+      "url": "https://novikovbeverly.com/menus/ora-king-salmon-filet-with-grilled-vegetables-tzatziki/",
+      "categories": [
+        "Lunch",
+        "Second Course"
+      ],
+      "price": "$5"
+    },
+    {
+      "slug": "ricotta-spinach-ravioli-with-mixed-mushrooms",
+      "name": "Ricotta & Spinach Ravioli with Mixed Mushrooms",
+      "url": "https://novikovbeverly.com/menus/ricotta-spinach-ravioli-with-mixed-mushrooms/",
+      "categories": [
+        "Lunch",
+        "Second Course"
+      ]
+    },
+    {
+      "slug": "risotto-with-asparagus",
+      "name": "Risotto with Asparagus",
+      "url": "https://novikovbeverly.com/menus/risotto-with-asparagus/",
+      "categories": [
+        "Lunch",
+        "Second Course"
+      ]
+    },
+    {
+      "slug": "minimum-of-two-courses",
+      "name": "THREE COURSES",
+      "url": "https://novikovbeverly.com/menus/minimum-of-two-courses/",
+      "categories": [
+        "Lunch",
+        "Set Lunch Menu"
+      ],
+      "price": "$39"
+    },
+    {
+      "slug": "tagliatelle-bolognese",
+      "name": "Tagliatelle Bolognese",
+      "url": "https://novikovbeverly.com/menus/tagliatelle-bolognese/",
+      "categories": [
+        "Lunch",
+        "Second Course"
+      ]
+    },
+    {
+      "slug": "wagyu-smash-burger-2",
+      "name": "Wagyu Smash Burger",
+      "url": "https://novikovbeverly.com/menus/wagyu-smash-burger-2/",
+      "categories": [
+        "Lunch",
+        "OTHER LUNCH OFFERINGS"
+      ],
+      "price": "$31"
+    },
+    {
+      "slug": "wagyu-smash-burger",
+      "name": "Wagyu Smash Burger",
+      "url": "https://novikovbeverly.com/menus/wagyu-smash-burger/",
+      "categories": [
+        "Lunch",
+        "Second Course"
+      ],
+      "price": "$5"
+    },
+    {
+      "slug": "whole-fish-of-the-day-butterfly-style",
+      "name": "Whole Fish of The Day (Butterfly Style)",
+      "url": "https://novikovbeverly.com/menus/whole-fish-of-the-day-butterfly-style/",
+      "categories": [
+        "Lunch",
+        "Second Course"
+      ]
+    },
+    {
+      "slug": "french-bloom-le-blanc",
+      "name": "French Bloom Le Blanc",
+      "url": "https://novikovbeverly.com/menus/french-bloom-le-blanc/",
+      "categories": [
+        "Non Alcoholic Wine",
+        "Wine List"
+      ],
+      "price": "$61",
+      "description": "Languedoc, France, NV"
+    },
+    {
+      "slug": "french-bloom-le-rose",
+      "name": "French Bloom Le Rose",
+      "url": "https://novikovbeverly.com/menus/french-bloom-le-rose/",
+      "categories": [
+        "Non Alcoholic Wine",
+        "Wine List"
+      ],
+      "price": "$63"
+    },
+    {
+      "slug": "almaviva-red-blend",
+      "name": "Almaviva- Red Blend",
+      "url": "https://novikovbeverly.com/menus/almaviva-red-blend/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$85",
+      "description": "Puente Alto, Chile, 2020"
+    },
+    {
+      "slug": "caymus-cabernet-sauvignon",
+      "name": "Caymus- Cabernet Sauvignon",
+      "url": "https://novikovbeverly.com/menus/caymus-cabernet-sauvignon/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$41",
+      "description": "Napa Valley, California, 2022"
+    },
+    {
+      "slug": "chateau-grand-puy-lacoste-lacoste-borie",
+      "name": "Château Grand -Puy -Lacoste – Lacoste Borie",
+      "url": "https://novikovbeverly.com/menus/chateau-grand-puy-lacoste-lacoste-borie/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$24",
+      "description": "Bordeaux, France, 2016"
+    },
+    {
+      "slug": "hartford-court-russian-river-pinot-noir",
+      "name": "Hartford Court – Russian River Pinot Noir",
+      "url": "https://novikovbeverly.com/menus/hartford-court-russian-river-pinot-noir/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$23",
+      "description": "Russian River Valley, California, 2021"
+    },
+    {
+      "slug": "jm-pillot-chassagne-montrachet-rouge",
+      "name": "JM Pillot- Chassagne Montrachet Rouge",
+      "url": "https://novikovbeverly.com/menus/jm-pillot-chassagne-montrachet-rouge/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$29",
+      "description": "Burgundy, France, 2022"
+    },
+    {
+      "slug": "louis-latour-volnay-1er-cru-en-chevret",
+      "name": "Louis Latour- Volnay 1er Cru En Chevret",
+      "url": "https://novikovbeverly.com/menus/louis-latour-volnay-1er-cru-en-chevret/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$59",
+      "description": "Burgundy,France,2019"
+    },
+    {
+      "slug": "marques-de-murrieta-rioja-reserva",
+      "name": "Marqués De Murrieta – Rioja Reserva",
+      "url": "https://novikovbeverly.com/menus/marques-de-murrieta-rioja-reserva/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$17",
+      "description": "Rioja, Spain, 2019"
+    },
+    {
+      "slug": "nickel-nickel-state-ranch-cabernet",
+      "name": "Nickel & Nickel- State Ranch Cabernet",
+      "url": "https://novikovbeverly.com/menus/nickel-nickel-state-ranch-cabernet/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$63",
+      "description": "Yountville, California, 2022"
+    },
+    {
+      "slug": "oasi-degli-angeli-kurni",
+      "name": "Oasi degli Angeli – Kurni",
+      "url": "https://novikovbeverly.com/menus/oasi-degli-angeli-kurni/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$82",
+      "description": "Marche, Italy, 2020"
+    },
+    {
+      "slug": "patrimony-cabernet-sauvignon",
+      "name": "Patrimony Cabernet Sauvignon",
+      "url": "https://novikovbeverly.com/menus/patrimony-cabernet-sauvignon/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$120",
+      "description": "Paso Robles, California, 2021"
+    },
+    {
+      "slug": "pio-cesare-barolo",
+      "name": "Pio Cesare – Barolo",
+      "url": "https://novikovbeverly.com/menus/pio-cesare-barolo/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$49",
+      "description": "Piemonte, Italy, 2020"
+    },
+    {
+      "slug": "san-felice-borgo-chianti-classico",
+      "name": "San Felice Borgo Chianti Classico",
+      "url": "https://novikovbeverly.com/menus/san-felice-borgo-chianti-classico/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$26",
+      "description": "Toscana, Italy, 2019"
+    },
+    {
+      "slug": "shafer-one-point-five-cabernet-sauvignon",
+      "name": "Shafer- One Point Five Cabernet Sauvignon",
+      "url": "https://novikovbeverly.com/menus/shafer-one-point-five-cabernet-sauvignon/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$41",
+      "description": "Napa Valley, California,2022"
+    },
+    {
+      "slug": "tenuta-san-guido-sassicaia",
+      "name": "Tenuta San Guido – Sassicaia",
+      "url": "https://novikovbeverly.com/menus/tenuta-san-guido-sassicaia/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$135",
+      "description": "Toscana, Italy, 2021"
+    },
+    {
+      "slug": "vina-robles-cabernet-sauvignon",
+      "name": "Vina Robles – Cabernet Sauvignon",
+      "url": "https://novikovbeverly.com/menus/vina-robles-cabernet-sauvignon/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$15",
+      "description": "Paso Robles, California, 2022"
+    },
+    {
+      "slug": "vina-cobos-bramare-malbec-lujan-de-cuyo",
+      "name": "Viña Cobos – Bramare Malbec Lujan de Cuyo",
+      "url": "https://novikovbeverly.com/menus/vina-cobos-bramare-malbec-lujan-de-cuyo/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$20",
+      "description": "Mendoza, Argentina, 2022"
+    },
+    {
+      "slug": "zenato-amarone-della-valpolicella-classico",
+      "name": "Zenato – Amarone della Valpolicella Classico",
+      "url": "https://novikovbeverly.com/menus/zenato-amarone-della-valpolicella-classico/",
+      "categories": [
+        "Red Wine",
+        "Wine List"
+      ],
+      "price": "$36",
+      "description": "Veneto, Italy, 2019"
+    },
+    {
+      "slug": "miraval-cotes-de-provence-rose",
+      "name": "Miraval-Cotes De Provence Rose",
+      "url": "https://novikovbeverly.com/menus/miraval-cotes-de-provence-rose/",
+      "categories": [
+        "Rose Wine",
+        "Wine List"
+      ],
+      "price": "$17",
+      "description": "Provence, France, 2023"
+    },
+    {
+      "slug": "tormaresca-calafuria-negroamaro-rosato",
+      "name": "Tormaresca – Calafuria Negroamaro Rosato",
+      "url": "https://novikovbeverly.com/menus/tormaresca-calafuria-negroamaro-rosato/",
+      "categories": [
+        "Rose Wine",
+        "Wine List"
+      ],
+      "price": "$14",
+      "description": "Puglia, Italy, 2023"
+    },
+    {
+      "slug": "contadi-castaldi-franciacorta-saten",
+      "name": "Contadi Castaldi – Franciacorta Satén",
+      "url": "https://novikovbeverly.com/menus/contadi-castaldi-franciacorta-saten/",
+      "categories": [
+        "Sparkling Wine",
+        "Wine List"
+      ],
+      "price": "$23",
+      "description": "Lombardia, Italy, 2018"
+    },
+    {
+      "slug": "dom-perignon-brut",
+      "name": "Dom Pérignon – Brut",
+      "url": "https://novikovbeverly.com/menus/dom-perignon-brut/",
+      "categories": [
+        "Sparkling Wine",
+        "Wine List"
+      ],
+      "price": "$95",
+      "description": "Champagne, France, 2015"
+    },
+    {
+      "slug": "pierre-sparr-cremant-brut-reserve",
+      "name": "Pierre Sparr Cremant Brut Reserve",
+      "url": "https://novikovbeverly.com/menus/pierre-sparr-cremant-brut-reserve/",
+      "categories": [
+        "Sparkling Wine",
+        "Wine List"
+      ],
+      "price": "$15",
+      "description": "Alsace, France, NV"
+    },
+    {
+      "slug": "raventos-i-blanc-de-nit-rose",
+      "name": "Raventós i Blanc – De Nit Rosé",
+      "url": "https://novikovbeverly.com/menus/raventos-i-blanc-de-nit-rose/",
+      "categories": [
+        "Sparkling Wine",
+        "Wine List"
+      ],
+      "price": "$17",
+      "description": "Catalonia, Spain, 2021"
+    },
+    {
+      "slug": "ruinart-brut-rose",
+      "name": "Ruinart – Brut Rosé",
+      "url": "https://novikovbeverly.com/menus/ruinart-brut-rose/",
+      "categories": [
+        "Sparkling Wine",
+        "Wine List"
+      ],
+      "price": "$43",
+      "description": "Champagne, France, NV"
+    },
+    {
+      "slug": "taittinger-brut-reserve",
+      "name": "Taittinger – Brut Réserve",
+      "url": "https://novikovbeverly.com/menus/taittinger-brut-reserve/",
+      "categories": [
+        "Sparkling Wine",
+        "Wine List"
+      ],
+      "price": "$29",
+      "description": "Champagne, France, NV"
+    },
+    {
+      "slug": "attems-sauvignon-blanc",
+      "name": "Attems Sauvignon Blanc",
+      "url": "https://novikovbeverly.com/menus/attems-sauvignon-blanc/",
+      "categories": [
+        "White Wine",
+        "Wine List"
+      ],
+      "price": "$12",
+      "description": "Friuli, Venezia, Giulia, Italy, 2023"
+    },
+    {
+      "slug": "castello-della-sala-antinori-cervaro-della-sala",
+      "name": "Castello della Sala Antinori – Cervaro della Sala",
+      "url": "https://novikovbeverly.com/menus/castello-della-sala-antinori-cervaro-della-sala/",
+      "categories": [
+        "White Wine",
+        "Wine List"
+      ],
+      "price": "$49",
+      "description": "Umbria, Italy, 2021"
+    },
+    {
+      "slug": "cloudy-bay-sauvignon-blanc",
+      "name": "Cloudy Bay – Sauvignon Blanc",
+      "url": "https://novikovbeverly.com/menus/cloudy-bay-sauvignon-blanc/",
+      "categories": [
+        "White Wine",
+        "Wine List"
+      ],
+      "price": "$17",
+      "description": "Cloudy Bay, Sauvignon Blanc, 2023"
+    },
+    {
+      "slug": "dom-laroche-chablis-1er-cru-les-vaillons",
+      "name": "Dom. Laroche – Chablis 1er Cru Les Vaillons",
+      "url": "https://novikovbeverly.com/menus/dom-laroche-chablis-1er-cru-les-vaillons/",
+      "categories": [
+        "White Wine",
+        "Wine List"
+      ],
+      "price": "$42",
+      "description": "Chablis, France, 2021"
+    },
+    {
+      "slug": "frank-family-chardonnay",
+      "name": "Frank Family – Chardonnay",
+      "url": "https://novikovbeverly.com/menus/frank-family-chardonnay/",
+      "categories": [
+        "White Wine",
+        "Wine List"
+      ],
+      "price": "$19",
+      "description": "Carneros, California, 2022"
+    },
+    {
+      "slug": "jermann-pinot-grigio",
+      "name": "Jermann – Pinot Grigio",
+      "url": "https://novikovbeverly.com/menus/jermann-pinot-grigio/",
+      "categories": [
+        "White Wine",
+        "Wine List"
+      ],
+      "price": "$15",
+      "description": "Venezia Giulia, Italy, 2023"
+    },
+    {
+      "slug": "la-poussie-sancerre-blanc",
+      "name": "La Poussie – Sancerre Blanc",
+      "url": "https://novikovbeverly.com/menus/la-poussie-sancerre-blanc/",
+      "categories": [
+        "White Wine",
+        "Wine List"
+      ],
+      "price": "$26",
+      "description": "Sancerre, France, 2022"
+    },
+    {
+      "slug": "la-scolca-gavi-dei-gavi-black-label",
+      "name": "La Scolca – Gavi dei Gavi Black Label",
+      "url": "https://novikovbeverly.com/menus/la-scolca-gavi-dei-gavi-black-label/",
+      "categories": [
+        "White Wine",
+        "Wine List"
+      ],
+      "price": "$29",
+      "description": "Piemonte, Italy, 2022"
+    },
+    {
+      "slug": "latour-pernand-vergelesses-1er-cru",
+      "name": "Latour – Pernand -Vergelesses 1er Cru",
+      "url": "https://novikovbeverly.com/menus/latour-pernand-vergelesses-1er-cru/",
+      "categories": [
+        "White Wine",
+        "Wine List"
+      ],
+      "price": "$38",
+      "description": "Burgundy, France, 2019"
+    },
+    {
+      "slug": "pine-ridge-chenin-blanc-viognier",
+      "name": "Pine Ridge – Chenin Blanc -Viognier",
+      "url": "https://novikovbeverly.com/menus/pine-ridge-chenin-blanc-viognier/",
+      "categories": [
+        "White Wine",
+        "Wine List"
+      ],
+      "price": "$12",
+      "description": "California, 2023"
+    },
+    {
+      "slug": "pizza-with-seafood",
+      "name": "Pizza with Seafood",
+      "url": "https://novikovbeverly.com/menus/pizza-with-seafood/",
+      "categories": [
+        "Wood Oven Pizza"
+      ],
+      "price": "$71"
+    }
+  ]
+}

@@ -4,6 +4,8 @@ steps:
     lang: es-US
   - say: "Me llamo Maria"
     lang: es-US
+  - say: "Sí, correcto"
+    lang: es-US
 expect_intent: reservation
 expect_party_size: 2
 expect_guest_name: Maria

@@ -4,6 +4,8 @@ name: en_full_booking_one_phrase
 steps:
   - say: "Hi, I'd like a table for four people tomorrow at eight pm, my name is Sarah"
     lang: en-US
+  - say: "Yes, that's correct"
+    lang: en-US
 expect_intent: reservation
 expect_guest_name: Sarah
 expect_party_size: 4

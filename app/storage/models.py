@@ -68,5 +68,8 @@ class CallerProfile(Base):
     speech_pace: Mapped[str | None] = mapped_column(String(16), nullable=True)
     formality: Mapped[str | None] = mapped_column(String(16), nullable=True)
     typical_intents: Mapped[dict[str, int]] = mapped_column(JSON, default=dict)
+    last_guest_name: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    visit_count: Mapped[int] = mapped_column(Integer, default=0)
+    last_call_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow, onupdate=_utcnow)

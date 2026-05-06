@@ -7,6 +7,8 @@ steps:
   - say: "Saturday at eight, party of four"
     lang: en-US
 # 'birthday' should hit the private_event path per intent priority.
+  - say: "Yes, that's correct"
+    lang: en-US
 expect_intent: private_event
 expect_guest_name: Emily
 expect_party_size: 4

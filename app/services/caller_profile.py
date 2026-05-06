@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime, timezone
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -57,6 +58,7 @@ def update_profile_from_turn(
     utterance: str,
     detected_lang: str,
     intent: str | None,
+    guest_name: str | None = None,
 ) -> None:
     if not profile.preferred_language or detected_lang and detected_lang != profile.preferred_language:
         profile.preferred_language = detected_lang
@@ -73,6 +75,42 @@ def update_profile_from_turn(
         intents = dict(profile.typical_intents or {})
         intents[intent] = int(intents.get(intent, 0)) + 1
         profile.typical_intents = intents
+
+    if guest_name and guest_name.strip():
+        profile.last_guest_name = guest_name.strip()
+
+
+def is_returning_caller(profile: CallerProfile | None) -> bool:
+    """A caller counts as 'returning' once they have at least one prior
+    completed visit on file. visit_count is incremented on call start."""
+    return bool(profile and (profile.visit_count or 0) >= 2 and profile.last_guest_name)
+
+
+def mark_call_started(profile: CallerProfile) -> None:
+    profile.visit_count = int(profile.visit_count or 0) + 1
+    profile.last_call_at = datetime.now(timezone.utc)
+
+
+def returning_caller_greeting(profile: CallerProfile, lang: str) -> str:
+    """Used when a known caller dials back. Pulls last name on file."""
+    name = (profile.last_guest_name or "").strip()
+    if lang.startswith("ru"):
+        return (
+            f"С возвращением, {name}! Чем сегодня могу помочь?"
+            if name
+            else "С возвращением! Чем сегодня могу помочь?"
+        )
+    if lang.startswith("es"):
+        return (
+            f"¡Bienvenido de nuevo, {name}! ¿En qué puedo ayudarle hoy?"
+            if name
+            else "¡Bienvenido de nuevo! ¿En qué puedo ayudarle hoy?"
+        )
+    return (
+        f"Welcome back, {name}! How can I help you today?"
+        if name
+        else "Welcome back! How can I help you today?"
+    )
 
 
 def profile_prompt_context(profile: CallerProfile | None) -> str:

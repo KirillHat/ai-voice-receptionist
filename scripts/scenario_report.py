@@ -181,8 +181,11 @@ def run_one(raw: dict, *, ws_factory, http_get) -> ScenarioRecord:
     started = time.monotonic()
     step_records: list[StepRecord] = []
 
+    # Use a unique phone per scenario so the returning-caller branch only
+    # fires inside scenarios that explicitly script multiple visits.
+    phone = f"+1555{uuid.uuid4().hex[:7]}"
     with ws_factory() as ws:
-        _send(ws, {"type": "setup", "callSid": call_sid, "from": "+15555550100"})
+        _send(ws, {"type": "setup", "callSid": call_sid, "from": phone})
         for s in steps_in:
             _send(
                 ws,
