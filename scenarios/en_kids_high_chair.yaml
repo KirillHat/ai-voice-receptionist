@@ -1,0 +1,12 @@
+name: en_kids_high_chair_request
+# Caller asks about a high chair while booking — the request is captured
+# alongside the reservation, but the high-chair phrase shouldn't break
+# field extraction.
+steps:
+  - say: "I'd like a reservation for two adults and one child tomorrow at seven pm, do you have a high chair?"
+    lang: en-US
+  - say: "My name is Daniel"
+    lang: en-US
+expect_intent: reservation
+expect_guest_name: Daniel
+expect_qualified: true

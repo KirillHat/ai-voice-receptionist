@@ -1,0 +1,12 @@
+name: en_change_existing_reservation
+# Out-of-flow intent: caller wants to change a reservation the agent
+# doesn't have records of. Agent must NOT confirm — just capture and
+# escalate. We assert that the qualifier still tags it as a reservation
+# inquiry and stores the caller's name so the team can call back.
+steps:
+  - say: "Hi, I'd like to change my existing reservation from seven pm to eight pm"
+    lang: en-US
+  - say: "This is Olivia"
+    lang: en-US
+expect_intent: reservation
+expect_guest_name: Olivia

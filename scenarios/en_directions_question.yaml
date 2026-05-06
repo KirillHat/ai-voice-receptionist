@@ -1,0 +1,7 @@
+name: en_directions_question
+steps:
+  - say: "Where are you located?"
+    lang: en-US
+    expect_contains:
+      - canon
+      - beverly hills

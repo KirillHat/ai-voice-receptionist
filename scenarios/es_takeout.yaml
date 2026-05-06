@@ -1,0 +1,10 @@
+name: es_takeout
+steps:
+  - say: "Hola, quisiera ordenar comida para llevar"
+    lang: es-US
+  - say: "Me llamo Carlos"
+    lang: es-US
+expect_intent: takeout
+expect_guest_name: Carlos
+expect_qualified: true
+expect_qualification_label: WARM

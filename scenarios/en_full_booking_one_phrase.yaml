@@ -1,0 +1,11 @@
+name: en_full_booking_one_phrase
+# Stress test: caller drops the whole reservation in a single utterance.
+# Every extractor (intent, name, party, datetime) must fire on the same turn.
+steps:
+  - say: "Hi, I'd like a table for four people tomorrow at eight pm, my name is Sarah"
+    lang: en-US
+expect_intent: reservation
+expect_guest_name: Sarah
+expect_party_size: 4
+expect_qualified: true
+expect_qualification_label: WARM

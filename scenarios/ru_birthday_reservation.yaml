@@ -1,0 +1,15 @@
+name: ru_birthday_reservation
+steps:
+  - say: "Здравствуйте, я бы хотел отметить день рождения у вас в ресторане"
+    lang: ru-RU
+  - say: "Меня зовут Анна"
+    lang: ru-RU
+  - say: "Нас будет шестеро"
+    lang: ru-RU
+  - say: "В субботу в восемь вечера"
+    lang: ru-RU
+expect_intent: private_event
+expect_guest_name: Анна
+expect_party_size: 6
+expect_qualified: true
+expect_qualification_label: WARM

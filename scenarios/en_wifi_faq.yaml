@@ -1,0 +1,6 @@
+name: en_wifi_faq
+steps:
+  - say: "Do you have wifi for guests?"
+    lang: en-US
+    expect_contains:
+      - novikov guest
