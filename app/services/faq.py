@@ -334,13 +334,43 @@ def detect_topic(utterance: str) -> str | None:
     return None
 
 
+_BOOKING_INTENT_PATTERNS = (
+    r"\bi'?d like\b",
+    r"\bi want(?:\s+to)?\b",
+    r"\bi would like\b",
+    r"\bi need\b",
+    r"\bcan i (?:book|reserve|order)\b",
+    r"\b(?:book|reserve|order|schedule)(?:\s+a)?\b",
+    r"\bхоч[уе]\b",
+    r"\bхотел[аи]?\s+бы\b",
+    r"\bзабронир\w*\b",
+    r"\bзаказ\w*\b",
+    r"\bquiero\b",
+    r"\bquisiera\b",
+    r"\bme gustaría\b",
+    r"\breservar\b",
+)
+
+
+def _looks_like_booking(utterance: str) -> bool:
+    lower = utterance.lower()
+    return any(re.search(pat, lower) for pat in _BOOKING_INTENT_PATTERNS)
+
+
 def match_faq(utterance: str, lang: str = "en-US") -> FaqAnswer | None:
     """Return a canonical FAQ answer if the utterance matches a known topic.
 
     The agent should call this *before* invoking the qualifier when no booking
     intent has been captured yet. If a topic matches, the answer should be
     spoken back, then the conversation can return to qualifying the call.
+
+    If the caller's utterance carries a clear booking intent ('I'd like',
+    'хочу забронировать', 'quisiera reservar'), we skip FAQ matching even
+    when a topic surface-matches — the caller wants to *book* a private
+    event, not learn the PDR capacity.
     """
+    if _looks_like_booking(utterance):
+        return None
     topic = detect_topic(utterance)
     if topic is None:
         return None

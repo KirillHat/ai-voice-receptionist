@@ -1,0 +1,17 @@
+name: regression_explicit_date_must_be_captured
+# Real call bug 2026-05-05: caller said "На 9 мая" up front, datetime_nlu
+# didn't have a 'day + month name' pattern, so the date was dropped and
+# the agent asked again — eventually settling on "tomorrow" instead.
+steps:
+  - say: "Я хотел бы забронировать столик на 9 мая"
+    lang: ru-RU
+  - say: "Меня зовут Кирилл"
+    lang: ru-RU
+  - say: "На четверых"
+    lang: ru-RU
+  - say: "В семь вечера"
+    lang: ru-RU
+expect_intent: reservation
+expect_guest_name: Кирилл
+expect_party_size: 4
+expect_reservation_datetime_contains: "-05-09"

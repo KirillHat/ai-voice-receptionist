@@ -1,0 +1,17 @@
+name: ru_reservation_with_language_switch
+steps:
+  - say: "Hi, could you speak Russian please"
+    lang: en-US
+    expect_language_switch: ru-RU
+  - say: "Я хотел бы забронировать столик"
+    lang: ru-RU
+  - say: "Меня зовут Кирилл"
+    lang: ru-RU
+  - say: "На четверых"
+    lang: ru-RU
+  - say: "Завтра в восемь вечера"
+    lang: ru-RU
+expect_intent: reservation
+expect_guest_name: Кирилл
+expect_party_size: 4
+expect_qualified: true

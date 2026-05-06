@@ -1,0 +1,16 @@
+name: regression_seven_oclock_must_not_become_party_size
+# Real call bug 2026-05-05: caller said "В 7 часов вечера" meaning 7pm,
+# qualifier hijacked it as party_size=7 because the word-fallback in
+# _extract_party_size matched "семь" / "7" without any party context.
+# Asserts that after a time-only reply, party_size remains unset.
+steps:
+  - say: "Я хотел бы забронировать столик"
+    lang: ru-RU
+  - say: "Меня зовут Кирилл"
+    lang: ru-RU
+  - say: "В семь часов вечера"
+    lang: ru-RU
+expect_intent: reservation
+expect_guest_name: Кирилл
+expect_party_size_is_none: true
+expect_reservation_datetime_contains: "T19"

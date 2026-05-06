@@ -1,0 +1,7 @@
+name: faq_valet_parking
+steps:
+  - say: "Is there valet parking?"
+    lang: en-US
+    expect_contains:
+      - valet
+      - seventeen

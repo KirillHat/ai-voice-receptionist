@@ -1,0 +1,15 @@
+name: large_party_needs_manager_approval
+# Per the host manual, parties of 12 or more require manager approval.
+# We label the lead HOT but should NOT promise the booking is final.
+steps:
+  - say: "Hi, I'd like to book a private event for fifteen people"
+    lang: en-US
+  - say: "This is Maria"
+    lang: en-US
+  - say: "Next Friday at seven"
+    lang: en-US
+expect_intent: private_event
+expect_party_size: 15
+expect_guest_name: Maria
+expect_qualified: true
+expect_qualification_label: HOT

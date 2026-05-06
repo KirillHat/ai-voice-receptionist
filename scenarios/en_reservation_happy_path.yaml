@@ -1,0 +1,11 @@
+name: en_reservation_happy_path
+steps:
+  - say: "Hi, I'd like a reservation for four guests tomorrow at 8 pm"
+    lang: en-US
+  - say: "My name is Alex"
+    lang: en-US
+expect_intent: reservation
+expect_party_size: 4
+expect_guest_name: Alex
+expect_qualified: true
+expect_qualification_label: WARM

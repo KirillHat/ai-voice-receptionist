@@ -19,6 +19,48 @@ _RELATIVE_DAY_OFFSETS: tuple[tuple[str, int], ...] = (
     ("manana", 1),
 )
 
+
+# Month name → number, multilingual. Russian months take genitive form
+# (января/февраля/...) because callers say 'девятого мая', 'на 9 мая'.
+_MONTH_BY_NAME: dict[str, int] = {
+    "january": 1, "jan": 1,
+    "february": 2, "feb": 2,
+    "march": 3, "mar": 3,
+    "april": 4, "apr": 4,
+    "may": 5,
+    "june": 6, "jun": 6,
+    "july": 7, "jul": 7,
+    "august": 8, "aug": 8,
+    "september": 9, "sept": 9, "sep": 9,
+    "october": 10, "oct": 10,
+    "november": 11, "nov": 11,
+    "december": 12, "dec": 12,
+    "января": 1, "январь": 1,
+    "февраля": 2, "февраль": 2,
+    "марта": 3, "март": 3,
+    "апреля": 4, "апрель": 4,
+    "мая": 5, "май": 5,
+    "июня": 6, "июнь": 6,
+    "июля": 7, "июль": 7,
+    "августа": 8, "август": 8,
+    "сентября": 9, "сентябрь": 9,
+    "октября": 10, "октябрь": 10,
+    "ноября": 11, "ноябрь": 11,
+    "декабря": 12, "декабрь": 12,
+    "enero": 1,
+    "febrero": 2,
+    "marzo": 3,
+    "abril": 4,
+    "mayo": 5,
+    "junio": 6,
+    "julio": 7,
+    "agosto": 8,
+    "septiembre": 9, "setiembre": 9,
+    "octubre": 10,
+    "noviembre": 11,
+    "diciembre": 12,
+}
+
 _WEEKDAY_BY_TOKEN = {
     "monday": 0,
     "mon": 0,
@@ -135,6 +177,11 @@ def normalize_datetime_text(
     hour, minute = _extract_time(lower)
     if hour is None:
         hour, minute = _extract_time_hint(lower)
+    elif hour < 12 and _has_pm_modifier(lower):
+        # 'семь часов вечера' / 'seven in the evening' / 'siete de la tarde'.
+        hour += 12
+    elif hour == 12 and _has_am_modifier(lower):
+        hour = 0
 
     if base_date is None and hour is None:
         return None
@@ -172,6 +219,45 @@ def _extract_explicit_date(lower: str, ref: datetime):
         month = int(eu.group(2))
         year = _coerce_year(eu.group(3), ref.year)
         return _safe_date(year, month, day)
+
+    # 'May 9' / 'May 9th' / 'May 9, 2027'
+    en_md = re.search(
+        r"\b(january|jan|february|feb|march|mar|april|apr|may|june|jun|"
+        r"july|jul|august|aug|september|sept|sep|october|oct|november|nov|"
+        r"december|dec)\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?:\s*,?\s*(\d{4}))?\b",
+        lower,
+    )
+    if en_md:
+        month = _MONTH_BY_NAME.get(en_md.group(1))
+        if month:
+            day = int(en_md.group(2))
+            year = _coerce_year(en_md.group(3), ref.year)
+            picked = _safe_date(year, month, day)
+            if picked and picked < ref.date() and not en_md.group(3):
+                picked = _safe_date(year + 1, month, day)
+            if picked:
+                return picked
+
+    # '9 мая' / 'девятого мая' (we already digitized words upstream so just digits)
+    # / '9 de mayo' / 'el 9 de mayo'
+    dm = re.search(
+        r"\b(?:el\s+|на\s+|до\s+)?(\d{1,2})\s*(?:de\s+|-)?\s*"
+        r"(января|январь|февраля|февраль|марта|март|апреля|апрель|мая|май|"
+        r"июня|июнь|июля|июль|августа|август|сентября|сентябрь|октября|"
+        r"октябрь|ноября|ноябрь|декабря|декабрь|"
+        r"enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|"
+        r"setiembre|octubre|noviembre|diciembre)\b",
+        lower,
+    )
+    if dm:
+        month = _MONTH_BY_NAME.get(dm.group(2))
+        if month:
+            day = int(dm.group(1))
+            picked = _safe_date(ref.year, month, day)
+            if picked and picked < ref.date():
+                picked = _safe_date(ref.year + 1, month, day)
+            if picked:
+                return picked
 
     return None
 
@@ -255,6 +341,45 @@ def _next_weekday(ref: datetime, target_weekday: int, lower: str):
     if delta == 0 or wants_next:
         delta = 7 if delta == 0 else delta
     return (ref + timedelta(days=delta)).date()
+
+
+_PM_MODIFIERS = (
+    "pm",
+    "p.m.",
+    "evening",
+    "night",
+    "in the evening",
+    "in the afternoon",
+    "вечера",
+    "вечером",
+    "ночи",
+    "ночью",
+    "дня",  # 'три часа дня' = 3 PM
+    "днём",
+    "днем",
+    "de la tarde",
+    "de la noche",
+    "por la tarde",
+    "por la noche",
+)
+_AM_MODIFIERS = (
+    "am",
+    "a.m.",
+    "in the morning",
+    "morning",
+    "утра",
+    "утром",
+    "de la mañana",
+    "por la mañana",
+)
+
+
+def _has_pm_modifier(lower: str) -> bool:
+    return any(token in lower for token in _PM_MODIFIERS)
+
+
+def _has_am_modifier(lower: str) -> bool:
+    return any(token in lower for token in _AM_MODIFIERS)
 
 
 def _coerce_year(raw: str | None, current_year: int) -> int:

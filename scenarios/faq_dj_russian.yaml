@@ -1,0 +1,7 @@
+name: faq_dj_in_russian
+steps:
+  - say: "У вас сегодня будет диджей"
+    lang: ru-RU
+    expect_contains:
+      - четверг
+      - суббот

@@ -1,0 +1,10 @@
+name: es_reservation
+steps:
+  - say: "Hola, una reserva para dos personas mañana a las nueve"
+    lang: es-US
+  - say: "Me llamo Maria"
+    lang: es-US
+expect_intent: reservation
+expect_party_size: 2
+expect_guest_name: Maria
+expect_qualified: true

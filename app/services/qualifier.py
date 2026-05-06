@@ -60,6 +60,19 @@ _NUMBER_WORDS: dict[str, int] = {
     "ten": 10,
     "eleven": 11,
     "twelve": 12,
+    "thirteen": 13,
+    "fourteen": 14,
+    "fifteen": 15,
+    "sixteen": 16,
+    "seventeen": 17,
+    "eighteen": 18,
+    "nineteen": 19,
+    "twenty": 20,
+    "twenty one": 21,
+    "twenty two": 22,
+    "twenty four": 24,
+    "twenty five": 25,
+    "thirty": 30,
     "uno": 1,
     "dos": 2,
     "tres": 3,
@@ -72,16 +85,40 @@ _NUMBER_WORDS: dict[str, int] = {
     "diez": 10,
     "once": 11,
     "doce": 12,
+    "trece": 13,
+    "catorce": 14,
+    "quince": 15,
+    "veinte": 20,
+    "treinta": 30,
     "один": 1,
+    "одного": 1,
     "два": 2,
+    "двое": 2,
+    "двоих": 2,
     "три": 3,
+    "трое": 3,
+    "троих": 3,
     "четыре": 4,
+    "четверо": 4,
+    "четверых": 4,
     "пять": 5,
+    "пятеро": 5,
+    "пятерых": 5,
     "шесть": 6,
+    "шестеро": 6,
+    "шестерых": 6,
     "семь": 7,
+    "семеро": 7,
+    "семерых": 7,
     "восемь": 8,
+    "восьмерых": 8,
     "девять": 9,
     "десять": 10,
+    "одиннадцать": 11,
+    "двенадцать": 12,
+    "пятнадцать": 15,
+    "двадцать": 20,
+    "тридцать": 30,
 }
 
 
@@ -199,8 +236,13 @@ def _extract_fields(
     *,
     last_assistant: str | None = None,
 ) -> None:
-    if not session.intent:
-        session.intent = _extract_intent(text)
+    # Re-run intent detection on every turn until we get a specific intent.
+    # The previous logic locked intent on the first reply, so a caller who
+    # opened with 'speak Russian please' was forever stuck on intent='general'.
+    if session.intent in (None, "", "general"):
+        new_intent = _extract_intent(text)
+        if new_intent != "general" or not session.intent:
+            session.intent = new_intent
 
     if not session.guest_name:
         maybe_name = _extract_name(text)
@@ -292,7 +334,24 @@ def _extract_short_name(text: str) -> str | None:
     return _title_case(cleaned)
 
 
+_TIME_LIKE_TOKENS = (
+    r"\b(?:o'?clock|am|pm|p\.m\.|a\.m\.)\b",
+    r"\bin the\s+(?:morning|afternoon|evening|night)\b",
+    r"\b(?:часов|часа|час|вечера|утра|дня|ночи|минут)\b",
+    r"\b(?:de la (?:mañana|tarde|noche)|en la (?:mañana|tarde|noche))\b",
+)
+
+
+def _looks_like_time_phrase(text: str) -> bool:
+    return any(re.search(pat, text) for pat in _TIME_LIKE_TOKENS)
+
+
 def _extract_short_party(text: str) -> int | None:
+    # Even when the assistant just asked for party size, the caller may
+    # answer with a time instead ('в семь часов вечера'). Don't grab a
+    # bare number from a sentence that is clearly about time.
+    if _looks_like_time_phrase(text):
+        return None
     digits = re.search(r"\b(\d{1,2})\b", text)
     if digits:
         value = int(digits.group(1))
@@ -367,7 +426,12 @@ def _last_assistant_prompt(session: CallSession) -> str | None:
 
 
 def _extract_intent(text: str) -> str:
-    for intent, keywords in _INTENT_KEYWORDS.items():
+    # Order matters: 'private event' should win over 'book a private event'.
+    # 'takeout' and 'private_event' are more specific than 'reservation' (which
+    # picks up generic words like 'book' or 'dinner'), so check them first.
+    priority = ("private_event", "takeout", "reservation")
+    for intent in priority:
+        keywords = _INTENT_KEYWORDS[intent]
         if any(word in text for word in keywords):
             return intent
     return "general"
@@ -388,18 +452,42 @@ def _extract_name(text: str) -> str | None:
 
 
 def _extract_party_size(text: str) -> int | None:
-    digit_match = re.search(
-        r"(?:party of|for|we are|we're|para|somos|нас|на)\s+(\d{1,2})\b",
+    # Auto-extract only when there's a strong contextual cue. We dropped the
+    # bare 'на N' Russian trigger because 'на 9 мая' (date) was being parsed
+    # as party=9, and the bare-number-word fallback because 'семь часов'
+    # (time) was being parsed as party=7. Bare numbers/words without those
+    # strong cues are handled by _extract_short_party in the state-aware
+    # branch (only after we explicitly asked for the party size).
+    contextual_digit = re.search(
+        r"(?:party of|for|we are|we're|table for|para|somos|нас|нас будет|для)"
+        r"\s+(\d{1,2})\b",
         text,
     )
-    if digit_match:
-        value = int(digit_match.group(1))
+    if contextual_digit:
+        value = int(contextual_digit.group(1))
         if 1 <= value <= 30:
             return value
 
-    for word, value in _NUMBER_WORDS.items():
-        if re.search(rf"\b{word}\b", text):
+    guests_digit = re.search(
+        r"\b(\d{1,2})\s*(?:guests?|people|persons?|adults?|"
+        r"гостей|человек|людей|persona[s]?)\b",
+        text,
+    )
+    if guests_digit:
+        value = int(guests_digit.group(1))
+        if 1 <= value <= 30:
             return value
+
+    # Word numbers near a 'guests/people/гостей/человек/personas' noun:
+    # 'for four guests', 'two people', 'четверо гостей', 'dos personas'.
+    word_alt = "|".join(re.escape(w) for w in _NUMBER_WORDS)
+    near_noun = re.search(
+        rf"\b({word_alt})\b\s+(?:guests?|people|persons?|adults?|"
+        r"гостей|человек|людей|persona[s]?)\b",
+        text,
+    )
+    if near_noun:
+        return _NUMBER_WORDS[near_noun.group(1)]
     return None
 
 
