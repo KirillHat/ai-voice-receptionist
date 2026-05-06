@@ -375,6 +375,27 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                         last=False,
                     )
 
+                # On the completion turn, skip the LLM entirely. The model has a
+                # bad habit of inventing a different party_size or dropping the
+                # date in confirmations ('your reservation for 8 on May 6' when
+                # the caller said 2). The deterministic summary is faithful to
+                # the captured fields and is rendered in the active language.
+                if decision.completed:
+                    confirmation = language_router.build_reply(
+                        call,
+                        missing_field=None,
+                        lang=active_lang,
+                    )
+                    await _send_text_token(
+                        websocket,
+                        confirmation,
+                        lang=active_lang,
+                        last=True,
+                    )
+                    if lead_payload:
+                        asyncio.create_task(_fanout_lead(lead_payload))
+                    continue
+
                 stream = llm_stream.stream_reply(
                     call=call,
                     user_input=user_input,
@@ -405,6 +426,11 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                 sent_any = False
                 pending_chunk: str | None = first_chunk
                 decorated_first_chunk = False
+                if pending_chunk is not None:
+                    pending_chunk = prosody.strip_leading_name_address(
+                        pending_chunk,
+                        guest_name=call.guest_name,
+                    )
                 async for chunk in stream:
                     if pending_chunk is not None and not decorated_first_chunk:
                         pending_chunk = prosody.maybe_add_disfluency(

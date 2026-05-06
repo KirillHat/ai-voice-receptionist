@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 
 from app.config import get_settings
 
@@ -44,6 +45,47 @@ def holding_phrase(lang: str) -> str:
 
 def interruption_ack(lang: str) -> str:
     return _INTERRUPTION_ACK.get(lang, _INTERRUPTION_ACK["en-US"])
+
+
+_NAME_OPENER_PATTERNS = (
+    r"^(?:dear|mr\.?|ms\.?|mrs\.?|miss)\s+[A-ZА-ЯЁ][A-Za-zА-Яа-яЁё'\-]+\s*[,—-]?\s*",
+    r"^(?:уважаем(?:ый|ая))\s+[А-ЯЁA-Z][А-Яа-яЁёA-Za-z'\-]+\s*[,—-]?\s*",
+    r"^[A-ZА-ЯЁ][A-Za-zА-Яа-яЁё'\-]{1,30}\s*,\s+",
+    r"^привет\s*,\s*[А-ЯЁ][А-Яа-яЁё'\-]+\s*[,—-]?\s*",
+    r"^(?:hi|hello|hey)\s*,?\s*[A-ZА-ЯЁ][A-Za-zА-Яа-яЁё'\-]+\s*[,—-]?\s*",
+)
+
+
+def strip_leading_name_address(text: str, *, guest_name: str | None) -> str:
+    """Remove 'Mr. Kirill,' / 'Уважаемый Кирилл,' / 'Kirill,' from the head.
+
+    The system prompt forbids opening every reply with the guest's name,
+    but gpt-4o still does it on perhaps half the turns. We post-process
+    the first chunk of the streamed reply to drop that opener.
+    """
+    if not text:
+        return text
+    cleaned = text.lstrip()
+    leading_ws = text[: len(text) - len(cleaned)]
+
+    for pat in _NAME_OPENER_PATTERNS:
+        match = re.match(pat, cleaned, flags=re.IGNORECASE)
+        if match:
+            cleaned = cleaned[match.end():]
+            break
+
+    if guest_name:
+        # 'Kirill, ' or 'Кирилл, ' specifically — prefix-trim by exact name.
+        first = guest_name.split()[0]
+        prefix_pat = rf"^{re.escape(first)}\s*[,—-]\s*"
+        match = re.match(prefix_pat, cleaned, flags=re.IGNORECASE)
+        if match:
+            cleaned = cleaned[match.end():]
+
+    cleaned = cleaned.lstrip()
+    if cleaned and cleaned[0].islower():
+        cleaned = cleaned[0].upper() + cleaned[1:]
+    return leading_ws + cleaned
 
 
 def maybe_add_disfluency(text: str, *, lang: str, call_sid: str, turn_count: int) -> str:

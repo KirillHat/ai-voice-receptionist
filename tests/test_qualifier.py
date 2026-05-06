@@ -32,7 +32,14 @@ def test_qualifier_completes_flow() -> None:
     decision = qualifier.ingest_turn(call, "next friday 7 pm")
 
     assert decision.completed is True
-    assert "I captured" in decision.prompt
+    # Natural-language confirmation: must mention the captured fields by
+    # value, NEVER echo internal labels like 'intent: ' or raw ISO timestamps.
+    prompt = decision.prompt
+    assert "Maria Gomez" in prompt
+    assert "private event" in prompt.lower()
+    assert "intent:" not in prompt.lower()
+    assert "party_size:" not in prompt.lower()
+    assert "T19:00" not in prompt  # ISO leakage
     assert qualifier.qualification_label(call) == "HOT"
     assert "T19:00" in (call.reservation_datetime or "")
 

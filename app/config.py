@@ -47,8 +47,8 @@ class Settings(BaseSettings):
     voice_soft_pause_max_ms: int = 650
     voice_fast_utterance_words: int = 8
     voice_long_utterance_words: int = 22
-    voice_holding_phrase_delay_fast_ms: int = 900
-    voice_holding_phrase_delay_slow_ms: int = 1400
+    voice_holding_phrase_delay_fast_ms: int = 8000
+    voice_holding_phrase_delay_slow_ms: int = 12000
     voice_interrupt_ack_window_sec: float = 10.0
     voice_disfluency_rate: float = 0.18
 

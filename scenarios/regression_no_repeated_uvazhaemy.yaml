@@ -1,0 +1,18 @@
+name: regression_no_repeated_uvazhaemy_kirill
+# Real call 2026-05-05 16:34: agent began EVERY reply with
+# "Уважаемый Кирилл, …". The system prompt forbade it but gpt-4o ignored.
+# Defense-in-depth: prosody.strip_leading_name_address scrubs the leading
+# 'Mr./Ms./Dear/Уважаемый <Name>,' before we send the chunk.
+steps:
+  - say: "Здравствуйте, я бы хотел забронировать столик"
+    lang: ru-RU
+  - say: "Меня зовут Кирилл"
+    lang: ru-RU
+  - say: "Нас будет двое"
+    lang: ru-RU
+  - say: "Завтра в восемь вечера"
+    lang: ru-RU
+expect_intent: reservation
+expect_guest_name: Кирилл
+expect_party_size: 2
+expect_qualified: true

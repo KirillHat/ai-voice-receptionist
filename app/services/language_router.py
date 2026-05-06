@@ -122,24 +122,63 @@ def _question_for_field(field: str, intent: str | None, lang: str) -> str:
 
 
 def _completion_message(session: CallSession, lang: str) -> str:
-    guest = session.guest_name or "guest"
-    party = str(session.party_size) if session.party_size else "-"
-    when = session.reservation_datetime or "-"
+    """Natural-language confirmation by language. Never echoes ISO timestamps,
+    raw field labels, or 'general' — those are internal to the qualifier and
+    sound robotic when spoken aloud."""
+    from app.services.qualifier import _humanize_datetime  # local import to avoid cycle
+
+    guest = (session.guest_name or "").strip()
 
     if lang == "es-US":
-        return (
-            f"Perfecto, {guest}. Ya está todo anotado. "
-            f"Tipo: {session.intent or 'consulta'}. Personas: {party}. Fecha y hora: {when}. "
-            "Nuestro equipo le confirmará en breve."
-        )
+        intent_phrase = {
+            "reservation": "su reserva",
+            "private_event": "su evento privado",
+            "takeout": "su pedido para llevar",
+        }.get(session.intent or "", "su solicitud")
+        bits: list[str] = [intent_phrase]
+        if session.party_size:
+            personas = "persona" if session.party_size == 1 else "personas"
+            bits.append(f"para {session.party_size} {personas}")
+        if session.reservation_datetime:
+            bits.append("el " + _humanize_datetime(session.reservation_datetime, lang="es-US"))
+        body = " ".join(bits)
+        opener = f"Gracias, {guest}." if guest else "Gracias."
+        return f"{opener} He anotado {body} — nuestro equipo le confirmará en breve."
+
     if lang == "ru-RU":
-        return (
-            f"Отлично, {guest}. Я все зафиксировала. "
-            f"Тип запроса: {session.intent or 'запрос'}. Гостей: {party}. Дата и время: {when}. "
-            "Наша команда скоро свяжется для подтверждения."
-        )
-    return (
-        f"Perfect, {guest}. I have everything noted: "
-        f"type {session.intent or 'inquiry'}, party size {party}, time {when}. "
-        "Our team will confirm shortly."
-    )
+        intent_phrase = {
+            "reservation": "вашу бронь",
+            "private_event": "ваше частное мероприятие",
+            "takeout": "ваш заказ навынос",
+        }.get(session.intent or "", "вашу заявку")
+        bits = [intent_phrase]
+        if session.party_size:
+            bits.append(f"на {session.party_size} {_ru_guests(session.party_size)}")
+        if session.reservation_datetime:
+            bits.append("на " + _humanize_datetime(session.reservation_datetime, lang="ru-RU"))
+        body = " ".join(bits)
+        opener = f"Спасибо, {guest}." if guest else "Спасибо."
+        return f"{opener} Я записала {body}. Наша команда скоро свяжется для подтверждения."
+
+    intent_phrase = {
+        "reservation": "your reservation",
+        "private_event": "your private event",
+        "takeout": "your takeout order",
+    }.get(session.intent or "", "your request")
+    bits = [intent_phrase]
+    if session.party_size:
+        guests = "guest" if session.party_size == 1 else "guests"
+        bits.append(f"for {session.party_size} {guests}")
+    if session.reservation_datetime:
+        bits.append("on " + _humanize_datetime(session.reservation_datetime, lang="en-US"))
+    body = " ".join(bits)
+    opener = f"Thank you, {guest}." if guest else "Thank you."
+    return f"{opener} I have {body} noted — our team will confirm shortly."
+
+
+def _ru_guests(n: int) -> str:
+    if n % 10 == 1 and n % 100 != 11:
+        return "гостя"
+    if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14:
+        return "гостей"
+    return "гостей"

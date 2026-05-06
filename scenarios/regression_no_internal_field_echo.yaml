@@ -1,0 +1,17 @@
+name: regression_no_internal_field_echo
+# Real call 2026-05-05 20:25: agent literally said
+# "Тип запроса – General. Гостей – 8. Дата и время – 2026-05-06-08007."
+# That's the language_router fallback echoing internal field labels and
+# ISO timestamps. The new natural-language summary must never expose
+# 'general' or raw 'YYYY-MM-DDTHH:MM' to the caller.
+steps:
+  - say: "I'd like a reservation for two tomorrow at eight pm"
+    lang: en-US
+  - say: "I am Sarah"
+    lang: en-US
+expect_intent: reservation
+expect_guest_name: Sarah
+expect_party_size: 2
+expect_qualified: true
+# In English the deterministic confirmation SHOULD include the cleaned-up
+# datetime ("at 8 PM"); we accept either lower or upper case below.

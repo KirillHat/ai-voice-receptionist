@@ -93,27 +93,38 @@ _NUMBER_WORDS: dict[str, int] = {
     "один": 1,
     "одного": 1,
     "два": 2,
+    "двух": 2,
     "двое": 2,
     "двоих": 2,
     "три": 3,
+    "трёх": 3,
+    "трех": 3,
     "трое": 3,
     "троих": 3,
     "четыре": 4,
+    "четырёх": 4,
+    "четырех": 4,
     "четверо": 4,
     "четверых": 4,
     "пять": 5,
-    "пятеро": 5,
+    "пяти": 5,
     "пятерых": 5,
+    "пятеро": 5,
     "шесть": 6,
+    "шести": 6,
     "шестеро": 6,
     "шестерых": 6,
     "семь": 7,
+    "семи": 7,
     "семеро": 7,
     "семерых": 7,
     "восемь": 8,
+    "восьми": 8,
     "восьмерых": 8,
     "девять": 9,
+    "девяти": 9,
     "десять": 10,
+    "десяти": 10,
     "одиннадцать": 11,
     "двенадцать": 12,
     "пятнадцать": 15,
@@ -183,28 +194,86 @@ def note_faq_turn(session: CallSession, utterance: str, answer: object) -> None:
 
 
 def summarize(session: CallSession) -> str:
-    intent_label = {
-        "reservation": "table reservation",
-        "private_event": "private event inquiry",
-        "takeout": "takeout inquiry",
-        "general": "general inquiry",
-    }.get(session.intent or "general", "inquiry")
+    """Natural-language confirmation in English.
 
-    details: list[str] = [f"{intent_label}"]
-    if session.guest_name:
-        details.append(f"name: {session.guest_name}")
+    Spoken to the guest, so we MUST NOT echo internal field labels
+    ('intent', 'party_size', ISO timestamps). The matching localized
+    versions live in language_router._completion_message.
+    """
+    pieces: list[str] = []
+
+    intent_phrase = {
+        "reservation": "your reservation",
+        "private_event": "your private event",
+        "takeout": "your takeout order",
+    }.get(session.intent or "", "your request")
+    pieces.append(intent_phrase)
+
     if session.party_size:
-        details.append(f"party size: {session.party_size}")
+        guests = "guest" if session.party_size == 1 else "guests"
+        pieces.append(f"for {session.party_size} {guests}")
     if session.reservation_datetime:
-        details.append(f"time: {session.reservation_datetime}")
-    if session.special_notes:
-        details.append(f"notes: {session.special_notes}")
+        pieces.append("on " + _humanize_datetime(session.reservation_datetime, lang="en-US"))
 
-    joined = "; ".join(details)
-    return (
-        "Perfect, thank you. I have everything I need and our team will confirm shortly. "
-        f"I captured: {joined}."
-    )
+    body = " ".join(pieces)
+    opener = f"Thank you, {session.guest_name}." if session.guest_name else "Thank you."
+    return f"{opener} I have {body} noted — our team will confirm shortly."
+
+
+def _humanize_datetime(value: str, *, lang: str) -> str:
+    """Turn an ISO-8601 string (or whatever fragment we captured) into speech."""
+    from datetime import datetime as _dt
+
+    raw = value.strip()
+    try:
+        # Be lenient: accept '2026-05-09T19:00-07:00' or '2026-05-09T19:00:00'.
+        cleaned = raw
+        if cleaned.endswith("Z"):
+            cleaned = cleaned[:-1] + "+00:00"
+        parsed = _dt.fromisoformat(cleaned)
+    except ValueError:
+        return raw  # fall back to whatever we got
+
+    if lang == "ru-RU":
+        months = (
+            "января", "февраля", "марта", "апреля", "мая", "июня",
+            "июля", "августа", "сентября", "октября", "ноября", "декабря",
+        )
+        date_part = f"{parsed.day} {months[parsed.month - 1]}"
+        time_part = _ru_time_phrase(parsed.hour, parsed.minute)
+        return f"{date_part} в {time_part}"
+    if lang == "es-US":
+        months = (
+            "enero", "febrero", "marzo", "abril", "mayo", "junio",
+            "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+        )
+        date_part = f"{parsed.day} de {months[parsed.month - 1]}"
+        time_part = _es_time_phrase(parsed.hour, parsed.minute)
+        return f"{date_part} a las {time_part}"
+    rendered = parsed.strftime("%B %-d at %-I:%M %p")
+    if rendered.endswith(":00 AM") or rendered.endswith(":00 PM"):
+        rendered = rendered.replace(":00 ", " ")
+    return rendered
+
+
+def _ru_time_phrase(hour: int, minute: int) -> str:
+    period = "вечера" if 17 <= hour <= 23 else "ночи" if hour < 5 else "утра" if hour < 12 else "дня"
+    twelve = hour if hour <= 12 else hour - 12
+    if twelve == 0:
+        twelve = 12
+    if minute:
+        return f"{twelve}:{minute:02d} {period}"
+    return f"{twelve} {period}"
+
+
+def _es_time_phrase(hour: int, minute: int) -> str:
+    period = "de la tarde" if 12 <= hour <= 18 else "de la noche" if hour > 18 or hour < 5 else "de la mañana"
+    twelve = hour if hour <= 12 else hour - 12
+    if twelve == 0:
+        twelve = 12
+    if minute:
+        return f"{twelve}:{minute:02d} {period}"
+    return f"{twelve} {period}"
 
 
 def qualification_label(session: CallSession) -> str:
