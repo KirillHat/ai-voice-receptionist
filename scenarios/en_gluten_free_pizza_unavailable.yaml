@@ -1,0 +1,7 @@
+name: en_gluten_free_pizza_unavailable
+steps:
+  - say: "Do you have gluten free pizza dough?"
+    lang: en-US
+    expect_contains:
+      - "not available"
+      - "pizza dough"

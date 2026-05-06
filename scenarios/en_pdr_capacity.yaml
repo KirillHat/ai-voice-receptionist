@@ -1,0 +1,9 @@
+name: en_pdr_capacity_question
+# Caller wants to know capacity, NOT to book yet — must answer FAQ, not
+# trigger the reservation flow.
+steps:
+  - say: "How big is your private dining room?"
+    lang: en-US
+    expect_contains:
+      - fourteen
+      - private dining

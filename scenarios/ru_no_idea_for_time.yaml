@@ -1,0 +1,18 @@
+name: ru_no_idea_for_time_must_not_be_locked
+# When caller says "не знаю", the datetime field should stay empty so
+# the agent can ask again (or the manager can follow up). The bug we
+# guard against is auto-storing 'не знаю' as a datetime string.
+steps:
+  - say: "Я хотел бы забронировать столик"
+    lang: ru-RU
+  - say: "Меня зовут Андрей"
+    lang: ru-RU
+  - say: "Нас будет двое"
+    lang: ru-RU
+  - say: "Не знаю, как получится"
+    lang: ru-RU
+expect_intent: reservation
+expect_guest_name: Андрей
+expect_party_size: 2
+# qualified should NOT flip true because reservation_datetime is still None.
+expect_qualified: false

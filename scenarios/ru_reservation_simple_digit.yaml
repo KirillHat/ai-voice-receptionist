@@ -1,0 +1,15 @@
+name: ru_reservation_simple_digit
+steps:
+  - say: "Здравствуйте, я бы хотел забронировать столик"
+    lang: ru-RU
+  - say: "Меня зовут Игорь"
+    lang: ru-RU
+  - say: "Нас будет четверо"
+    lang: ru-RU
+  - say: "Сегодня в восемь вечера"
+    lang: ru-RU
+expect_intent: reservation
+expect_guest_name: Игорь
+expect_party_size: 4
+expect_reservation_datetime_contains: "T20"
+expect_qualified: true

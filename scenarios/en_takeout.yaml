@@ -1,0 +1,10 @@
+name: en_takeout
+steps:
+  - say: "Hi, I'd like to place an order for takeout"
+    lang: en-US
+  - say: "My name is Daniel"
+    lang: en-US
+expect_intent: takeout
+expect_guest_name: Daniel
+expect_qualified: true
+expect_qualification_label: WARM

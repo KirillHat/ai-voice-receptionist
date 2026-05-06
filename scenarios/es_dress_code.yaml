@@ -1,0 +1,7 @@
+name: es_dress_code_question
+steps:
+  - say: "Hola, ¿cuál es el código de vestir del restaurante?"
+    lang: es-US
+    expect_contains:
+      - elegante
+      - deportiva

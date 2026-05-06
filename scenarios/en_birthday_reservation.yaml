@@ -1,0 +1,13 @@
+name: en_birthday_reservation_complimentary_tiramisu
+steps:
+  - say: "Hi, I want to book a table for my birthday dinner"
+    lang: en-US
+  - say: "I'm Emily"
+    lang: en-US
+  - say: "Saturday at eight, party of four"
+    lang: en-US
+# 'birthday' should hit the private_event path per intent priority.
+expect_intent: private_event
+expect_guest_name: Emily
+expect_party_size: 4
+expect_qualified: true

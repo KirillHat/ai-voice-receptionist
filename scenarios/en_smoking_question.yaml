@@ -1,0 +1,6 @@
+name: en_smoking_question
+steps:
+  - say: "Can I smoke at your restaurant?"
+    lang: en-US
+    expect_contains:
+      - "right of the entrance"

@@ -1,0 +1,10 @@
+name: en_late_night_thursday_reservation
+steps:
+  - say: "Can I get a table at midnight on Thursday for two"
+    lang: en-US
+  - say: "My name is Lucas"
+    lang: en-US
+expect_intent: reservation
+expect_guest_name: Lucas
+expect_party_size: 2
+expect_qualified: true

@@ -1,0 +1,14 @@
+name: en_private_event_small_warm_label
+# Private event for under 12 people → label WARM, not HOT.
+steps:
+  - say: "Hi, I'd like to plan a private event for five guests"
+    lang: en-US
+  - say: "This is Sophia"
+    lang: en-US
+  - say: "Friday at seven pm"
+    lang: en-US
+expect_intent: private_event
+expect_party_size: 5
+expect_guest_name: Sophia
+expect_qualified: true
+expect_qualification_label: WARM

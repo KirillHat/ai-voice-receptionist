@@ -478,9 +478,20 @@ def _extract_party_size(text: str) -> int | None:
         if 1 <= value <= 30:
             return value
 
-    # Word numbers near a 'guests/people/гостей/человек/personas' noun:
-    # 'for four guests', 'two people', 'четверо гостей', 'dos personas'.
+    # Word numbers in two situations:
+    # 1. Right after a strong context cue: 'for two', 'party of three',
+    #    'table for four', 'нас будет четверо', 'somos tres'.
+    # 2. Adjacent to a noun: 'four guests', 'two people', 'четверо гостей',
+    #    'dos personas'.
     word_alt = "|".join(re.escape(w) for w in _NUMBER_WORDS)
+    after_cue = re.search(
+        r"(?:party of|for|we are|we're|table for|para|somos|нас|нас будет|для)"
+        rf"\s+({word_alt})\b",
+        text,
+    )
+    if after_cue:
+        return _NUMBER_WORDS[after_cue.group(1)]
+
     near_noun = re.search(
         rf"\b({word_alt})\b\s+(?:guests?|people|persons?|adults?|"
         r"гостей|человек|людей|persona[s]?)\b",

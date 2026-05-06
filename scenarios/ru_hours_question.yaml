@@ -1,0 +1,7 @@
+name: ru_hours_question
+steps:
+  - say: "Во сколько вы открыты сегодня"
+    lang: ru-RU
+    expect_contains:
+      - одиннадцати
+      - вечера
