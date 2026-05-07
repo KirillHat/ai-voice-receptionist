@@ -23,6 +23,12 @@ _INTENT_KEYWORDS: dict[str, tuple[str, ...]] = {
         "reserva",
         "mesa",
         "бронир",
+        "забронир",
+        "столик",
+        "столика",
+        "столиком",
+        "ужин",
+        "обед",
     ),
     "private_event": (
         "private",
@@ -382,21 +388,22 @@ def _ru_guests(n: int) -> str:
 
 
 def note_faq_turn(session: CallSession, utterance: str, answer: object) -> None:
-    """Record an FAQ exchange in the transcript without advancing qualification.
+    """Record an FAQ answer in the transcript.
 
-    FAQ matches are answered by the deterministic matcher before the qualifier
-    runs, so we still want the back-and-forth visible in the call transcript
-    for analytics, but we should not treat the question as a missing-field
-    response.
+    Caller utterance is already appended by ``ingest_turn`` (which voice.py
+    calls before this for silent field extraction), so we just stamp the
+    FAQ reply on top — replacing whatever placeholder ``ingest_turn``
+    appended last.
     """
-    text = _clean(utterance)
-    if not text:
-        return
-    _append_transcript(session, role="caller", text=text)
     answer_text = getattr(answer, "text", "") or ""
-    if answer_text:
-        _append_transcript(session, role="assistant", text=answer_text)
-    session.turn_count = int(session.turn_count or 0) + 1
+    if not answer_text:
+        return
+    transcript = list(session.transcript or [])
+    if transcript and transcript[-1].get("role") == "assistant":
+        transcript[-1] = {"role": "assistant", "text": answer_text}
+    else:
+        transcript.append({"role": "assistant", "text": answer_text})
+    session.transcript = transcript
 
 
 def summarize(session: CallSession) -> str:
@@ -601,9 +608,61 @@ def _was_asking_for(last_assistant: str | None, field: str) -> bool:
     return False
 
 
+_NOT_A_NAME_TOKENS = frozenset(
+    {
+        # Confirmation/rejection words a caller might say in response
+        # to a name prompt that lingered into the read-back state.
+        "yes", "yeah", "yep", "yup", "sure", "no", "nope", "ok", "okay",
+        "fine", "correct", "right", "exactly", "perfect",
+        "да", "нет", "верно", "точно", "правильно", "хорошо", "ок",
+        "sí", "si", "no", "claro", "exacto", "correcto", "vale",
+        # Filler words.
+        "hello", "hi", "hey", "thanks", "thank", "you",
+        "здравствуйте", "привет", "спасибо",
+        "hola", "gracias",
+    }
+)
+
+
+def _looks_like_name(cleaned: str) -> bool:
+    lower = cleaned.lower().strip(" .,!?-")
+    if not lower:
+        return False
+    # Strip trailing punctuation/contractions before checking against the
+    # blacklist: 'that's correct' -> 'thats correct'.
+    stripped = re.sub(r"[^\w\s]", "", lower)
+    if stripped in _NOT_A_NAME_TOKENS:
+        return False
+    # Multi-word affirmations like "that's correct" / "all good" / "yes please".
+    tokens = [t for t in stripped.split() if t]
+    if tokens and all(t in _NOT_A_NAME_TOKENS for t in tokens):
+        return False
+    # Multi-word containing a strong confirmation word at the head/tail.
+    if tokens and (tokens[0] in {"thats", "that"} or tokens[-1] in {"correct", "right", "thats"}):
+        return False
+    return True
+
+
+_NAME_TAIL_BOUNDARY = re.compile(
+    r"\s+(?:from|with|and|but|y|на|для|из|de\s+la|de\s+los|de)\s+"
+    r"|[,;]",
+    re.IGNORECASE,
+)
+
+
 def _extract_short_name(text: str) -> str | None:
-    """Treat a 1–3 word reply as a name when we just asked for one."""
+    """Treat a 1–3 word reply as a name when we just asked for one.
+
+    Also handles trailing introducer tail-phrases like 'David from Goldman
+    Sachs' -> 'David' or 'Anna and my friend' -> 'Anna'.
+    """
     cleaned = re.sub(r"[.,!?]+$", "", text).strip()
+    if not cleaned:
+        return None
+    # Strip boundary tail so 'David from Goldman Sachs' becomes 'David'.
+    cut = _NAME_TAIL_BOUNDARY.search(cleaned)
+    if cut:
+        cleaned = cleaned[: cut.start()].strip()
     if not cleaned:
         return None
     parts = [p for p in cleaned.split() if p and not p.isdigit()]
@@ -614,6 +673,8 @@ def _extract_short_name(text: str) -> str | None:
     if any(token in cleaned for token in _INTENT_KEYWORDS["private_event"]):
         return None
     if any(token in cleaned for token in _INTENT_KEYWORDS["takeout"]):
+        return None
+    if not _looks_like_name(cleaned):
         return None
     return _title_case(cleaned)
 
@@ -722,16 +783,33 @@ def _extract_intent(text: str) -> str:
 
 
 def _extract_name(text: str) -> str | None:
+    # Trim trailing affixes that often follow a self-introduction:
+    #   'David from Goldman Sachs' -> stop at ' from '
+    #   'I'm Anna and I have a nut allergy' -> stop at ' and '
+    #   'My name is Sarah, I want a window seat' -> stop at the comma
+    boundary_re = re.compile(
+        r"\s+(?:from|with|and|but|y|на|для|из|de\s+la|de\s+los|de)\s+"
+        r"|[,;]",
+        re.IGNORECASE,
+    )
     patterns = [
         r"(?:my name is|this is|i am|i'm)\s+([a-z][a-z\-\s']{1,40})",
-        r"(?:name)\s+([a-z][a-z\-\s']{1,40})",
-        r"(?:me llamo|soy)\s+([a-záéíóúñ][a-záéíóúñ\-\s']{1,40})",
-        r"(?:меня зовут|это)\s+([а-яё][а-яё\-\s']{1,40})",
+        r"(?:^|[\s,])(?:name)\s+is\s+([a-z][a-z\-\s']{1,40})",
+        r"(?:me llamo|soy|mi nombre es)\s+([a-záéíóúñ][a-záéíóúñ\-\s']{1,40})",
+        r"(?:меня зовут|меня называют)\s+([а-яё][а-яё\-\s']{1,40})",
     ]
     for pattern in patterns:
         match = re.search(pattern, text, flags=re.IGNORECASE)
-        if match:
-            return _title_case(match.group(1).strip(" .,!"))
+        if not match:
+            continue
+        raw = match.group(1)
+        cut = boundary_re.search(raw)
+        if cut:
+            raw = raw[: cut.start()]
+        cleaned = raw.strip(" .,!?-")
+        if not cleaned or not _looks_like_name(cleaned):
+            continue
+        return _title_case(cleaned)
     return None
 
 

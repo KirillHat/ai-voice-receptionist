@@ -236,14 +236,25 @@ def load_index(path: Path | None = None) -> MenuIndex:
     )
 
 
+# Tokens that are too generic to drive a menu match on their own — they
+# are filler for the booking flow, not specific dishes. A single-token
+# overlap on these (e.g. caller says "table for 30 pm" matching dish
+# "Bistecca 30oz" via "30") is meaningless.
+_GENERIC_FILLER_TOKENS = frozenset({
+    "can", "get", "have", "want", "need", "would", "like", "table",
+    "tonight", "tomorrow", "today", "time", "pm", "am",
+    "and", "or", "the", "for", "with",
+})
+
+
 def has_item(query: str, *, min_token_overlap: int = 1) -> MenuItem | None:
     """Return the best-matching item or None.
 
     Strategy:
     1. Exact normalized-name hit.
     2. All query tokens present in some item name.
-    3. >= min_token_overlap tokens overlap, prefer the highest overlap and
-       shortest item name as tiebreaker.
+    3. >= min_token_overlap meaningful (non-numeric, non-filler) tokens
+       overlap; tiebreak by category priority + shorter name.
     """
     idx = load_index()
     if not idx.items:
@@ -261,14 +272,19 @@ def has_item(query: str, *, min_token_overlap: int = 1) -> MenuItem | None:
     best: tuple[int, int, int, str, MenuItem] | None = None
     for it in idx.items:
         i_tokens = _tokens(it.name)
-        overlap = len(q_tokens & i_tokens)
-        if overlap == 0:
+        common = q_tokens & i_tokens
+        # Require at least one meaningful overlap — bare digit / filler
+        # token overlap doesn't count as 'the caller asked about this dish'.
+        meaningful = {
+            tok for tok in common
+            if not tok.isdigit() and tok not in _GENERIC_FILLER_TOKENS
+        }
+        if not meaningful:
             continue
         full = q_tokens.issubset(i_tokens)
-        score = overlap * 10 + (5 if full else 0)
+        score = len(meaningful) * 10 + (5 if full else 0)
         if score < min_token_overlap * 10:
             continue
-        # Tiebreaker: prefer the main A La Carte over Lunch/Late Night/Kids.
         cat_priority = 1 if "A La Carte" in it.categories else 0
         candidate = (score, cat_priority, -len(it.name), it.slug, it)
         if best is None or candidate[:4] > best[:4]:

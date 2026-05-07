@@ -118,7 +118,11 @@ async def render_dashboard(db: AsyncSession) -> str:
         for call in calls
     ) or '<tr><td colspan="7" style="text-align:center;color:#64748b;padding:24px">No calls yet.</td></tr>'
 
-    funnel_bar = ""
+    funnel_bar = (
+        f"<p style='font-size:12px;color:#64748b;margin:0 0 12px'>"
+        f"{funnel.booking_total} booking caller(s), {funnel.faq_only} FAQ-only "
+        f"({funnel.total} total)</p>"
+    )
     max_count = max(funnel.counts.values()) if funnel.counts else 1
     for stage in ("greeted", "intent_captured", "name_captured",
                    "party_captured", "datetime_captured", "qualified"):

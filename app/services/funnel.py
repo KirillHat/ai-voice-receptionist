@@ -32,6 +32,8 @@ STAGES: tuple[str, ...] = (
 class FunnelReport:
     window_hours: int
     total: int
+    booking_total: int  # callers with booking intent only
+    faq_only: int       # callers who asked questions but never started booking
     counts: dict[str, int]
     drop_off: dict[str, int]
     drop_rate: dict[str, float]
@@ -62,17 +64,30 @@ def _stage_for(call: CallSession) -> str:
     return "greeted"
 
 
+def _is_booking_caller(call: CallSession) -> bool:
+    """A booking caller is one who reached at least 'intent_captured'.
+
+    Pure FAQ/menu/allergy queries leave intent at None or 'general' and
+    should not be counted in the booking funnel — they have no booking
+    intent to drop from.
+    """
+    intent = call.intent or ""
+    return intent in {"reservation", "private_event", "takeout"}
+
+
 async def build_report(
     db: AsyncSession, *, window_hours: int = 168
 ) -> FunnelReport:
     cutoff = datetime.now(timezone.utc) - timedelta(hours=window_hours)
     q = select(CallSession).where(CallSession.created_at >= cutoff)
-    calls = list((await db.execute(q)).scalars())
+    all_calls = list((await db.execute(q)).scalars())
+
+    booking_calls = [c for c in all_calls if _is_booking_caller(c)]
+    faq_only = len(all_calls) - len(booking_calls)
 
     counts = dict.fromkeys(STAGES, 0)
-    for call in calls:
+    for call in booking_calls:
         reached = _stage_for(call)
-        # Each call counts at the furthest stage AND every prior stage.
         idx = STAGES.index(reached)
         for s in STAGES[: idx + 1]:
             counts[s] += 1
@@ -89,7 +104,9 @@ async def build_report(
 
     return FunnelReport(
         window_hours=window_hours,
-        total=len(calls),
+        total=len(all_calls),
+        booking_total=len(booking_calls),
+        faq_only=faq_only,
         counts=counts,
         drop_off=drop_off,
         drop_rate=drop_rate,

@@ -26,75 +26,99 @@ from twilio.request_validator import RequestValidator
 
 
 SCENARIOS: list[dict] = [
-    {
-        "label": "Reservation, party of 4 (Olga)",
-        "lang": "en-US",
-        "turns": [
-            "Hi, I'd like a table for four tomorrow at 8 pm",
-            "My name is Olga",
-            "Yes, that's correct",
-        ],
-    },
-    {
-        "label": "Private event, 15 guests (Maria)",
-        "lang": "en-US",
-        "turns": [
-            "I'd like to plan a private event for fifteen people",
-            "This is Maria",
-            "Next Friday at seven pm",
-            "Yes",
-        ],
-    },
-    {
-        "label": "Russian birthday (Анна)",
-        "lang": "ru-RU",
-        "turns": [
-            "Здравствуйте, я бы хотела отметить день рождения у вас",
-            "Меня зовут Анна",
-            "Нас будет шестеро",
-            "В субботу в восемь вечера",
-            "Да, всё верно",
-        ],
-    },
-    {
-        "label": "Spanish reservation (Carlos)",
-        "lang": "es-US",
-        "turns": [
-            "Hola, una reserva para cuatro personas mañana a las nueve",
-            "Me llamo Carlos",
-            "Sí, correcto",
-        ],
-    },
-    {
-        "label": "Menu question — tomahawk",
-        "lang": "en-US",
-        "turns": [
-            "Do you have a tomahawk steak?",
-        ],
-    },
-    {
-        "label": "Allergy question — peanuts",
-        "lang": "en-US",
-        "turns": [
-            "I have a peanut allergy, what can I have?",
-        ],
-    },
-    {
-        "label": "Hours question (FAQ)",
-        "lang": "en-US",
-        "turns": [
-            "What time are you open today?",
-        ],
-    },
-    {
-        "label": "Takeout order (Daniel)",
-        "lang": "en-US",
-        "turns": [
-            "Hi, I'd like to place a takeout order",
-            "My name is Daniel",
-            "Yes",
-        ],
-    },
+    # === Reservations (EN) — 8 ===
+    {"label": "Reservation 4 guests (Olga)", "lang": "en-US",
+     "turns": ["Hi, I'd like a table for four tomorrow at 8 pm",
+               "My name is Olga", "Yes, that's correct"]},
+    {"label": "Reservation 2 guests (James)", "lang": "en-US",
+     "turns": ["A table for two on Saturday at seven pm please",
+               "I'm James", "Yes"]},
+    {"label": "Reservation 6 guests (Sophia)", "lang": "en-US",
+     "turns": ["Hi, can I book a table for six tomorrow at nine pm",
+               "Sophia", "Correct"]},
+    {"label": "Reservation 3 guests anniversary (Daniel)", "lang": "en-US",
+     "turns": ["I'd like a reservation for three on Friday at 8",
+               "It's our anniversary, name is Daniel", "Yes that's right"]},
+    {"label": "Reservation kids high chair (Lucas)", "lang": "en-US",
+     "turns": ["A table for two adults and one child tomorrow at seven",
+               "My name is Lucas", "Yes"]},
+    {"label": "Reservation late dinner (Emma)", "lang": "en-US",
+     "turns": ["Can I get a table at 10:30 pm tonight for two",
+               "Emma", "That's correct"]},
+    {"label": "Reservation gluten-free pasta (Hannah)", "lang": "en-US",
+     "turns": ["Hi, table for two tomorrow at 8 with gluten-free pasta",
+               "I'm Hannah", "Yes"]},
+    {"label": "Reservation window seat (Michael)", "lang": "en-US",
+     "turns": ["I'd like a table for four tomorrow at 7:30 pm by the window",
+               "Michael", "Yes"]},
+
+    # === Private events (EN) — 4 ===
+    {"label": "Private event 15 guests HOT (Maria)", "lang": "en-US",
+     "turns": ["I'd like to plan a private event for fifteen people",
+               "This is Maria", "Next Friday at seven pm", "Yes"]},
+    {"label": "Private event birthday (Emily)", "lang": "en-US",
+     "turns": ["Hi, I want to book a table for my birthday",
+               "I'm Emily", "Saturday at eight, party of four", "Yes"]},
+    {"label": "Private event 8 (Sophia)", "lang": "en-US",
+     "turns": ["Private dinner for eight on Friday at seven",
+               "Sophia", "Yes"]},
+    {"label": "Private event 25 corporate HOT (David)", "lang": "en-US",
+     "turns": ["We're planning a corporate dinner for 25",
+               "David from Goldman Sachs", "Next Thursday at 7:30 pm", "Yes"]},
+
+    # === Takeout (EN/ES) — 3 ===
+    {"label": "Takeout order (Daniel)", "lang": "en-US",
+     "turns": ["Hi, I'd like to place a takeout order",
+               "My name is Daniel", "Yes"]},
+    {"label": "Takeout pickup at 7 (Olivia)", "lang": "en-US",
+     "turns": ["Takeout please, pickup at 7 pm",
+               "Olivia", "Yes"]},
+    {"label": "Spanish takeout (Carlos)", "lang": "es-US",
+     "turns": ["Hola, quisiera ordenar comida para llevar",
+               "Me llamo Carlos", "Sí"]},
+
+    # === Spanish (ES) — 3 ===
+    {"label": "Spanish reservation 4 (Sofia)", "lang": "es-US",
+     "turns": ["Hola, una reserva para cuatro personas mañana a las nueve",
+               "Me llamo Sofia", "Sí, correcto"]},
+    {"label": "Spanish reservation 2 (Diego)", "lang": "es-US",
+     "turns": ["Quisiera reservar mesa para dos el sábado a las ocho",
+               "Soy Diego", "Sí"]},
+    {"label": "Spanish allergy (Lucia)", "lang": "es-US",
+     "turns": ["Tengo alergia a los mariscos, ¿qué pueden ofrecer?"]},
+
+    # === Russian (RU) — 4 ===
+    {"label": "Russian birthday 6 (Анна)", "lang": "ru-RU",
+     "turns": ["Здравствуйте, я бы хотела отметить день рождения у вас",
+               "Меня зовут Анна", "Нас будет шестеро",
+               "В субботу в восемь вечера", "Да, всё верно"]},
+    {"label": "Russian reservation 4 (Кирилл)", "lang": "ru-RU",
+     "turns": ["Здравствуйте, столик на четверых завтра в восемь вечера",
+               "Меня зовут Кирилл", "Да, всё верно"]},
+    {"label": "Russian reservation 2 (Игорь)", "lang": "ru-RU",
+     "turns": ["Хочу забронировать столик",
+               "Меня зовут Игорь", "Нас будет двое",
+               "На пятницу в семь вечера", "Да"]},
+    {"label": "Russian hours (faq)", "lang": "ru-RU",
+     "turns": ["Во сколько вы сегодня открыты?"]},
+
+    # === FAQ / menu / allergens — 8 ===
+    {"label": "Menu — tomahawk", "lang": "en-US",
+     "turns": ["Do you have a tomahawk steak?"]},
+    {"label": "Menu — gnocchi", "lang": "en-US",
+     "turns": ["Do you serve gnocchi?"]},
+    {"label": "Menu — desserts list", "lang": "en-US",
+     "turns": ["What desserts do you have?"]},
+    {"label": "Menu — price tomahawk", "lang": "en-US",
+     "turns": ["How much is the tomahawk?"]},
+    {"label": "Allergy — peanuts", "lang": "en-US",
+     "turns": ["I have a peanut allergy, what can I have?"]},
+    {"label": "Allergy — vegan options", "lang": "en-US",
+     "turns": ["Do you have any vegan options?"]},
+    {"label": "FAQ — wifi", "lang": "en-US",
+     "turns": ["Do you have wifi for guests?"]},
+    {"label": "FAQ — valet parking", "lang": "en-US",
+     "turns": ["Is there valet parking?"]},
 ]
 
 

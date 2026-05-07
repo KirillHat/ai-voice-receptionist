@@ -58,9 +58,10 @@ async def test_build_report_counts_and_drops() -> None:
     async with session_scope() as db:
         report = await build_report(db, window_hours=24)
 
-    assert report.counts["greeted"] >= 4
+    # Booking-only calls (3 of the 4 seeded), greeted-only caller is faq_only.
+    assert report.booking_total >= 3
+    assert report.faq_only >= 1
+    assert report.counts["greeted"] >= 3
     assert report.counts["qualified"] >= 1
-    # Greeted->intent_captured drop should equal (greeted - intent_captured)
-    assert report.drop_off["greeted->intent_captured"] >= 1
     # Drop rate is a 0..1 fraction
     assert 0.0 <= report.drop_rate["greeted->intent_captured"] <= 1.0

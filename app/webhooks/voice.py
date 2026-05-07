@@ -807,6 +807,8 @@ async def analytics_funnel(window_hours: int = 168) -> dict[str, object]:
     return {
         "window_hours": report.window_hours,
         "total": report.total,
+        "booking_total": report.booking_total,
+        "faq_only": report.faq_only,
         "counts": report.counts,
         "drop_off": report.drop_off,
         "drop_rate": report.drop_rate,
