@@ -556,10 +556,15 @@ def _extract_fields(
                 text=text,
             )
 
-    if not session.special_notes:
-        maybe_notes = _extract_notes(text)
-        if maybe_notes:
+    maybe_notes = _extract_notes(text)
+    if maybe_notes:
+        existing = (session.special_notes or "").strip()
+        if not existing:
             session.special_notes = maybe_notes
+        elif maybe_notes not in existing and existing not in maybe_notes:
+            # Multi-turn preferences accumulate — caller may mention high
+            # chair on turn 1 and an allergy on turn 4.
+            session.special_notes = (existing + " | " + maybe_notes)[:400]
 
 
 _NAME_QUESTION_TOKENS = (
@@ -958,9 +963,48 @@ def _extract_datetime_phrase(text: str) -> str | None:
     return None
 
 
+_NOTES_KEYWORDS: tuple[str, ...] = (
+    # Allergies / dietary
+    "allerg", "аллерг", "alerg", "intoleran", "непереносимост",
+    "vegan", "veган", "vegetarian", "вегетариан", "vegano", "vegetariano",
+    "gluten-free", "gluten free", "без глютен", "sin gluten",
+    "halal", "халяль", "kosher", "кошер",
+    "nut", "peanut", "арахис", "орех", "nuez", "frutos secos",
+    "shellfish", "marisco", "морепродукт", "креветк",
+    "dairy", "lactose", "лактоз", "молоч", "lácteo",
+    "fish", "рыб", "pescado",
+    # Special occasions
+    "birthday", "день рожден", "именин", "cumpleaño", "cumpleanos",
+    "anniversary", "годовщин", "юбилей", "aniversario",
+    "engagement", "помолвк", "compromiso",
+    "celebration", "праздн", "celebrar",
+    # Seating preferences
+    "by the window", "window seat", "у окна", "junto a la ventana",
+    "quiet table", "тих", "tranquilo",
+    "patio", "терраса", "terraza",
+    "private room", "pdr", "приватн", "privado",
+    "outdoor", "outside",
+    # Family
+    "high chair", "kid", "child", "stroller",
+    "детский", "ребенок", "ребёнок", "коляск",
+    "niño", "niña", "silla alta",
+    # Other common
+    "wheelchair", "коляск", "silla de ruedas",
+    "stroller",
+    "wine pair", "tasting",
+)
+
+
 def _extract_notes(text: str) -> str | None:
-    if "allergy" in text or "birthday" in text or "anniversary" in text:
-        return text[:200]
+    """Snapshot the caller's utterance when it carries a special request.
+
+    Stored verbatim (truncated) so the host team sees the original phrasing
+    when preparing the table — 'with high chair', 'by the window', 'nut
+    allergy' — without us interpreting beyond keyword detection.
+    """
+    lower = text.lower()
+    if any(kw in lower for kw in _NOTES_KEYWORDS):
+        return text.strip()[:200]
     return None
 
 
