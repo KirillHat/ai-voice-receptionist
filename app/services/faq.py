@@ -347,6 +347,10 @@ _BOOKING_INTENT_PATTERNS = (
     r"\bcan i (?:book|reserve|order|celebrate|host|plan|get|have)\s+(?:a\s+)?(?:table|seat|reservation|spot)\b",
     r"\b(?:book|reserve|order|schedule|celebrate|host|plan)(?:\s+a)?\b",
     r"\b(?:a\s+)?table\s+(?:for|at|by|on|tomorrow|tonight)\b",
+    # Implicit booking: '<adjective> dinner/lunch/brunch for N' or
+    # '<adjective> dinner ... at/tomorrow/tonight'.
+    r"\b(?:dinner|lunch|brunch|breakfast|reservation)\s+for\s+\w+\b",
+    r"\b\w+\s+(?:dinner|lunch|brunch)\s+(?:for|tomorrow|tonight|today|on|at)\b",
     r"\bхоч[уе]\b",
     r"\bхотел[аи]?\s+бы\b",
     r"\b(?:бы\s+)?хотел[аи]?\b",
