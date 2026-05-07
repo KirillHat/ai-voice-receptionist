@@ -24,6 +24,9 @@ _INTENT_KEYWORDS: dict[str, tuple[str, ...]] = {
         "mesa",
         "бронир",
         "забронир",
+        "бронь",
+        "брони",
+        "бронью",
         "столик",
         "столика",
         "столиком",
@@ -239,7 +242,16 @@ def ingest_turn(
         return TurnDecision(prompt=prompt, completed=False, kind="readback")
 
     _append_transcript(session, role="caller", text=text)
-    _extract_fields(session, text, last_assistant=last_assistant)
+    # Mid-flow corrections like 'actually make it six' / 'wait, change to
+    # 7:30 pm' should overwrite previously-captured fields. Detect those
+    # signals and allow overwrite for this turn.
+    correction = _is_correction_utterance(text)
+    _extract_fields(
+        session,
+        text,
+        last_assistant=last_assistant,
+        allow_overwrite=correction,
+    )
     session.turn_count = int(session.turn_count or 0) + 1
 
     missing = _missing_fields(session)
@@ -270,6 +282,35 @@ _NO_PATTERNS = (
     r"\b(?:нет|неверно|неправильно|не так|погод(?:и|ите)|секундочку|стоп)\b",
     r"\b(?:no|incorrecto|incorrecta|equivocad[ao]|espera|esper[ae])\b",
 )
+
+
+_CORRECTION_PATTERNS = (
+    r"\bactually\b",
+    r"\bwait,?\s+(?:change|make|let)",
+    r"\bmake it\s+\w+",
+    r"\bchange (?:it|that)\s+to\b",
+    r"\bscratch that\b",
+    r"\bnevermind\b|\bnever mind\b",
+    r"\bsorry,?\s+(?:i|let)",
+    r"\bна\s+самом\s+деле\b",
+    r"\bподожд(?:и|ите)\b",
+    r"\bпоменя\w*\b",
+    r"\bлучше\s+(?:на|в|к)\b",
+    r"\bдавайте\s+(?:другую|изменим|поменяем)\b",
+    r"\bизвини\w*,?\s+(?:давай|лучше)\b",
+    r"\bespera,?\s+(?:cambia|mejor)\b",
+    r"\bmejor\s+(?:a|el|la)\b",
+    r"\bperdón,?\s+(?:cambia|mejor)\b",
+    r"\bcambia\s+(?:a|por)\b",
+)
+
+
+def _is_correction_utterance(text: str) -> bool:
+    """Detect 'actually / wait, make it / change to / на самом деле' phrasing."""
+    if not text:
+        return False
+    lower = text.lower()
+    return any(re.search(pat, lower) for pat in _CORRECTION_PATTERNS)
 
 
 def _confirmation_verdict(text: str) -> str | None:
@@ -625,6 +666,14 @@ _NOT_A_NAME_TOKENS = frozenset(
         "hello", "hi", "hey", "thanks", "thank", "you",
         "здравствуйте", "привет", "спасибо",
         "hola", "gracias",
+        # Common gerunds / adjectives a caller might tack onto the
+        # reason they're calling — definitely not personal names.
+        # 'I'm proposing' / 'I'm celebrating' / 'I'm calling'.
+        "proposing", "celebrating", "calling", "checking", "wondering",
+        "asking", "booking", "ordering", "looking", "trying",
+        "hosting", "planning", "thinking",
+        "праздную", "звоню", "проверяю", "узнаю", "хочу", "буду",
+        "celebrando", "llamando", "preguntando", "buscando",
     }
 )
 
@@ -820,13 +869,16 @@ def _extract_name(text: str) -> str | None:
 
 _MIXED_PARTY_RE = re.compile(
     r"(?P<a>\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|"
-    r"один|два|две|двое|три|трое|четверо|четыре|пять|пятеро|шесть|шестеро|"
+    r"один|одного|двух|двое|двоих|два|две|трёх|трех|трое|троих|три|"
+    r"четверых|четверо|четыре|четырёх|пятерых|пять|пятеро|шестерых|шесть|шестеро|"
     r"uno|dos|tres|cuatro|cinco|seis)\s+"
-    r"(?:adults?|grown[\s-]?ups?|взрослых|adultos)\s+"
+    r"(?:adults?|grown[\s-]?ups?|взрослых|взрослые|adultos)\s+"
     r"(?:and|и|y|plus|\+)\s+"
     r"(?P<k>\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|"
     r"a|an|"
-    r"один|одного|два|двух|трёх|трех|четверых|"
+    r"один|одного|два|две|двое|двух|двоих|"
+    r"три|трое|трёх|трех|троих|четыре|четверо|четверых|четырёх|"
+    r"пять|пятеро|пятерых|шесть|шестеро|шестерых|"
     r"un|una|uno|dos|tres|cuatro)\s+"
     r"(?:child(?:ren)?|kids?|baby|babies|toddlers?|"
     r"ребёнок|ребенок|ребёнка|ребенка|дет[еяи][ийя]?|"
@@ -843,8 +895,20 @@ def _extract_mixed_party(text: str) -> int | None:
     a = m.group("a")
     k = m.group("k")
     article_to_one = {"a": 1, "an": 1, "un": 1, "una": 1}
-    a_n = int(a) if a.isdigit() else article_to_one.get(a.lower()) or _NUMBER_WORDS.get(a.lower())
-    k_n = int(k) if k.isdigit() else article_to_one.get(k.lower()) or _NUMBER_WORDS.get(k.lower())
+    extra_ru = {
+        "одного": 1, "двух": 2, "двоих": 2, "двое": 2,
+        "трёх": 3, "трех": 3, "троих": 3, "трое": 3,
+        "четверых": 4, "четырёх": 4, "четверо": 4,
+        "пятерых": 5, "пятеро": 5,
+        "шестерых": 6, "шестеро": 6,
+    }
+    def _to_int(word: str) -> int | None:
+        if word.isdigit():
+            return int(word)
+        w = word.lower()
+        return article_to_one.get(w) or extra_ru.get(w) or _NUMBER_WORDS.get(w)
+    a_n = _to_int(a)
+    k_n = _to_int(k)
     if a_n is None or k_n is None:
         return None
     total = a_n + k_n
