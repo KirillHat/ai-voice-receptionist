@@ -568,6 +568,12 @@ def _extract_fields(
         if new_intent != "general" or not session.intent:
             session.intent = new_intent
 
+    # Only extract booking-shaped fields (party, datetime) when the call
+    # actually carries a booking intent. Otherwise a pure FAQ utterance
+    # like 'до скольки в субботу?' would set datetime=Saturday-19:00 and
+    # leave a phantom reservation in the call record.
+    is_booking = session.intent in {"reservation", "private_event", "takeout"}
+
     if not session.guest_name or allow_overwrite:
         maybe_name = _extract_name(text)
         if not maybe_name and _was_asking_for(last_assistant, "name"):
@@ -575,20 +581,20 @@ def _extract_fields(
         if maybe_name:
             session.guest_name = maybe_name
 
-    if session.party_size is None or allow_overwrite:
+    if is_booking and (session.party_size is None or allow_overwrite):
         maybe_party = _extract_party_size(text)
         if maybe_party is None and _was_asking_for(last_assistant, "party"):
             maybe_party = _extract_short_party(text)
         if maybe_party:
             session.party_size = maybe_party
 
-    if not session.reservation_datetime:
+    if is_booking and not session.reservation_datetime:
         maybe_time = _extract_datetime_phrase(text)
         if not maybe_time and _was_asking_for(last_assistant, "datetime"):
             maybe_time = _extract_short_datetime(text)
         if maybe_time:
             session.reservation_datetime = maybe_time
-    elif _has_explicit_time_correction(text):
+    elif is_booking and _has_explicit_time_correction(text):
         new_dt = _extract_datetime_phrase(text)
         if new_dt:
             session.reservation_datetime = _merge_time_into_stored(
