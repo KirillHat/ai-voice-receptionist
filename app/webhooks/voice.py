@@ -396,17 +396,20 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                             call_sid=active_call_sid,
                             caller_phone=active_from,
                         )
-                        # Even when the FAQ matcher owns the spoken reply,
-                        # silently extract any guest fields the caller
-                        # mentioned in the same breath ('I'm John, and I
-                        # have a nut allergy'). The TurnDecision drives the
-                        # qualified-state transition; the spoken reply is
-                        # the FAQ answer.
-                        silent_decision = qualifier.ingest_turn(
-                            call, user_input, lang=active_lang
-                        )
-                        if silent_decision.completed and call.status != "qualified":
-                            call.status = "qualified"
+                        # We silently extract guest fields ONLY when the
+                        # call already has booking context — otherwise an
+                        # FAQ-only utterance like 'во сколько вы сегодня
+                        # открыты?' would extract today's date and
+                        # pollute the call record with a phantom booking.
+                        already_booking = (call.intent or "") in {
+                            "reservation", "private_event", "takeout"
+                        }
+                        if already_booking:
+                            silent_decision = qualifier.ingest_turn(
+                                call, user_input, lang=active_lang
+                            )
+                            if silent_decision.completed and call.status != "qualified":
+                                call.status = "qualified"
                         qualifier.note_faq_turn(call, user_input, faq_answer)
                         profile = await caller_profile.get_or_create_profile(session, active_from)
                         if profile:

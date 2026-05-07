@@ -818,7 +818,45 @@ def _extract_name(text: str) -> str | None:
     return None
 
 
+_MIXED_PARTY_RE = re.compile(
+    r"(?P<a>\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|"
+    r"один|два|две|двое|три|трое|четверо|четыре|пять|пятеро|шесть|шестеро|"
+    r"uno|dos|tres|cuatro|cinco|seis)\s+"
+    r"(?:adults?|grown[\s-]?ups?|взрослых|adultos)\s+"
+    r"(?:and|и|y|plus|\+)\s+"
+    r"(?P<k>\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|"
+    r"a|an|"
+    r"один|одного|два|двух|трёх|трех|четверых|"
+    r"un|una|uno|dos|tres|cuatro)\s+"
+    r"(?:child(?:ren)?|kids?|baby|babies|toddlers?|"
+    r"ребёнок|ребенок|ребёнка|ребенка|дет[еяи][ийя]?|"
+    r"niñ[ao]s?|nin[ao]s?|hij[ao]s?)",
+    re.IGNORECASE,
+)
+
+
+def _extract_mixed_party(text: str) -> int | None:
+    """Sum adults + children when the caller says 'X adults and Y kids'."""
+    m = _MIXED_PARTY_RE.search(text)
+    if not m:
+        return None
+    a = m.group("a")
+    k = m.group("k")
+    article_to_one = {"a": 1, "an": 1, "un": 1, "una": 1}
+    a_n = int(a) if a.isdigit() else article_to_one.get(a.lower()) or _NUMBER_WORDS.get(a.lower())
+    k_n = int(k) if k.isdigit() else article_to_one.get(k.lower()) or _NUMBER_WORDS.get(k.lower())
+    if a_n is None or k_n is None:
+        return None
+    total = a_n + k_n
+    return total if 1 <= total <= 30 else None
+
+
 def _extract_party_size(text: str) -> int | None:
+    # Mixed-group ('two adults and one child') wins over single counts —
+    # restaurants seat the total head count, not just adults.
+    mixed = _extract_mixed_party(text)
+    if mixed is not None:
+        return mixed
     # Auto-extract only when there's a strong contextual cue. We dropped the
     # bare 'на N' Russian trigger because 'на 9 мая' (date) was being parsed
     # as party=9, and the bare-number-word fallback because 'семь часов'
