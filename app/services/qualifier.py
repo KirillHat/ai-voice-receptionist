@@ -192,7 +192,7 @@ def ingest_turn(
         session.turn_count = int(session.turn_count or 0) + 1
         verdict = _confirmation_verdict(text)
         if verdict == "yes":
-            summary = summarize(session)
+            summary = _localized_summary(session, lang)
             _append_transcript(session, role="assistant", text=summary)
             return TurnDecision(prompt=summary, completed=True, kind="complete")
         if verdict == "no":
@@ -207,7 +207,7 @@ def ingest_turn(
             missing = _missing_fields(session)
             if missing:
                 next_field = missing[0]
-                prompt = _prompt_for(next_field, session.intent)
+                prompt = _prompt_for(next_field, session.intent, lang)
                 _append_transcript(session, role="assistant", text=prompt)
                 return TurnDecision(
                     prompt=prompt, completed=False, missing_field=next_field, kind="reopen"
@@ -223,7 +223,7 @@ def ingest_turn(
         if missing:
             session.status = "in_progress"
             next_field = missing[0]
-            prompt = _prompt_for(next_field, session.intent)
+            prompt = _prompt_for(next_field, session.intent, lang)
             _append_transcript(session, role="assistant", text=prompt)
             return TurnDecision(
                 prompt=prompt, completed=False, missing_field=next_field, kind="reopen"
@@ -247,7 +247,7 @@ def ingest_turn(
         return TurnDecision(prompt=prompt, completed=False, kind="readback")
 
     next_field = missing[0]
-    prompt = _prompt_for(next_field, session.intent)
+    prompt = _prompt_for(next_field, session.intent, lang)
     _append_transcript(session, role="assistant", text=prompt)
     return TurnDecision(prompt=prompt, completed=False, missing_field=next_field)
 
@@ -355,6 +355,18 @@ def _readback_prompt(
         bits.append(f"under {guest}")
     body = " ".join(bits)
     return f"Just to confirm: {body}. Is that correct?"
+
+
+def _localized_summary(session: CallSession, lang: str | None) -> str:
+    """Final 'noted, our team will confirm' message in caller's language.
+
+    Mirrors language_router._completion_message — kept in sync but lives
+    here so the transcript shipped to the dashboard reflects what the
+    caller actually heard.
+    """
+    from app.services.language_router import _completion_message
+
+    return _completion_message(session, lang or "en-US")
 
 
 def _ru_guests(n: int) -> str:
@@ -874,18 +886,39 @@ def _extract_notes(text: str) -> str | None:
     return None
 
 
-def _prompt_for(field: str, intent: str | None) -> str:
-    if field == "intent":
-        return "Are you calling for a reservation, a private event, or takeout?"
-    if field == "guest_name":
-        return "May I have your full name for the booking note?"
-    if field == "party_size":
-        return "How many guests should I note for your party?"
-    if field == "reservation_datetime":
-        if intent == "takeout":
-            return "When would you like to pick up your order?"
-        return "What date and time would you like?"
-    return "Could you share one more detail so I can finish your request?"
+_FIELD_PROMPTS: dict[str, dict[str, str]] = {
+    "en-US": {
+        "intent": "Are you calling for a reservation, a private event, or takeout?",
+        "guest_name": "May I have your full name for the booking note?",
+        "party_size": "How many guests should I note for your party?",
+        "reservation_datetime": "What date and time would you like?",
+        "reservation_datetime_takeout": "When would you like to pick up your order?",
+        "default": "Could you share one more detail so I can finish your request?",
+    },
+    "ru-RU": {
+        "intent": "Подскажите, вы звоните по поводу брони, частного мероприятия или заказа навынос?",
+        "guest_name": "Подскажите, пожалуйста, ваше полное имя для брони.",
+        "party_size": "На сколько гостей оформить заявку?",
+        "reservation_datetime": "Какую дату и время вам удобно забронировать?",
+        "reservation_datetime_takeout": "Во сколько вам удобно забрать заказ?",
+        "default": "Поделитесь, пожалуйста, ещё одной деталью, и я завершу заявку.",
+    },
+    "es-US": {
+        "intent": "¿Llama por una reserva, un evento privado o para llevar?",
+        "guest_name": "¿Me comparte su nombre completo para la reserva?",
+        "party_size": "¿Para cuántas personas debo anotarlo?",
+        "reservation_datetime": "¿Qué fecha y hora le viene bien?",
+        "reservation_datetime_takeout": "¿A qué hora desea recoger el pedido?",
+        "default": "¿Me comparte un detalle más para terminar su solicitud?",
+    },
+}
+
+
+def _prompt_for(field: str, intent: str | None, lang: str | None = None) -> str:
+    bundle = _FIELD_PROMPTS.get(lang or "en-US", _FIELD_PROMPTS["en-US"])
+    if field == "reservation_datetime" and intent == "takeout":
+        return bundle["reservation_datetime_takeout"]
+    return bundle.get(field, bundle["default"])
 
 
 def _append_transcript(session: CallSession, *, role: str, text: str) -> None:

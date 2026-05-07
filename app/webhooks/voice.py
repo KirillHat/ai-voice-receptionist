@@ -537,6 +537,10 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                 sent_any = False
                 pending_chunk: str | None = first_chunk
                 decorated_first_chunk = False
+                # Capture everything we actually speak so we can persist
+                # the real reply (not the qualifier's English placeholder)
+                # to the call transcript.
+                spoken_parts: list[str] = []
                 if pending_chunk is not None:
                     pending_chunk = prosody.strip_leading_name_address(
                         pending_chunk,
@@ -553,6 +557,7 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                         decorated_first_chunk = True
                     if pending_chunk is not None:
                         sent_any = True
+                        spoken_parts.append(pending_chunk)
                         await _send_text_token(
                             websocket,
                             pending_chunk,
@@ -570,12 +575,30 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                             turn_count=int(call.turn_count or 0),
                         )
                     sent_any = True
+                    spoken_parts.append(pending_chunk)
                     await _send_text_token(
                         websocket,
                         pending_chunk,
                         lang=active_lang,
                         last=True,
                     )
+
+                if spoken_parts:
+                    spoken_full = "".join(spoken_parts).strip()
+                    async with session_scope() as session:
+                        call = await _get_or_create_call_session(
+                            session,
+                            call_sid=active_call_sid,
+                            caller_phone=active_from,
+                        )
+                        # Replace qualifier's deterministic placeholder
+                        # with the actual paraphrase the caller heard.
+                        transcript = list(call.transcript or [])
+                        if transcript and transcript[-1].get("role") == "assistant":
+                            transcript[-1] = {"role": "assistant", "text": spoken_full}
+                        else:
+                            transcript.append({"role": "assistant", "text": spoken_full})
+                        call.transcript = transcript
 
                 if not sent_any:
                     fallback = language_router.build_reply(
