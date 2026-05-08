@@ -29,9 +29,28 @@ _INTERRUPTION_ACK = {
 }
 
 _DISFLUENCY_MARKERS = {
-    "en-US": ("certainly", "of course", "one moment"),
-    "es-US": ("claro", "por supuesto", "un momento"),
-    "ru-RU": ("конечно", "разумеется", "одну секунду"),
+    "en-US": (
+        "of course", "certainly", "sure", "got it", "alright",
+        "okay", "let me see", "let's see", "hmm", "well",
+        "absolutely", "right",
+    ),
+    "es-US": (
+        "claro", "por supuesto", "perfecto", "muy bien", "bueno",
+        "a ver", "pues", "vale", "entendido", "okay",
+    ),
+    "ru-RU": (
+        "конечно", "разумеется", "хорошо", "понятно", "ага",
+        "так", "сейчас", "ну", "ясно", "так-так",
+    ),
+}
+
+# Soft "thinking" interjections that sound like a real person taking a
+# half-beat to think — used sparingly and only when the reply is a
+# multi-clause answer (confirmations, multi-detail FAQ).
+_THINKING_INTERJECTIONS = {
+    "en-US": ("Mmm,", "Hmm,", "Right,", "So,"),
+    "es-US": ("Mmm,", "Hmm,", "Bueno,", "Así que,"),
+    "ru-RU": ("Ммм,", "Так,", "Угу,", "Хорошо,"),
 }
 
 
@@ -157,6 +176,14 @@ def strip_leading_name_address(text: str, *, guest_name: str | None) -> str:
 
 
 def maybe_add_disfluency(text: str, *, lang: str, call_sid: str, turn_count: int) -> str:
+    """Maybe prepend a natural conversational marker ("of course", "так",
+    "let me see") to the start of the bot's reply.
+
+    The marker is picked deterministically per (call_sid, turn) so a
+    given call has consistent variety, but rotates across the wider
+    pool of options below. Gated by voice_disfluency_rate (default
+    18%) — most replies stay clean, only a fraction get a soft opener.
+    """
     settings = get_settings()
     if not text.strip():
         return text
@@ -164,15 +191,56 @@ def maybe_add_disfluency(text: str, *, lang: str, call_sid: str, turn_count: int
         return text
 
     token = f"{call_sid}:{turn_count}:{lang}".encode()
-    score = int(hashlib.sha256(token).hexdigest()[:8], 16) / 0xFFFFFFFF
+    digest = hashlib.sha256(token).hexdigest()
+    score = int(digest[:8], 16) / 0xFFFFFFFF
     if score > settings.voice_disfluency_rate:
         return text
 
-    marker = _DISFLUENCY_MARKERS.get(lang, _DISFLUENCY_MARKERS["en-US"])[turn_count % 3]
+    pool = _DISFLUENCY_MARKERS.get(lang, _DISFLUENCY_MARKERS["en-US"])
+    pick_idx = int(digest[8:14], 16) % len(pool)
+    marker = pool[pick_idx]
+
     lowered = text.lower().strip()
-    if marker in lowered:
+    if any(lowered.startswith(m) for m in pool):
+        # Don't double-stack markers if the LLM already started with one.
         return text
 
     if lang == "ru-RU":
         return f"{marker.capitalize()}, {text}"
-    return f"{marker.capitalize()}. {text}"
+    return f"{marker.capitalize()}, {text}"
+
+
+def maybe_add_thinking_pause(text: str, *, lang: str, call_sid: str, turn_count: int) -> str:
+    """For multi-clause answers, occasionally inject a brief 'mmm,' lead
+    or an ellipsis after the first comma so the line carries a natural
+    pause (ElevenLabs reads '…' as a thoughtful beat).
+
+    Used independently of the prefix marker, gated by the same rate so
+    we don't overload the reply with fillers.
+    """
+    settings = get_settings()
+    if not text.strip() or turn_count <= 0:
+        return text
+    rate = settings.voice_disfluency_rate
+    if rate <= 0:
+        return text
+
+    token = f"thinking:{call_sid}:{turn_count}:{lang}".encode()
+    digest = hashlib.sha256(token).hexdigest()
+    score = int(digest[:8], 16) / 0xFFFFFFFF
+    # Half the disfluency rate — these are heavier and we want them rarer.
+    if score > rate * 0.5:
+        return text
+
+    pool = _THINKING_INTERJECTIONS.get(lang, _THINKING_INTERJECTIONS["en-US"])
+    pick = pool[int(digest[8:14], 16) % len(pool)]
+    # Avoid stacking if reply already opens with a soft marker.
+    head = text.lstrip()
+    if not head:
+        return text
+    first_word = head.split()[0].lower().rstrip(",.!?")
+    skip_prefixes = {m.split()[0].lower() for m in _DISFLUENCY_MARKERS.get(lang, ()) if m}
+    skip_prefixes.update({"mmm", "ммм", "hmm"})
+    if first_word in skip_prefixes:
+        return text
+    return f"{pick} {text}"

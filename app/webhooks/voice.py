@@ -557,6 +557,12 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                             call_sid=active_call_sid,
                             turn_count=int(call.turn_count or 0),
                         )
+                        pending_chunk = prosody.maybe_add_thinking_pause(
+                            pending_chunk,
+                            lang=active_lang,
+                            call_sid=active_call_sid,
+                            turn_count=int(call.turn_count or 0),
+                        )
                         decorated_first_chunk = True
                     if pending_chunk is not None:
                         sent_any = True
@@ -572,6 +578,12 @@ async def conversationrelay_ws(websocket: WebSocket) -> None:
                 if pending_chunk is not None:
                     if not decorated_first_chunk:
                         pending_chunk = prosody.maybe_add_disfluency(
+                            pending_chunk,
+                            lang=active_lang,
+                            call_sid=active_call_sid,
+                            turn_count=int(call.turn_count or 0),
+                        )
+                        pending_chunk = prosody.maybe_add_thinking_pause(
                             pending_chunk,
                             lang=active_lang,
                             call_sid=active_call_sid,
