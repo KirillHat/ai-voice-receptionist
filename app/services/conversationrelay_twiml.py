@@ -9,13 +9,22 @@ from app.services.business_hours import closed_greeting, is_open_now
 
 
 def _build_welcome_greeting() -> str:
+    settings = get_settings()
+    # California is a two-party-consent state: we cannot record without
+    # disclosing it. Prepend the disclosure whenever recording is on.
+    disclosure = (
+        "This call may be recorded for quality and training. "
+        if settings.record_calls else ""
+    )
     if is_open_now():
         return (
+            f"{disclosure}"
             "Good evening, thank you for calling Novikov Beverly Hills. "
             "How may I help you?"
         )
     closed = closed_greeting("en-US")
     return (
+        f"{disclosure}"
         "Thank you for calling Novikov Beverly Hills. "
         f"{closed} How may I help you?"
     )

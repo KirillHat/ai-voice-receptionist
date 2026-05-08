@@ -103,20 +103,33 @@ async def render_dashboard(db: AsyncSession) -> str:
         for lead in leads
     ) or '<tr><td colspan="8" style="text-align:center;color:#64748b;padding:24px">No leads yet today.</td></tr>'
 
-    calls_rows = "".join(
-        f"<tr>"
-        f"<td>{_format_local(call.created_at, tz)}</td>"
-        f'<td><span style="font-size:11px;color:{"#16a34a" if call.status == "qualified" else "#64748b"}">'
-        f"{_esc(call.status)}</span></td>"
-        f"<td>{_esc(call.intent or '—')}</td>"
-        f"<td>{_esc(call.guest_name or '—')}</td>"
-        f"<td>{_esc(call.turn_count)}</td>"
-        f"<td>{_esc(call.caller_phone)}</td>"
-        f'<td><a href="/dashboard/call/{_esc(call.call_sid)}" '
-        f'style="color:#2563eb">view →</a></td>'
-        f"</tr>"
-        for call in calls
-    ) or '<tr><td colspan="7" style="text-align:center;color:#64748b;padding:24px">No calls yet.</td></tr>'
+    def _call_row(call: CallSession) -> str:
+        listen = ""
+        if call.recording_url:
+            proxy = f"/dashboard/recording/{_esc(call.call_sid)}"
+            listen = (
+                f' · <a href="{proxy}" target="_blank" '
+                f'style="color:#16a34a">🎙 listen</a>'
+            )
+        return (
+            f"<tr>"
+            f"<td>{_format_local(call.created_at, tz)}</td>"
+            f'<td><span style="font-size:11px;color:'
+            f'{"#16a34a" if call.status == "qualified" else "#64748b"}">'
+            f"{_esc(call.status)}</span></td>"
+            f"<td>{_esc(call.intent or '—')}</td>"
+            f"<td>{_esc(call.guest_name or '—')}</td>"
+            f"<td>{_esc(call.turn_count)}</td>"
+            f"<td>{_esc(call.caller_phone)}</td>"
+            f'<td><a href="/dashboard/call/{_esc(call.call_sid)}" '
+            f'style="color:#2563eb">view →</a>{listen}</td>'
+            f"</tr>"
+        )
+
+    calls_rows = "".join(_call_row(c) for c in calls) or (
+        '<tr><td colspan="7" style="text-align:center;'
+        'color:#64748b;padding:24px">No calls yet.</td></tr>'
+    )
 
     funnel_bar = (
         f"<p style='font-size:12px;color:#64748b;margin:0 0 12px'>"
@@ -195,6 +208,19 @@ async def render_call_detail(db: AsyncSession, call_sid: str) -> str | None:
                 f"{_esc(text)}</div>"
             )
 
+    audio_block = ""
+    if call.recording_url:
+        proxy_url = f"/dashboard/recording/{_esc(call.call_sid)}"
+        audio_block = (
+            f'<div class="card"><h2>🎙 Recording</h2>'
+            f'<audio controls preload="metadata" '
+            f'style="width:100%;height:40px" src="{proxy_url}"></audio>'
+            f'<p style="font-size:11px;color:#64748b;margin:8px 0 0">'
+            f'<a href="{proxy_url}" download style="color:#2563eb">download mp3</a> · '
+            f'duration: {_esc(call.recording_duration_sec or "—")}s'
+            f"</p></div>"
+        )
+
     return _CALL_PAGE.format(
         venue=_esc(settings.business_name),
         sid=_esc(call.call_sid),
@@ -207,6 +233,7 @@ async def render_call_detail(db: AsyncSession, call_sid: str) -> str | None:
         status=_esc(call.status),
         turns=_esc(call.turn_count),
         notes=_esc(call.special_notes or ""),
+        audio_block=audio_block,
         bubbles=bubbles or '<p style="color:#64748b">No transcript captured.</p>',
     )
 
@@ -323,6 +350,7 @@ _CALL_PAGE = """<!doctype html>
   </dl>
   {notes}
 </div>
+{audio_block}
 <div class="card">
   <h2>Transcript</h2>
   <div class="transcript">{bubbles}</div>

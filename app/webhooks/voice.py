@@ -808,6 +808,41 @@ async def dashboard_call_detail(call_sid: str) -> Response:
     return Response(content=html_body, media_type="text/html")
 
 
+@router.get("/dashboard/recording/{call_sid}")
+async def dashboard_recording_proxy(call_sid: str) -> Response:
+    """Stream Twilio recording audio with our server-side credentials.
+
+    Twilio recording URLs require HTTP Basic auth, which the browser
+    cannot supply for an <audio> tag. We fetch the recording with the
+    account credentials and re-emit it as audio/mpeg.
+    """
+    import httpx
+
+    settings = get_settings()
+    async with session_scope() as db:
+        result = await db.execute(
+            select(CallSession).where(CallSession.call_sid == call_sid)
+        )
+        call = result.scalar_one_or_none()
+    if call is None or not call.recording_url:
+        return Response(status_code=404)
+    # Twilio's stored URL has no extension — add .mp3 to get audio bytes.
+    url = call.recording_url
+    if not url.endswith((".mp3", ".wav")):
+        url = url + ".mp3"
+    auth = (settings.twilio_account_sid, settings.twilio_auth_token.get_secret_value())
+    async with httpx.AsyncClient(timeout=30, follow_redirects=True) as client:
+        upstream = await client.get(url, auth=auth)
+    if upstream.status_code != 200:
+        log.warning("recording.fetch_failed", call_sid=call_sid, status=upstream.status_code)
+        return Response(status_code=upstream.status_code)
+    return Response(
+        content=upstream.content,
+        media_type="audio/mpeg",
+        headers={"Cache-Control": "private, max-age=300"},
+    )
+
+
 @router.get("/analytics/funnel")
 async def analytics_funnel(window_hours: int = 168) -> dict[str, object]:
     """Conversion funnel over the last ``window_hours`` (default 7 days).
