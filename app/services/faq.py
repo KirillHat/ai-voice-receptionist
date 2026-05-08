@@ -185,6 +185,85 @@ _ANSWERS: dict[str, dict[str, str]] = {
         "es-US": "Nuestra red wifi para huéspedes se llama Novikov Guest.",
         "ru-RU": "Наша гостевая Wi-Fi сеть называется Novikov Guest.",
     },
+    "parking_nearby": {
+        "en-US": (
+            "We offer valet parking right at the entrance for seventeen dollars. "
+            "Street parking and city lots are also available nearby on Canon Drive "
+            "and Brighton Way."
+        ),
+        "es-US": (
+            "Ofrecemos servicio de valet en la entrada por diecisiete dólares. "
+            "También hay estacionamiento en la calle y aparcamientos públicos "
+            "cerca, en Canon Drive y Brighton Way."
+        ),
+        "ru-RU": (
+            "Прямо у входа работает наш валет — семнадцать долларов. "
+            "Также есть городские парковки и места на улице рядом, "
+            "на Canon Drive и Brighton Way."
+        ),
+    },
+    "pets": {
+        "en-US": (
+            "We're not able to accommodate pets inside the dining room. Service "
+            "animals are welcome. For our patio, please ask the host on arrival "
+            "and we'll do our best."
+        ),
+        "es-US": (
+            "No podemos recibir mascotas en el comedor. Los animales de servicio "
+            "son bienvenidos. Para la terraza, pregunte al anfitrión a su llegada "
+            "y haremos lo posible."
+        ),
+        "ru-RU": (
+            "В зале мы не сможем принять питомцев. Служебные собаки — пожалуйста. "
+            "По террасе уточните у хостес при встрече, постараемся помочь."
+        ),
+    },
+    "corkage": {
+        "en-US": (
+            "Yes, we accept outside wine with a corkage fee of forty dollars per "
+            "bottle. Limit two bottles per table, and please make sure the wine "
+            "isn't already on our list."
+        ),
+        "es-US": (
+            "Sí, aceptamos vino traído por el cliente con una tarifa de descorche "
+            "de cuarenta dólares por botella. Máximo dos botellas por mesa, y por "
+            "favor verifique que no esté ya en nuestra carta."
+        ),
+        "ru-RU": (
+            "Да, своё вино можно принести — пробковый сбор сорок долларов за "
+            "бутылку, не более двух на стол, и, пожалуйста, убедитесь, что вина "
+            "нет в нашей карте."
+        ),
+    },
+    "wine_list_inquiry": {
+        "en-US": (
+            "Yes, we have an extensive wine list, with strong selections from "
+            "Italy, France, and California. Our team is happy to suggest a "
+            "pairing when you arrive."
+        ),
+        "es-US": (
+            "Sí, tenemos una carta de vinos amplia, con buena selección de Italia, "
+            "Francia y California. Nuestro equipo le sugerirá un maridaje al llegar."
+        ),
+        "ru-RU": (
+            "Да, у нас обширная винная карта с акцентом на Италию, Францию и "
+            "Калифорнию. Команда подскажет пейринг к вашему столу при встрече."
+        ),
+    },
+    "kids_menu": {
+        "en-US": (
+            "Yes, we offer a kids' menu with simpler dishes and smaller portions. "
+            "High chairs are available — please mention it when you arrive."
+        ),
+        "es-US": (
+            "Sí, tenemos menú infantil con platos sencillos y porciones más "
+            "pequeñas. Disponemos de sillas altas — avísenos al llegar."
+        ),
+        "ru-RU": (
+            "Да, у нас есть детское меню с простыми блюдами и меньшими порциями. "
+            "Высокий стульчик дадим по запросу — скажите хостес при встрече."
+        ),
+    },
 }
 
 
@@ -320,10 +399,62 @@ _TOPIC_PATTERNS: tuple[tuple[str, tuple[str, ...]], ...] = (
             r"\b(?:open|opening|hours|close|closing)\b",
             r"\bwhat time\b",
             r"\b(?:lunch|dinner)\s+(?:hours|time|service)\b",
-            r"\b(?:часы|во сколько)\b",
+            r"\b(?:часы|во сколько|до скольки)\b",
             r"\bкогда (?:открыты|закрываетесь|работаете)\b",
             r"\bhorario\b",
             r"\b(?:abren|cierran)\b",
+        ),
+    ),
+    (
+        "parking_nearby",
+        (
+            r"\bpark(?:ing)?\s+(?:nearby|near|around|close)\b",
+            r"\bwhere\s+(?:can\s+i|do\s+i)\s+park\b",
+            r"\bпарковк\w*\b",
+            r"\bприпарков\w*\b",
+            r"\bгде\s+(?:можно\s+)?(?:припарк|стоянк|парк)\w*\b",
+            r"\b(?:estacionamiento|aparcamiento|parking)\b",
+            r"\b(?:donde|dónde)\s+(?:puedo|me)\s+(?:estacion|aparc)\w*\b",
+        ),
+    ),
+    (
+        "pets",
+        (
+            r"\b(?:dog|dogs|pet|pets|puppy|puppies)\s+(?:allowed|on\s+the\s+patio|welcome)\b",
+            r"\b(?:are|do)\s+(?:dogs|pets)\b",
+            r"\bbring\s+(?:my|our)\s+(?:dog|pet)\b",
+            r"\b(?:собак|питомц|животн)\w*\b",
+            r"\b(?:perro|perros|mascota)\w*\b",
+        ),
+    ),
+    (
+        "corkage",
+        (
+            r"\bcorkage\b",
+            r"\bbring\s+(?:my\s+own|our\s+own)\s+(?:wine|bottle)\b",
+            r"\bпробков\w*\s+сбор\b",
+            r"\b(?:моё|мое|своё|свое)\s+вино\b",
+            r"\bпринес\w+\s+(?:моё|мое|своё|свое|собственн\w+)\s+вино\b",
+            r"\bdescorche\b|\bdescorchar\b",
+            r"\btraer\s+(?:mi\s+propio\s+)?vino\b",
+        ),
+    ),
+    (
+        "wine_list_inquiry",
+        (
+            r"\b(?:do\s+you\s+have\s+(?:a\s+)?)?wine\s+list\b",
+            r"\bcarta\s+de\s+vinos\b",
+            r"\bвинн(?:ая|ую)\s+карт\w*\b",
+        ),
+    ),
+    (
+        "kids_menu",
+        (
+            r"\b(?:kid|kids|children|child)['']?s?\s+menu\b",
+            r"\bdo\s+you\s+have\s+(?:a\s+)?kids\b",
+            r"\bдетск\w+\s+меню\b",
+            r"\bmenú\s+(?:infantil|para\s+niños)\b",
+            r"\bmenu\s+(?:infantil|para\s+ninos)\b",
         ),
     ),
 )

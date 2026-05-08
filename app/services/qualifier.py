@@ -1104,16 +1104,40 @@ _NOTES_KEYWORDS: tuple[str, ...] = (
 
 
 def _extract_notes(text: str) -> str | None:
-    """Snapshot the caller's utterance when it carries a special request.
+    """Extract the relevant clause(s) when the caller voices a preference.
 
-    Stored verbatim (truncated) so the host team sees the original phrasing
-    when preparing the table — 'with high chair', 'by the window', 'nut
-    allergy' — without us interpreting beyond keyword detection.
+    Used to be: store the entire utterance — host saw boilerplate around
+    a small useful phrase ('hi, table for two tomorrow at 8 with gluten-free
+    pasta'). Now: split on commas / 'and' / 'with' and keep only fragments
+    that contain a preference keyword, so the host sees just the relevant
+    bits ('with gluten-free pasta', 'by the window', 'nut allergy').
     """
     lower = text.lower()
-    if any(kw in lower for kw in _NOTES_KEYWORDS):
+    if not any(kw in lower for kw in _NOTES_KEYWORDS):
+        return None
+    # Split on natural clause separators while keeping order.
+    fragments = re.split(
+        r"\s*(?:,|;|\.| — | -- | – |\band\b|\bи\b|\by\b|\bbut\b|\bно\b|\bpero\b)\s*",
+        text.strip(),
+        flags=re.IGNORECASE,
+    )
+    relevant: list[str] = []
+    for frag in fragments:
+        f = frag.strip(" .,!?-")
+        if not f:
+            continue
+        if any(kw in f.lower() for kw in _NOTES_KEYWORDS):
+            # Drop redundant 'name is X' phrases that overlap with name field.
+            if re.search(r"\bname\s+is\s+\w+", f, re.IGNORECASE):
+                f = re.sub(r"\b(?:my\s+)?name\s+is\s+\w+\s*", "", f,
+                           flags=re.IGNORECASE).strip(" ,.")
+                if not f:
+                    continue
+            relevant.append(f)
+    if not relevant:
+        # Fall back to the whole utterance when we can't isolate a fragment.
         return text.strip()[:200]
-    return None
+    return " | ".join(dict.fromkeys(relevant))[:200]
 
 
 _FIELD_PROMPTS: dict[str, dict[str, str]] = {
